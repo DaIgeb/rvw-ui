@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="de-CH" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="532f3834f88ba845b52cc205be597ee3bdfd3fe8" datatype="html">
+        <source>RVW - Cycling</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/navigation/navigation.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">menu title</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

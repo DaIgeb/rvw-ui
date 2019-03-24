@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, LOCALE_ID, Inject } from "@angular/core";
 
 @Component({
-  selector: 'rvw-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: "rvw-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"]
 })
 export class AppComponent {
-  title = 'rvw';
+  title = "rvw";
+
+  constructor(@Inject(LOCALE_ID) protected localeId: string) {
+    console.log(localeId);
+  }
 }
