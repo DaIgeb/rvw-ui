@@ -5,7 +5,7 @@ import { CallbackComponent } from './callback/callback.component';
 
 const routes: Routes = [
   { path: 'callback', component: CallbackComponent },
-  { path: 'admin', loadChildren: './admin/admin-routing.module#AdminRoutingModule' },
+  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' },
   { path: '**', component: PageNotFoundComponent }
 ];
 

@@ -1,7 +1,6 @@
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { LayoutModule } from "@angular/cdk/layout";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LayoutModule } from '@angular/cdk/layout';
 
 import {
   MatToolbarModule,
@@ -14,14 +13,13 @@ import {
   MatCardModule,
   MatMenuModule,
   MatProgressBarModule
-} from "@angular/material";
+} from '@angular/material';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
-    LayoutModule,
-    BrowserAnimationsModule
+    LayoutModule
   ],
   exports: [
     MatToolbarModule,

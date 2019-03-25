@@ -1,30 +1,30 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, bindNodeCallback, of } from "rxjs";
-import { WebAuth, Auth0DecodedHash, Auth0ParseHashError } from "auth0-js";
-import { environment } from "./../../environments/environment";
-import { Router } from "@angular/router";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, bindNodeCallback, of } from 'rxjs';
+import { WebAuth, Auth0DecodedHash, Auth0ParseHashError } from 'auth0-js';
+import { environment } from './../../environments/environment';
+import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class AuthService {
   private auth0 = new WebAuth({
     clientID: environment.auth.CLIENT_ID,
     domain: environment.auth.CLIENT_DOMAIN,
-    responseType: "id_token token",
+    responseType: 'id_token token',
     redirectUri: environment.auth.REDIRECT,
     audience: environment.auth.AUDIENCE,
-    scope: "openid profile email"
+    scope: 'openid profile email'
   });
 
-  private authFlag = "isLoggedIn";
+  private authFlag = 'isLoggedIn';
   // Create stream for token
   token$: Observable<string> = new Observable();
   // Create stream for user profile data
   userProfile$ = new BehaviorSubject<any>(null);
   // Authentication navigation
-  onAuthSuccessUrl = "/";
-  onAuthFailureUrl = "/";
+  onAuthSuccessUrl = '/';
+  onAuthFailureUrl = '/';
   logoutUrl = environment.auth.LOGOUT_URL;
   // Create observable of Auth0 parseHash method to gather auth results
   parseHash$ = bindNodeCallback<Auth0DecodedHash | null>(this.auth0.parseHash.bind(this.auth0));
@@ -43,7 +43,7 @@ export class AuthService {
       this.parseHash$().subscribe(
         authResult => {
           this._setAuth(authResult);
-          window.location.hash = "";
+          window.location.hash = '';
           this.router.navigate([this.onAuthSuccessUrl]);
         },
         err => this._handleError(err)

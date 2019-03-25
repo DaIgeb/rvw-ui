@@ -4,9 +4,10 @@ import { registerLocaleData } from '@angular/common';
 import localeDeCh from '@angular/common/locales/de-CH';
 import localeDeChExtra from '@angular/common/locales/extra/de-CH';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AdminModule } from './admin/admin.module';
 import { SharedModule } from './shared/shared.module';
 
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -25,10 +26,10 @@ registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
   ],
   imports: [
     BrowserModule,
-    AdminModule,
     AppRoutingModule,
     AppMaterialModule,
-    SharedModule
+    SharedModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
