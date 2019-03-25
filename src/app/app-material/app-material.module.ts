@@ -1,26 +1,26 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LayoutModule } from '@angular/cdk/layout';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { LayoutModule } from "@angular/cdk/layout";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 import {
   MatToolbarModule,
   MatButtonModule,
   MatSidenavModule,
   MatIconModule,
-  MatListModule
-} from '@angular/material';
+  MatListModule,
+  MatProgressSpinnerModule,
+  MatGridListModule,
+  MatCardModule,
+  MatMenuModule,
+  MatProgressBarModule
+} from "@angular/material";
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
     LayoutModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatListModule,
     BrowserAnimationsModule
   ],
   exports: [
@@ -28,7 +28,12 @@ import {
     MatButtonModule,
     MatSidenavModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatGridListModule,
+    MatCardModule,
+    MatMenuModule,
   ]
 })
-export class AppMaterialModule { }
+export class AppMaterialModule {}

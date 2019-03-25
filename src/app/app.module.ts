@@ -12,6 +12,7 @@ import { SharedModule } from './shared/shared.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { AppMaterialModule } from './app-material/app-material.module';
+import { CallbackComponent } from './callback/callback.component';
 
 registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
 
@@ -19,7 +20,8 @@ registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
   declarations: [
     AppComponent,
     PageNotFoundComponent,
-    NavigationComponent
+    NavigationComponent,
+    CallbackComponent
   ],
   imports: [
     BrowserModule,

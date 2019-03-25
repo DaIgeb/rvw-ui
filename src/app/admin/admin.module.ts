@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { MatGridListModule, MatCardModule, MatMenuModule, MatIconModule, MatButtonModule } from '@angular/material';
 import { LayoutModule } from '@angular/cdk/layout';
+import { AppMaterialModule } from '../app-material/app-material.module';
 
 @NgModule({
   declarations: [AdminDashboardComponent],
@@ -13,12 +14,7 @@ import { LayoutModule } from '@angular/cdk/layout';
     CommonModule,
     AdminRoutingModule,
     UserModule,
-    MatGridListModule,
-    MatCardModule,
-    MatMenuModule,
-    MatIconModule,
-    MatButtonModule,
-    LayoutModule
+    AppMaterialModule
   ]
 })
 export class AdminModule { }

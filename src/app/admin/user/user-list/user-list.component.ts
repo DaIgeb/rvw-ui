@@ -12,4 +12,14 @@ export class UserListComponent implements OnInit {
   ngOnInit() {
   }
 
+  /*
+  URLS
+
+    POST - https://c4vxp6b5m3.execute-api.eu-central-1.amazonaws.com/dev/
+  GET - https://c4vxp6b5m3.execute-api.eu-central-1.amazonaws.com/dev/
+  GET - https://c4vxp6b5m3.execute-api.eu-central-1.amazonaws.com/dev/{id}
+  PUT - https://c4vxp6b5m3.execute-api.eu-central-1.amazonaws.com/dev/{id}
+  DELETE - https://c4vxp6b5m3.execute-api.eu-central-1.amazonaws.com/dev/{id}
+
+  */
 }

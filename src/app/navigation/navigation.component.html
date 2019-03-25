@@ -26,6 +26,9 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span i18n="menu title">RVW - Cycling</span>
+      <span class="spacer"></span>
+      <mat-icon *ngIf="auth.authenticated" class="example-icon" aria-hidden="false" aria-label="Example user verified icon"  (click)="logout()">verified_user</mat-icon>
+      <button *ngIf="!auth.authenticated" mat-flat-button color="primary" (click)="login()">Login</button>
     </mat-toolbar>
 
     <router-outlet></router-outlet>
