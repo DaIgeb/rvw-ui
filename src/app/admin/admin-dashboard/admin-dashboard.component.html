@@ -5,6 +5,30 @@
       <mat-card class="dashboard-card">
         <mat-card-header>
           <mat-card-title>
+            Config
+            <button
+              mat-icon-button
+              class="more-button"
+              [matMenuTriggerFor]="menu"
+              aria-label="Toggle menu"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item>Expand</button>
+              <button mat-menu-item>Remove</button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <pre>{{ configObj | json }}</pre>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
             Profile
             <button
               mat-icon-button
@@ -22,12 +46,10 @@
         </mat-card-header>
         <mat-card-content>
           <mat-progress-spinner
-            *ngIf="!(auth.userProfile$ | async)"
+            *ngIf="!userProfile"
             mode="indeterminate"
           ></mat-progress-spinner>
-          <pre *ngIf="(auth.userProfile$ | async)">{{
-            auth.userProfile$ | async | json
-          }}</pre>
+          <pre *ngIf="userProfile">{{ userProfile | json }}</pre>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>

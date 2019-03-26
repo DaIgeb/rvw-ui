@@ -1,10 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
+
 import localeDeCh from '@angular/common/locales/de-CH';
 import localeDeChExtra from '@angular/common/locales/extra/de-CH';
-
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -14,6 +15,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { NavigationComponent } from './navigation/navigation.component';
 import { AppMaterialModule } from './app-material/app-material.module';
 import { CallbackComponent } from './callback/callback.component';
+import { httpInterceptorProviders } from './http-interceptors';
 
 registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
 
@@ -29,9 +31,10 @@ registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
     AppRoutingModule,
     AppMaterialModule,
     SharedModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

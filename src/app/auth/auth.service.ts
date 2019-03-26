@@ -19,15 +19,17 @@ export class AuthService {
 
   private authFlag = 'isLoggedIn';
   // Create stream for token
-  token$: Observable<string> = new Observable();
+  private token$ = new BehaviorSubject<string>(null);
   // Create stream for user profile data
-  userProfile$ = new BehaviorSubject<any>(null);
+  private userProfile$ = new BehaviorSubject<any>(null);
   // Authentication navigation
   onAuthSuccessUrl = '/';
   onAuthFailureUrl = '/';
   logoutUrl = environment.auth.LOGOUT_URL;
   // Create observable of Auth0 parseHash method to gather auth results
-  parseHash$ = bindNodeCallback<Auth0DecodedHash | null>(this.auth0.parseHash.bind(this.auth0));
+  parseHash$ = bindNodeCallback<Auth0DecodedHash | null>(
+    this.auth0.parseHash.bind(this.auth0)
+  );
   // Create observable of Auth0 checkSession method to
   // verify authorization server session and renew tokens
   checkSession$ = bindNodeCallback(this.auth0.checkSession.bind(this.auth0));
@@ -36,6 +38,14 @@ export class AuthService {
 
   login() {
     this.auth0.authorize();
+  }
+
+  getToken(): Observable<string> {
+    return this.token$;
+  }
+
+  getUserProfile(): Observable<any> {
+    return this.userProfile$;
   }
 
   handleLoginCallback() {
@@ -53,7 +63,7 @@ export class AuthService {
 
   private _setAuth(authResult: Auth0DecodedHash) {
     // Observable of token
-    this.token$ = of(authResult.accessToken);
+    this.token$.next(authResult.accessToken);
     // Emit value for user data subject
     this.userProfile$.next(authResult.idTokenPayload);
     // Set flag in local storage stating this app is logged in

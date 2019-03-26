@@ -4,6 +4,7 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 
 const routes: Routes = [
   { path: 'user', loadChildren: './user/user.module#UserModule' },
+  { path: 'role', loadChildren: './role/role.module#RoleModule' },
   { path: '', component: AdminDashboardComponent }
 ];
 
