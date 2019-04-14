@@ -1,10 +1,11 @@
 import { finalize, tap } from 'rxjs/operators';
-import { LoggerService } from '../core/logger.service';
 import { HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { LoggerService } from '../logger.service';
+
 @Injectable()
-export class LoggingInterceptor implements HttpInterceptor {
+export class HttpLoggingInterceptor implements HttpInterceptor {
   constructor(private logger: LoggerService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {

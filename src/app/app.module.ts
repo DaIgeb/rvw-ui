@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
 
 import localeDeCh from '@angular/common/locales/de-CH';
 import localeDeChExtra from '@angular/common/locales/extra/de-CH';
@@ -15,7 +14,8 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { NavigationComponent } from './navigation/navigation.component';
 import { AppMaterialModule } from './app-material/app-material.module';
 import { CallbackComponent } from './callback/callback.component';
-import { httpInterceptorProviders } from './http-interceptors';
+
+import { CoreModule } from '@app/core';
 
 registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
 
@@ -27,14 +27,18 @@ registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
     CallbackComponent
   ],
   imports: [
-    BrowserModule,
-    AppRoutingModule,
-    AppMaterialModule,
-    SharedModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    BrowserModule,
+    AppMaterialModule,
+    CoreModule,
+    SharedModule,
+    AppRoutingModule,
+
+    // StoreModule.forRoot(reducers, { metaReducers }),
+    // StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+    // EffectsModule.forRoot([AppEffects])
   ],
-  providers: [httpInterceptorProviders],
+  providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

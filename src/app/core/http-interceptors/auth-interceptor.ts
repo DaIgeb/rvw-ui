@@ -8,10 +8,11 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
+
 import { AuthService } from '../auth/auth.service';
 
 @Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export class HttpAuthInterceptor implements HttpInterceptor {
   constructor(private auth: AuthService) {}
   // function which will be called for all http calls
   intercept(

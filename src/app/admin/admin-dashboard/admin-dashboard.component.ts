@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { map, first, tap, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
-import { AuthService } from 'src/app/auth/auth.service';
-import { ConfigService } from 'src/app/core/config.service';
-import { Config } from 'src/app/core/config';
+import { Store, select } from '@ngrx/store';
+
+import { selectProfile, AppState } from '@app/core';
+import { ConfigService } from '@app/core/config.service';
+import { Config } from '@app/core/config';
 
 @Component({
   selector: 'rvw-admin-dashboard',
@@ -33,14 +35,16 @@ export class AdminDashboardComponent implements OnInit {
     })
   );
 
-  ngOnInit(): void {
-    this.config.getConfig().subscribe(c => (this.configObj = c));
-    this.auth.getUserProfile().subscribe(p => (this.userProfile = p));
-  }
-
   constructor(
     private breakpointObserver: BreakpointObserver,
-    public auth: AuthService,
+    public store: Store<AppState>,
     public config: ConfigService
   ) {}
+
+  ngOnInit(): void {
+    this.config.getConfig().subscribe(c => (this.configObj = c));
+    this.store
+      .pipe(select(selectProfile))
+      .subscribe(p => (this.userProfile = p));
+  }
 }

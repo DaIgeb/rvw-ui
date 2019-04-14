@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
+import { Store } from '@ngrx/store';
+import { AppState, ActionAuthLoginComplete } from '../core';
 
 @Component({
   selector: 'rvw-callback',
@@ -7,9 +8,10 @@ import { AuthService } from '../auth/auth.service';
   styleUrls: ['./callback.component.scss']
 })
 export class CallbackComponent implements OnInit {
-  constructor(private auth: AuthService) {}
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
-    this.auth.handleLoginCallback();
+      this.store.dispatch(new ActionAuthLoginComplete());
+    // this.auth.handleLoginCallback();
   }
 }

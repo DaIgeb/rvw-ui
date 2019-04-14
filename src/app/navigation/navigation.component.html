@@ -5,9 +5,19 @@
     fixedInViewport="true"
     [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="!(isHandset$ | async)"
+    [opened]="showSideNav$ | async"
   >
-    <mat-toolbar>Menu</mat-toolbar>
+    <mat-toolbar>
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="toggleSideNav(false)"
+        *ngIf="(showSideNav$ | async)"
+      >
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon></button
+      >Menu
+    </mat-toolbar>
     <mat-nav-list>
       <a mat-list-item href="#">Link 1</a>
       <a mat-list-item href="#">Link 2 {{ 3 | currency }}</a>
@@ -25,10 +35,33 @@
       >
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="toggleSideNav(true)"
+        *ngIf="!(showSideNav$ | async)"
+      >
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
       <span i18n="menu title">RVW - Cycling</span>
       <span class="spacer"></span>
-      <mat-icon *ngIf="auth.authenticated" class="example-icon" aria-hidden="false" aria-label="Example user verified icon"  (click)="logout()">verified_user</mat-icon>
-      <button *ngIf="!auth.authenticated" mat-flat-button color="primary" (click)="login()">Login</button>
+      <mat-icon
+        *ngIf="isAuthenticated$ | async"
+        class="example-icon"
+        aria-hidden="false"
+        aria-label="Example user verified icon"
+        (click)="logout()"
+        >verified_user</mat-icon
+      >
+      <button
+        *ngIf="!(isAuthenticated$ | async)"
+        mat-flat-button
+        color="primary"
+        (click)="login()"
+      >
+        Login
+      </button>
     </mat-toolbar>
 
     <router-outlet></router-outlet>

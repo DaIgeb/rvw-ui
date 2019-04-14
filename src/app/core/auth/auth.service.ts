@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, bindNodeCallback, of } from 'rxjs';
 import { WebAuth, Auth0DecodedHash, Auth0ParseHashError } from 'auth0-js';
-import { environment } from './../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -22,6 +22,7 @@ export class AuthService {
   private token$ = new BehaviorSubject<string>(null);
   // Create stream for user profile data
   private userProfile$ = new BehaviorSubject<any>(null);
+
   // Authentication navigation
   onAuthSuccessUrl = '/';
   onAuthFailureUrl = '/';
@@ -52,7 +53,7 @@ export class AuthService {
     if (window.location.hash && !this.authenticated) {
       this.parseHash$().subscribe(
         authResult => {
-          this._setAuth(authResult);
+          this.setAuth(authResult);
           window.location.hash = '';
           this.router.navigate([this.onAuthSuccessUrl]);
         },
@@ -61,7 +62,7 @@ export class AuthService {
     }
   }
 
-  private _setAuth(authResult: Auth0DecodedHash) {
+  public setAuth(authResult: Auth0DecodedHash) {
     // Observable of token
     this.token$.next(authResult.accessToken);
     // Emit value for user data subject
@@ -77,7 +78,7 @@ export class AuthService {
   renewAuth() {
     if (this.authenticated) {
       this.checkSession$({}).subscribe(
-        authResult => this._setAuth(authResult as Auth0DecodedHash),
+        authResult => this.setAuth(authResult as Auth0DecodedHash),
         err => {
           localStorage.removeItem(this.authFlag);
           this.router.navigate([this.onAuthFailureUrl]);
@@ -96,6 +97,10 @@ export class AuthService {
       returnTo: this.logoutUrl,
       clientID: environment.auth.CLIENT_ID
     });
+  }
+
+  resetAuthFlag() {
+    localStorage.removeItem(this.authFlag);
   }
 
   private _handleError(err) {
