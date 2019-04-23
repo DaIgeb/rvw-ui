@@ -12,7 +12,7 @@ export function authReducer(
 ): AuthState {
   switch (action.type) {
     case AuthActionTypes.LOGIN_SUCCESS:
-      return { ...state, isAuthenticated: true, profile: action.payload };
+      return { ...state, isAuthenticated: true, profile: action.payload.profile };
 
     case AuthActionTypes.LOGOUT:
       return { ...state, isAuthenticated: false, profile: undefined };

@@ -26,7 +26,7 @@ export class ActionAuthLoginComplete implements Action {
 export class ActionAuthLoginSuccess implements Action {
   readonly type = AuthActionTypes.LOGIN_SUCCESS;
 
-  constructor(public payload: any) {}
+  constructor(public payload: { profile: any; redirectUrl?: string }) {}
 }
 
 export class ActionAuthLoginFailure implements Action {

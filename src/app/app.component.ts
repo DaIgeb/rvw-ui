@@ -1,5 +1,5 @@
-import { Component, LOCALE_ID, Inject, OnInit } from '@angular/core';
-import { AppState, ActionAuthCheckLogin } from '@app/core';
+import { Component, OnInit } from '@angular/core';
+import { AppState, ActionAuthCheckLogin, LocalStorageService } from '@app/core';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -10,14 +10,11 @@ import { Store } from '@ngrx/store';
 export class AppComponent implements OnInit {
   title = 'rvw';
 
-  constructor(@Inject(LOCALE_ID) protected localeId: string, private store: Store<AppState>) {
-    console.log(localeId);
+  constructor(private store: Store<AppState>, private storageService: LocalStorageService) {
   }
 
   ngOnInit() {
-    // If there is an active session on the
-    // authorization server, get tokens
-    // this.auth.renewAuth();
+    this.storageService.testLocalStorage();
     this.store.dispatch(new ActionAuthCheckLogin());
   }
 }

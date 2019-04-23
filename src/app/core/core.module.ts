@@ -14,6 +14,7 @@ import { httpInterceptorProviders } from './http-interceptors';
 
 import { reducers, metaReducers } from './core.state';
 import { AuthEffects } from './auth/auth.effects';
+import { CurrentUserEffects } from './current-user/current-user.effects';
 
 @NgModule({
   declarations: [],
@@ -23,13 +24,14 @@ import { AuthEffects } from './auth/auth.effects';
     StoreModule.forRoot(reducers, { metaReducers }),
     // StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([
-      AuthEffects
+      AuthEffects,
+      CurrentUserEffects
       //  GoogleAnalyticsEffects
     ]),
     environment.production
       ? []
       : StoreDevtoolsModule.instrument({
-          name: 'Angular NgRx Material Starter'
+          name: 'RVW - Apps'
         })
   ],
   providers: [httpInterceptorProviders]

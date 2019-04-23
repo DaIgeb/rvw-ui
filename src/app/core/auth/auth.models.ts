@@ -1,4 +1,7 @@
 export interface AuthState {
   isAuthenticated: boolean;
-  profile: any;
+  profile: {
+    sub: string;
+    [index: string]: any;
+  };
 }

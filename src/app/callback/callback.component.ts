@@ -3,7 +3,6 @@ import { Store } from '@ngrx/store';
 import { AppState, ActionAuthLoginComplete } from '../core';
 
 @Component({
-  selector: 'rvw-callback',
   templateUrl: './callback.component.html',
   styleUrls: ['./callback.component.scss']
 })
@@ -12,6 +11,5 @@ export class CallbackComponent implements OnInit {
 
   ngOnInit() {
       this.store.dispatch(new ActionAuthLoginComplete());
-    // this.auth.handleLoginCallback();
   }
 }

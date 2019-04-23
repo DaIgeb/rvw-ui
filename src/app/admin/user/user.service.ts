@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ConfigService } from 'src/app/core/config.service';
+import { ConfigService } from '@app/core/config/config.service';
 import { tap, switchMap, debounce } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 

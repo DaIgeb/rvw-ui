@@ -4,7 +4,7 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Store, select } from '@ngrx/store';
 
 import { selectProfile, AppState } from '@app/core';
-import { ConfigService } from '@app/core/config.service';
+import { ConfigService } from '@app/core/config/config.service';
 import { Config } from '@app/core/config';
 
 @Component({

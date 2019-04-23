@@ -24,10 +24,7 @@ export class AuthEffects {
   @Effect({ dispatch: false })
   login = this.actions$.pipe(
     ofType<fromAuth.ActionAuthLogin>(fromAuth.AuthActionTypes.LOGIN),
-    tap(
-      () => this.authService.login()
-      // this.localStorageService.setItem(AUTH_KEY, { isAuthenticated: true })
-    )
+    tap(() => this.authService.login())
   );
 
   @Effect({ dispatch: false })
@@ -41,14 +38,19 @@ export class AuthEffects {
 
   @Effect()
   loginComplete$ = this.actions$.pipe(
-    ofType<fromAuth.ActionAuthLogin>(fromAuth.AuthActionTypes.LOGIN_COMPLETE),
+    ofType<fromAuth.ActionAuthLoginComplete>(
+      fromAuth.AuthActionTypes.LOGIN_COMPLETE
+    ),
     exhaustMap(() => {
       return this.authService.parseHash$().pipe(
-        map((authResult) => {
+        map(authResult => {
+          console.log(authResult);
           if (authResult && authResult.accessToken) {
             this.authService.setAuth(authResult);
-            window.location.hash = '';
-            return new fromAuth.ActionAuthLoginSuccess(authResult.idTokenPayload);
+            return new fromAuth.ActionAuthLoginSuccess({
+              profile: authResult.idTokenPayload,
+              redirectUrl: authResult.state
+            });
           }
         }),
         catchError(error => of(new fromAuth.ActionAuthLoginFailure(error)))
@@ -58,15 +60,21 @@ export class AuthEffects {
 
   @Effect({ dispatch: false })
   loginRedirect$ = this.actions$.pipe(
-    ofType<fromAuth.ActionAuthLoginSuccess>(fromAuth.AuthActionTypes.LOGIN_SUCCESS),
-    tap(() => {
-      this.router.navigate([this.authService.onAuthSuccessUrl]);
+    ofType<fromAuth.ActionAuthLoginSuccess>(
+      fromAuth.AuthActionTypes.LOGIN_SUCCESS
+    ),
+    tap(action => {
+      this.router.navigate([
+        action.payload.redirectUrl || this.authService.onAuthSuccessUrl
+      ]);
     })
   );
 
   @Effect({ dispatch: false })
   loginErrorRedirect$ = this.actions$.pipe(
-    ofType<fromAuth.ActionAuthLoginFailure>(fromAuth.AuthActionTypes.LOGIN_FAILURE),
+    ofType<fromAuth.ActionAuthLoginFailure>(
+      fromAuth.AuthActionTypes.LOGIN_FAILURE
+    ),
     map(action => action.payload),
     tap((err: any) => {
       if (err.error_description) {
@@ -87,7 +95,9 @@ export class AuthEffects {
           map((authResult: any) => {
             if (authResult && authResult.accessToken) {
               this.authService.setAuth(authResult);
-              return new fromAuth.ActionAuthLoginSuccess(authResult.idTokenPayload);
+              return new fromAuth.ActionAuthLoginSuccess({
+                profile: authResult.idTokenPayload
+              });
             }
           }),
           catchError(error => {

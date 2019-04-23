@@ -10,6 +10,7 @@ import {
 } from '@angular/material';
 
 import { AdminDashboardComponent } from './admin-dashboard.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -26,7 +27,8 @@ describe('AdminDashboardComponent', () => {
         MatGridListModule,
         MatIconModule,
         MatMenuModule,
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 

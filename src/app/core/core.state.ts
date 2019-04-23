@@ -14,11 +14,14 @@ import { AuthState } from './auth/auth.models';
 import { authReducer } from './auth/auth.reducer';
 import { layoutReducer } from './reducers';
 import { LayoutState } from './reducers/layout.models';
+import { currentUserReducer } from './current-user/current-user.reducer';
+import { CurrentUserState } from './current-user/current-user.models';
 // import { RouterStateUrl } from './router/router.state';
 
 export const reducers: ActionReducerMap<AppState> = {
   auth: authReducer,
-  layout: layoutReducer
+  layout: layoutReducer,
+  currentUser: currentUserReducer
   // router: routerReducer
 };
 
@@ -36,6 +39,10 @@ export const selectAuthState = createFeatureSelector<AppState, AuthState>(
   'auth'
 );
 
+export const selectCurrentUserState = createFeatureSelector<AppState, CurrentUserState>(
+  'currentUser'
+);
+
 export const selectLayoutState = createFeatureSelector<AppState, LayoutState>(
   'layout'
 );
@@ -48,5 +55,6 @@ export const selectRouterState = createFeatureSelector<
 export interface AppState {
   auth: AuthState;
   layout: LayoutState;
+  currentUser: CurrentUserState;
 //  router: RouterReducerState<RouterStateUrl>;
 }

@@ -18,7 +18,7 @@ describe('AuthEffects', () => {
       'setItem'
     ]);
     router = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    authService = jasmine.createSpyObj('AuthService', []);
+    authService = jasmine.createSpyObj('AuthService', ['login', 'logout']);
   });
 
   describe('login', () => {
