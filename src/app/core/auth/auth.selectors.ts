@@ -9,11 +9,16 @@ export const selectAuth = createSelector(
 );
 
 export const selectIsAuthenticated = createSelector(
-  selectAuthState,
+  selectAuth,
   (state: AuthState) => state.isAuthenticated
 );
 
 export const selectProfile = createSelector(
-  selectAuthState,
+  selectAuth,
   (state: AuthState) => state.profile
+);
+
+export const selectProfileSubject = createSelector(
+  selectProfile,
+  (state: any) => (state ? state.sub : undefined)
 );

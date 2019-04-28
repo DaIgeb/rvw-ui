@@ -1,7 +1,7 @@
 import { AuthState } from './auth.models';
 import { AuthActions, AuthActionTypes } from './auth.actions';
 
-export const initialState: AuthState = {
+const initialState: AuthState = {
   isAuthenticated: false,
   profile: undefined
 };

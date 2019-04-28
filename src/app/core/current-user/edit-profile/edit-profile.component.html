@@ -1,0 +1,51 @@
+<div class="container">
+  <form [formGroup]="currentUserFormGroup" (ngSubmit)="register()" class="form">
+    <mat-form-field>
+      <input
+        matInput
+        placeholder="First Name"
+        formControlName="firstName"
+        required
+      />
+      <mat-error *ngIf="firstName.invalid">{{
+        getErrorMessage(firstName)
+      }}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input
+        matInput
+        placeholder="Last Name"
+        formControlName="lastName"
+        required
+      />
+      <mat-error *ngIf="lastName.invalid">{{
+        getErrorMessage(lastName)
+      }}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Email" formControlName="email" required />
+      <mat-error *ngIf="email.invalid">{{ getErrorMessage(email) }}</mat-error>
+    </mat-form-field>
+
+    <div class="button">
+      <div class="spacer"></div>
+      <button
+        mat-button
+        type="submit"
+        [disabled]="currentUserFormGroup.invalid || currentUserFormGroup.pristine"
+        color="primary"
+      >
+        Submit
+      </button>
+
+      <button
+        mat-button
+        type="reset"
+        [disabled]="currentUserFormGroup.pristine"
+        (click)="reset()"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

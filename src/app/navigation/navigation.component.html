@@ -21,7 +21,7 @@
     <mat-nav-list>
       <a mat-list-item href="#">Link 1</a>
       <a mat-list-item href="#">Link 2 {{ 3 | currency }}</a>
-      <a mat-list-item routerLink="/admin">Admin</a>
+      <a mat-list-item routerLink="/admin" *ngIf="(isAdmin$ | async)">Admin</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -46,14 +46,24 @@
       </button>
       <span i18n="menu title">RVW - Cycling</span>
       <span class="spacer"></span>
-      <mat-icon
-        *ngIf="isAuthenticated$ | async"
-        class="example-icon"
-        aria-hidden="false"
-        aria-label="Example user verified icon"
-        (click)="logout()"
-        >verified_user</mat-icon
-      >
+      <div *ngIf="(isAuthenticated$ | async)">
+        <button mat-button [matMenuTriggerFor]="menu" yPosition="before">
+          <mat-icon
+            class="example-icon"
+            aria-hidden="false"
+            aria-label="Example user verified icon"
+            color="{{ (isAdmin$ | async) ? 'warn' : 'ascent' }}"
+            >verified_user</mat-icon
+          >
+          {{ userName$ | async }}
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item routerLink="/current-user/profile">
+            Profile
+          </button>
+          <button mat-menu-item (click)="logout()">Logout</button>
+        </mat-menu>
+      </div>
       <button
         *ngIf="!(isAuthenticated$ | async)"
         mat-flat-button

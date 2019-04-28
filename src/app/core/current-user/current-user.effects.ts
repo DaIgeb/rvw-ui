@@ -9,6 +9,7 @@ import { of, EMPTY } from 'rxjs';
 import { CurrentUserService } from './current-user.service';
 import * as fromAuth from '../auth/auth.actions';
 import * as fromCurrentUser from './current-user.actions';
+import { Router } from '@angular/router';
 
 export const AUTH_KEY = 'AUTH';
 
@@ -16,6 +17,7 @@ export const AUTH_KEY = 'AUTH';
 export class CurrentUserEffects {
   constructor(
     private actions$: Actions<Action>,
+    private router: Router,
     private currentUserService: CurrentUserService
   ) {}
 
@@ -24,7 +26,7 @@ export class CurrentUserEffects {
     ofType<fromAuth.ActionAuthLoginSuccess>(
       fromAuth.AuthActionTypes.LOGIN_SUCCESS
     ),
-    map(() => new fromCurrentUser.ActionCurrentUserLoad())
+    map(a => new fromCurrentUser.ActionCurrentUserLoad(a.payload.profile.sub))
   );
 
   @Effect()
@@ -32,10 +34,33 @@ export class CurrentUserEffects {
     ofType<fromCurrentUser.ActionCurrentUserLoad>(
       fromCurrentUser.CurrentUserActionTypes.LOAD
     ),
-    switchMap(() =>
+    exhaustMap(a =>
+      this.currentUserService.getCurrentUser(a.payload).pipe(
+        map(user => {
+          if (!user) {
+            this.router.navigate(['/current-user/profile']);
+            return new fromCurrentUser.ActionCurrentUserLoadFailure();
+          }
+
+          return new fromCurrentUser.ActionCurrentUserLoadSuccess(user);
+        })
+      )
+    )
+  );
+
+  @Effect()
+  register$ = this.actions$.pipe(
+    ofType<fromCurrentUser.ActionCurrentUserRegister>(
+      fromCurrentUser.CurrentUserActionTypes.REGISTER
+    ),
+    exhaustMap(a =>
       this.currentUserService
-        .getCurrentUser()
-        .pipe(map((user) => new fromCurrentUser.ActionCurrentUserLoadSuccess(user)))
+        .registerCurrentUser(a.payload)
+        .pipe(
+          map(
+            user => new fromCurrentUser.ActionCurrentUserRegisterSuccess(user)
+          )
+        )
     )
   );
 }

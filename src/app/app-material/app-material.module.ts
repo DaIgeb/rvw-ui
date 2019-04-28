@@ -12,15 +12,14 @@ import {
   MatGridListModule,
   MatCardModule,
   MatMenuModule,
-  MatProgressBarModule
+  MatProgressBarModule,
+  MatFormFieldModule,
+  MatInputModule
 } from '@angular/material';
 
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-    LayoutModule
-  ],
+  imports: [CommonModule, LayoutModule],
   exports: [
     MatToolbarModule,
     MatButtonModule,
@@ -32,6 +31,8 @@ import {
     MatGridListModule,
     MatCardModule,
     MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule
   ]
 })
 export class AppMaterialModule {}

@@ -3,5 +3,9 @@ export interface CurrentUserState {
 }
 
 export interface User {
+  sub: string;
+  firstName: string;
+  lastName: string;
+  email: string;
   roles: string[];
 }

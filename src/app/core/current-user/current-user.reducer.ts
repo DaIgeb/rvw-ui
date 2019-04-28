@@ -4,7 +4,7 @@ import {
   CurrentUserActionTypes
 } from './current-user.actions';
 
-export const initialState: CurrentUserState = {
+const initialState: CurrentUserState = {
   user: undefined
 };
 
@@ -13,6 +13,13 @@ export function currentUserReducer(
   action: CurrentUserActions
 ): CurrentUserState {
   switch (action.type) {
+    case CurrentUserActionTypes.LOAD:
+    case CurrentUserActionTypes.REGISTER:
+      return {
+        ...state,
+        user: undefined
+      };
+    case CurrentUserActionTypes.REGISTER_SUCCESS:
     case CurrentUserActionTypes.LOAD_SUCCESS:
       return {
         ...state,

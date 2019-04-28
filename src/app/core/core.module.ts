@@ -15,12 +15,17 @@ import { httpInterceptorProviders } from './http-interceptors';
 import { reducers, metaReducers } from './core.state';
 import { AuthEffects } from './auth/auth.effects';
 import { CurrentUserEffects } from './current-user/current-user.effects';
+import { EditProfileComponent } from './current-user/edit-profile/edit-profile.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { AppMaterialModule } from '@app/app-material/app-material.module';
 
 @NgModule({
-  declarations: [],
+  declarations: [EditProfileComponent],
   imports: [
     CommonModule,
     HttpClientModule,
+    ReactiveFormsModule,
+    AppMaterialModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     // StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([
@@ -34,6 +39,7 @@ import { CurrentUserEffects } from './current-user/current-user.effects';
           name: 'RVW - Apps'
         })
   ],
+  exports: [EditProfileComponent],
   providers: [httpInterceptorProviders]
 })
 export class CoreModule {

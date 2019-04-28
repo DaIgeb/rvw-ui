@@ -13,7 +13,6 @@ import { CoreModule } from '@app/core';
     CommonModule,
     AdminRoutingModule,
     AppMaterialModule,
-    CoreModule,
     RoleModule
   ]
 })

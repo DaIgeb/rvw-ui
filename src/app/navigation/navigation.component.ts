@@ -9,7 +9,11 @@ import {
   ActionAuthLogin,
   ActionAuthLogout,
   selectIsSideNavShown,
-  ToggleSideNav
+  ToggleSideNav,
+  User,
+  selectCurrentUser,
+  selectCurrentUserName,
+  selectCurrentUserIsAdmin
 } from '@app/core';
 
 @Component({
@@ -23,6 +27,9 @@ export class NavigationComponent implements OnInit {
     .pipe(map(result => result.matches));
   showSideNav$: Observable<boolean>;
   isAuthenticated$: Observable<boolean>;
+  isAdmin$: Observable<boolean>;
+  currentUser$: Observable<User | undefined>;
+  userName$: Observable<string | undefined>;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -32,6 +39,9 @@ export class NavigationComponent implements OnInit {
   ngOnInit(): void {
     this.showSideNav$ = this.store.pipe(select(selectIsSideNavShown));
     this.isAuthenticated$ = this.store.pipe(select(selectIsAuthenticated));
+    this.currentUser$ = this.store.pipe(select(selectCurrentUser));
+    this.userName$ = this.store.pipe(select(selectCurrentUserName));
+    this.isAdmin$ = this.store.pipe(select(selectCurrentUserIsAdmin));
   }
 
   toggleSideNav(toggle: boolean) {
