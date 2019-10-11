@@ -6,8 +6,8 @@ import { EditProfileComponent } from './core/current-user/edit-profile/edit-prof
 
 const routes: Routes = [
   { path: 'callback', component: CallbackComponent },
-  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' },
-  { path: 'route', loadChildren: './route/route.module#RouteModule' },
+  { path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
+  { path: 'route', loadChildren: () => import('./route/route.module').then(m => m.RouteModule) },
   {
     path: 'current-user',
     children: [
