@@ -12,15 +12,12 @@ import { initStateFromLocalStorage } from './meta-reducers/init-state-from-local
 import { debug } from './meta-reducers/debug.reducer';
 import { AuthState } from './auth/auth.models';
 import { authReducer } from './auth/auth.reducer';
-import { layoutReducer } from './reducers';
-import { LayoutState } from './reducers/layout.models';
 import { currentUserReducer } from './current-user/current-user.reducer';
 import { CurrentUserState } from './current-user/current-user.models';
 // import { RouterStateUrl } from './router/router.state';
 
 export const reducers: ActionReducerMap<AppState> = {
   auth: authReducer,
-  layout: layoutReducer,
   currentUser: currentUserReducer
   // router: routerReducer
 };
@@ -43,10 +40,6 @@ export const selectCurrentUserState = createFeatureSelector<AppState, CurrentUse
   'currentUser'
 );
 
-export const selectLayoutState = createFeatureSelector<AppState, LayoutState>(
-  'layout'
-);
-
 export const selectRouterState = createFeatureSelector<
   AppState
 //  RouterReducerState<RouterStateUrl>
@@ -54,7 +47,6 @@ export const selectRouterState = createFeatureSelector<
 
 export interface AppState {
   auth: AuthState;
-  layout: LayoutState;
   currentUser: CurrentUserState;
 //  router: RouterReducerState<RouterStateUrl>;
 }

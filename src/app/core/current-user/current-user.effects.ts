@@ -5,7 +5,7 @@ import { tap, exhaustMap, map, catchError, switchMap } from 'rxjs/operators';
 
 import { LocalStorageService } from '../local-storage/local-storage.service';
 
-import { of, EMPTY } from 'rxjs';
+import { of, EMPTY, scheduled } from 'rxjs';
 import { CurrentUserService } from './current-user.service';
 import * as fromAuth from '../auth/auth.actions';
 import * as fromCurrentUser from './current-user.actions';
@@ -59,7 +59,8 @@ export class CurrentUserEffects {
         .pipe(
           map(
             user => new fromCurrentUser.ActionCurrentUserRegisterSuccess(user)
-          )
+          ),
+          catchError(error =>  of(new fromCurrentUser.ActionCurrentUserRegisterFailure(error)))
         )
     )
   );

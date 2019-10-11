@@ -97,7 +97,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
         firstName: this.firstName.value,
         lastName: this.lastName.value,
         email: this.email.value,
-        sub: this.subject,
+        subject: this.subject,
         roles: []
       })
     );

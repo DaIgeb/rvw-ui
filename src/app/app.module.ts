@@ -11,11 +11,11 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { NavigationComponent } from './navigation/navigation.component';
 import { AppMaterialModule } from './app-material/app-material.module';
 import { CallbackComponent } from './callback/callback.component';
 
 import { CoreModule } from '@app/core';
+import { NavigationModule } from './navigation/navigation.module';
 
 registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
 
@@ -23,7 +23,6 @@ registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
   declarations: [
     AppComponent,
     PageNotFoundComponent,
-    NavigationComponent,
     CallbackComponent
   ],
   imports: [
@@ -33,6 +32,7 @@ registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
     CoreModule,
     SharedModule,
     AppRoutingModule,
+    NavigationModule
 
     // StoreModule.forRoot(reducers, { metaReducers }),
     // StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),

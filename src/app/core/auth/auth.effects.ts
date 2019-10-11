@@ -99,6 +99,8 @@ export class AuthEffects {
                 profile: authResult.idTokenPayload
               });
             }
+
+            return EMPTY;
           }),
           catchError(error => {
             this.authService.resetAuthFlag();

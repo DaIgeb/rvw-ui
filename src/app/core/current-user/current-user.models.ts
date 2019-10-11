@@ -3,7 +3,7 @@ export interface CurrentUserState {
 }
 
 export interface User {
-  sub: string;
+  subject: string;
   firstName: string;
   lastName: string;
   email: string;

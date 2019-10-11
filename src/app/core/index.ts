@@ -11,8 +11,6 @@ export * from './current-user/current-user.reducer';
 export * from './current-user/current-user.actions';
 export * from './current-user/current-user.selectors';
 
-export * from './reducers/selectors';
-export * from './app.actions';
 // export * from './notifications/notification.service';
 // export * from './router/router.state';
 // export * from './title/title.service';

@@ -8,13 +8,13 @@ import {
   AppState,
   ActionAuthLogin,
   ActionAuthLogout,
-  selectIsSideNavShown,
-  ToggleSideNav,
   User,
   selectCurrentUser,
   selectCurrentUserName,
   selectCurrentUserIsAdmin
 } from '@app/core';
+import { selectNavigationShowSidebar } from '../navigation.selectors';
+import { ActionNavigationToggleSidebar } from '../navigation.actions';
 
 @Component({
   selector: 'rvw-navigation',
@@ -37,15 +37,15 @@ export class NavigationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.showSideNav$ = this.store.pipe(select(selectIsSideNavShown));
+    this.showSideNav$ = this.store.pipe(select(selectNavigationShowSidebar));
     this.isAuthenticated$ = this.store.pipe(select(selectIsAuthenticated));
     this.currentUser$ = this.store.pipe(select(selectCurrentUser));
     this.userName$ = this.store.pipe(select(selectCurrentUserName));
     this.isAdmin$ = this.store.pipe(select(selectCurrentUserIsAdmin));
   }
 
-  toggleSideNav(toggle: boolean) {
-    this.store.dispatch(new ToggleSideNav(toggle));
+  toggleSideNav() {
+    this.store.dispatch(new ActionNavigationToggleSidebar());
   }
 
   login() {

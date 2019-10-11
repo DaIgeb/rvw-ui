@@ -38,9 +38,17 @@ export class ActionCurrentUserRegisterSuccess implements Action {
   constructor(public payload: User) {}
 }
 
+
+export class ActionCurrentUserRegisterFailure implements Action {
+  readonly type = CurrentUserActionTypes.REGISTER_FAILURE;
+
+  constructor(public payload: any) {}
+}
+
 export type CurrentUserActions =
   | ActionCurrentUserLoad
   | ActionCurrentUserLoadSuccess
   | ActionCurrentUserLoadFailure
   | ActionCurrentUserRegister
-  | ActionCurrentUserRegisterSuccess;
+  | ActionCurrentUserRegisterSuccess
+  | ActionCurrentUserRegisterFailure;
