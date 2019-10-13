@@ -19,7 +19,7 @@ export class CurrentUserEffects {
     private actions$: Actions<Action>,
     private router: Router,
     private currentUserService: CurrentUserService
-  ) {}
+  ) { }
 
   @Effect()
   afterLogin$ = this.actions$.pipe(
@@ -48,6 +48,16 @@ export class CurrentUserEffects {
     )
   );
 
+
+
+  @Effect()
+  registerSuccess$ = this.actions$.pipe(
+    ofType<fromCurrentUser.ActionCurrentUserRegisterSuccess>(
+      fromCurrentUser.CurrentUserActionTypes.REGISTER_SUCCESS
+    ),
+    exhaustMap(a => this.router.navigate(['/']))
+  );
+
   @Effect()
   register$ = this.actions$.pipe(
     ofType<fromCurrentUser.ActionCurrentUserRegister>(
@@ -60,7 +70,7 @@ export class CurrentUserEffects {
           map(
             user => new fromCurrentUser.ActionCurrentUserRegisterSuccess(user)
           ),
-          catchError(error =>  of(new fromCurrentUser.ActionCurrentUserRegisterFailure(error)))
+          catchError(error => of(new fromCurrentUser.ActionCurrentUserRegisterFailure(error)))
         )
     )
   );

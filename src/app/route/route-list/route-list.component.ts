@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { merge, of as observableOf, Observable } from 'rxjs';
@@ -13,7 +13,7 @@ import { ActionRouteLoad } from '../route.actions';
   templateUrl: './route-list.component.html',
   styleUrls: ['./route-list.component.css']
 })
-export class RouteListComponent implements OnInit {
+export class RouteListComponent implements AfterViewInit, OnInit {
   displayedColumns: string[] = ['id', 'elevation', 'distance', 'name'];
 
   data: Route[] = [];
@@ -31,10 +31,13 @@ export class RouteListComponent implements OnInit {
   ngOnInit() {
     this.store.dispatch(new ActionRouteLoad());
     this.store.select(selectRouteRoutes).subscribe(data => this.data = data);
-    /*this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+  }
+
+  ngAfterViewInit() {
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
-        startWith({}),
+        startWith({} ),
         switchMap(() => {
           this.isLoadingResults = true;
           return this.store.select(selectRouteRoutes);
@@ -54,6 +57,6 @@ export class RouteListComponent implements OnInit {
           return observableOf([]);
         })
       )
-      .subscribe(data => (this.data = data));*/
+      .subscribe(data => (this.data = data));
   }
 }
