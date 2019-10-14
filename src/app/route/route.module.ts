@@ -9,9 +9,10 @@ import { AppMaterialModule } from '@app/app-material/app-material.module';
 import { routeReducer } from './route.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { RouteEffects } from './route.effects';
+import { RouteEditComponent } from './route-edit/route-edit.component';
 
 @NgModule({
-  declarations: [RouteListComponent],
+  declarations: [RouteListComponent, RouteEditComponent],
   imports: [
     CommonModule,
     RouteRoutingModule,

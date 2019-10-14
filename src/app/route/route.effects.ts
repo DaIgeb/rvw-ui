@@ -20,4 +20,15 @@ export class RouteEffects {
       )
     )
   );
+  
+  @Effect()
+  save = this.actions$.pipe(
+    ofType<fromRoute.ActionRouteSave>(fromRoute.RouteActionTypes.SAVE),
+    exhaustMap(a =>
+      this.routeService.save(a.payload).pipe(
+        map(r => new fromRoute.ActionRouteSaveSuccess(r)),
+        catchError(error => of(new fromRoute.ActionRouteSaveFailure(error)))
+      )
+    )
+  );
 }

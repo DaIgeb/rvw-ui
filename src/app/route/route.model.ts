@@ -1,7 +1,10 @@
 import { AppState } from '@app/core';
 
 export interface Route {
+  id?: string;
   name: string;
+  distance: number;
+  elevation: number;
 }
 
 export interface RouteState {

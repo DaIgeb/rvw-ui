@@ -8,6 +8,7 @@ import { AppState } from '@app/core';
 import { selectRouteRoutes } from '../route.selectors';
 import { Route } from '../route.model';
 import { ActionRouteLoad } from '../route.actions';
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './route-list.component.html',
@@ -26,7 +27,7 @@ export class RouteListComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: false }) sort: MatSort;
 
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>, private route: Router) { }
 
   ngOnInit() {
     this.store.dispatch(new ActionRouteLoad());
@@ -37,7 +38,7 @@ export class RouteListComponent implements AfterViewInit, OnInit {
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
-        startWith({} ),
+        startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
           return this.store.select(selectRouteRoutes);
@@ -58,5 +59,9 @@ export class RouteListComponent implements AfterViewInit, OnInit {
         })
       )
       .subscribe(data => (this.data = data));
+  }
+
+  editRoute(id: string) {
+    this.route.navigate([`${id}/edit`]);
   }
 }

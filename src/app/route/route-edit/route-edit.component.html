@@ -1,0 +1,61 @@
+<div class="container">
+    <form [formGroup]="currentRouteFormGroup" (ngSubmit)="save()" class="form">
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="Name"
+          formControlName="name"
+          required
+        />
+        <mat-error *ngIf="name.invalid">{{
+          getErrorMessage(name)
+        }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          matInput
+          type="number"
+          placeholder="Elevation"
+          formControlName="elevation"
+          required
+        />
+        <mat-error *ngIf="elevation.invalid">{{
+          getErrorMessage(elevation)
+        }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          matInput
+          type="number"
+          placeholder="Distance"
+          formControlName="distance"
+          required
+        />
+        <mat-error *ngIf="distance.invalid">{{
+          getErrorMessage(distance)
+        }}</mat-error>
+      </mat-form-field>
+  
+      <div class="button">
+        <div class="spacer"></div>
+        <button
+          mat-button
+          type="submit"
+          [disabled]="currentRouteFormGroup.invalid || currentRouteFormGroup.pristine"
+          color="primary"
+        >
+          Submit
+        </button>
+  
+        <button
+          mat-button
+          type="reset"
+          [disabled]="currentRouteFormGroup.pristine"
+          (click)="reset()"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+  

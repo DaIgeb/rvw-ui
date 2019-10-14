@@ -15,3 +15,8 @@ export const selectRouteRoutes = createSelector(
   selectRoute,
   (state: RouteState) => state.routes
 );
+
+export const selectCurrentRouteRoutes = createSelector(
+  selectRoute,
+  (state: RouteState) => state.routes[0]
+);
