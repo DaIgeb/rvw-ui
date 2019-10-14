@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { LoggerService } from '@app/core/logger.service';
 import { ConfigService } from '@app/core/config';
 import { switchMap, tap, catchError } from 'rxjs/operators';
+import { isArray } from 'util';
 
 @Injectable({
   providedIn: 'root'
@@ -16,16 +17,15 @@ export class RouteService {
     private http: HttpClient
   ) {}
 
-  save(payload: Route): Observable<Route> {
+  save(payload: Route | Route[]): Observable<Route | Route[]> {
     return this.configService
       .getConfig()
       .pipe(
         switchMap(c => {
-          if (payload.id) {
-            return this.http.put<Route>(
-              `${c.routesUrl}${payload.id}`,
-              payload
-            );
+          if (isArray(payload)) {
+            return this.http.post<Route[]>(c.routesUrl, payload);
+          } else if (payload.id) {
+            return this.http.put<Route>(`${c.routesUrl}${payload.id}`, payload);
           } else {
             return this.http.post<Route>(c.routesUrl, payload);
           }
