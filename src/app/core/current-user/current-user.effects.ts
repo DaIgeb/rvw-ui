@@ -48,8 +48,6 @@ export class CurrentUserEffects {
     )
   );
 
-
-
   @Effect()
   registerSuccess$ = this.actions$.pipe(
     ofType<fromCurrentUser.ActionCurrentUserRegisterSuccess>(

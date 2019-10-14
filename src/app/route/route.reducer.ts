@@ -22,6 +22,15 @@ export function routeReducer(
         routes: []
       };
     }
+    case RouteActionTypes.SAVE_SUCCESS: {
+      return {
+        ...state,
+        routes: [
+          ...state.routes.filter(r => r.id !== action.payload.id),
+          action.payload
+        ]
+      };
+    }
     default:
       return state;
   }

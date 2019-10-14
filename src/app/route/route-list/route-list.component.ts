@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./route-list.component.css']
 })
 export class RouteListComponent implements AfterViewInit, OnInit {
-  displayedColumns: string[] = ['id', 'elevation', 'distance', 'name'];
+  displayedColumns: string[] = ['name', 'elevation', 'distance', 'action'];
 
   data: Route[] = [];
   data$: Observable<Route[]>;
@@ -35,7 +35,7 @@ export class RouteListComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    /*this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
@@ -58,7 +58,7 @@ export class RouteListComponent implements AfterViewInit, OnInit {
           return observableOf([]);
         })
       )
-      .subscribe(data => (this.data = data));
+      .subscribe(data => (this.data = data));*/
   }
 
   editRoute(id: string) {

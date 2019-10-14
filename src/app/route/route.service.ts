@@ -10,23 +10,36 @@ import { switchMap, tap, catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class RouteService {
-  constructor(private logger: LoggerService, private configService: ConfigService, private http: HttpClient) { }
+  constructor(
+    private logger: LoggerService,
+    private configService: ConfigService,
+    private http: HttpClient
+  ) {}
 
   save(payload: Route): Observable<Route> {
-    return this.configService.getConfig().pipe(switchMap(c => {
-      if (payload.id) {
-        return this.http.patch<Route>(`${c.routesUrl}${payload.id}`, payload)
-      }
-      else {
-        return this.http.post<Route>(c.routesUrl, payload);
-      }
-    }))
-    .pipe(tap(i => this.logger.log('Routes save: ' + JSON.stringify(i, null, 2))));
+    return this.configService
+      .getConfig()
+      .pipe(
+        switchMap(c => {
+          if (payload.id) {
+            return this.http.put<Route>(
+              `${c.routesUrl}${payload.id}`,
+              payload
+            );
+          } else {
+            return this.http.post<Route>(c.routesUrl, payload);
+          }
+        })
+      )
+      .pipe(
+        tap(i => this.logger.log('Routes save: ' + JSON.stringify(i, null, 2)))
+      );
   }
 
   load = (): Observable<Route[]> => {
-    return this.configService.getConfig()
+    return this.configService
+      .getConfig()
       .pipe(switchMap(c => this.http.get<Route[]>(c.routesUrl)))
       .pipe(tap(i => this.logger.log('Routes: ' + JSON.stringify(i, null, 2))));
-  }
+  };
 }

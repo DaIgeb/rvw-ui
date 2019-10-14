@@ -35,7 +35,7 @@
           getErrorMessage(distance)
         }}</mat-error>
       </mat-form-field>
-  
+
       <div class="button">
         <div class="spacer"></div>
         <button
@@ -46,10 +46,10 @@
         >
           Submit
         </button>
-  
+
         <button
           mat-button
-          type="reset"
+          type="button"
           [disabled]="currentRouteFormGroup.pristine"
           (click)="reset()"
         >
@@ -58,4 +58,3 @@
       </div>
     </form>
   </div>
-  

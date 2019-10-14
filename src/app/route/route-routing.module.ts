@@ -4,12 +4,13 @@ import { RouteListComponent } from './route-list/route-list.component';
 import { RouteEditComponent } from './route-edit/route-edit.component';
 
 const routes: Routes = [
-  { path: '', component: RouteListComponent },
-  { path: ':id/edit', component: RouteEditComponent }
+  { path: '', redirectTo: 'list', pathMatch: 'full' },
+  { path: 'route/:id', component: RouteEditComponent },
+  { path: 'list', component: RouteListComponent }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class RouteRoutingModule { }
+export class RouteRoutingModule {}

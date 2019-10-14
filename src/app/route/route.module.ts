@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
-import {CdkTableModule} from '@angular/cdk/table';
+import { CdkTableModule } from '@angular/cdk/table';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { RouteRoutingModule } from './route-routing.module';
 import { RouteListComponent } from './route-list/route-list.component';
@@ -15,6 +16,7 @@ import { RouteEditComponent } from './route-edit/route-edit.component';
   declarations: [RouteListComponent, RouteEditComponent],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     RouteRoutingModule,
     CdkTableModule,
     AppMaterialModule,
@@ -22,4 +24,4 @@ import { RouteEditComponent } from './route-edit/route-edit.component';
     EffectsModule.forFeature([RouteEffects])
   ]
 })
-export class RouteModule { }
+export class RouteModule {}

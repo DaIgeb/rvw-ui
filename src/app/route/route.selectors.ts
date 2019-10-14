@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import { RouteState, State } from './route.model';
+import { RouteState, State, Route } from './route.model';
 
 export const selectRouteState = createFeatureSelector<State, RouteState>(
   'route'
@@ -16,7 +16,9 @@ export const selectRouteRoutes = createSelector(
   (state: RouteState) => state.routes
 );
 
-export const selectCurrentRouteRoutes = (id: string): Route => createSelector(
-  selectRoute,
-  (state: RouteState) => state.routes.find(r => r.id === id)
-);
+export const selectCurrentRouteRoutes = (id: string) => {
+  return createSelector(
+    selectRouteRoutes,
+    (state: Route[]) => state.find(r => r.id === id)
+  );
+};

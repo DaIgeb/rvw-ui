@@ -2,10 +2,10 @@ import { Action } from '@ngrx/store';
 import { Route } from './route.model';
 
 export enum RouteActionTypes {
-  LOAD = '[Route] Load',
+  LOAD = '[Route] Load2',
   LOAD_SUCCESS = '[Route] Load Success',
   LOAD_FAILURE = '[Route] Load Failure',
-  SAVE = '[Route] Save Failure',
+  SAVE = '[Route] Save',
   SAVE_SUCCESS = '[Route] Save Success',
   SAVE_FAILURE = '[Route] Save Failure',
 }
@@ -22,7 +22,7 @@ export class ActionRouteLoadSuccess implements Action {
 
 export class ActionRouteLoadFailure implements Action {
   readonly type = RouteActionTypes.LOAD_FAILURE;
-  
+
   constructor(public payload: any) {}
 }
 
