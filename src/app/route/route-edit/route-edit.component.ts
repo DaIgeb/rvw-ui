@@ -36,19 +36,12 @@ export class RouteEditComponent implements OnInit, OnDestroy {
   constructor(private store: Store<AppState>, private fb: FormBuilder, private routeSnapshot: ActivatedRoute) { }
 
   ngOnInit() {
-    this.currentRouteSubscription = this.routeSnapshot.paramMap.pipe(switchMap(p => {
-      const id = p.get('id');
-
-      const sub = this.store
-        .pipe(select(selectCurrentRouteRoutes(id)))
-        .subscribe(r => {
-          if (r) {
-            this.route = r;
-            this.reset();
-          }
-        });
-      return sub;
-    }));
+    this.currentRouteSubscription = this.routeSnapshot.paramMap
+      .pipe(switchMap(p => this.store.pipe(select(selectCurrentRouteRoutes(p.get('id'))))))
+      .subscribe(r => {
+        this.route = r;
+        this.reset();
+      });;
   }
 
   ngOnDestroy(): void {
