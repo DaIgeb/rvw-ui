@@ -6,6 +6,8 @@ import { RouteState, Route } from '../route.model';
 import { selectCurrentRouteRoutes } from '../route.selectors';
 import { AppState } from '@app/core';
 import { ActionRouteSave } from '../route.actions';
+import { ActivatedRouteSnapshot, ParamMap, ActivatedRoute } from '@angular/router';
+import { switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'rvw-route-edit',
@@ -31,15 +33,22 @@ export class RouteEditComponent implements OnInit, OnDestroy {
     distance: this.distance
   });
 
-  constructor(private store: Store<AppState>, private fb: FormBuilder) { }
+  constructor(private store: Store<AppState>, private fb: FormBuilder, private routeSnapshot: ActivatedRoute) { }
 
   ngOnInit() {
-    this.currentRouteSubscription = this.store
-      .pipe(select(selectCurrentRouteRoutes))
-      .subscribe(p => {
-        this.route = p;
-        this.reset();
-      });
+    this.currentRouteSubscription = this.routeSnapshot.paramMap.pipe(switchMap(p => {
+      const id = p.get('id');
+
+      const sub = this.store
+        .pipe(select(selectCurrentRouteRoutes(id)))
+        .subscribe(r => {
+          if (r) {
+            this.route = r;
+            this.reset();
+          }
+        });
+      return sub;
+    }));
   }
 
   ngOnDestroy(): void {

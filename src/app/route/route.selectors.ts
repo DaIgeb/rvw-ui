@@ -16,7 +16,7 @@ export const selectRouteRoutes = createSelector(
   (state: RouteState) => state.routes
 );
 
-export const selectCurrentRouteRoutes = createSelector(
+export const selectCurrentRouteRoutes = (id: string): Route => createSelector(
   selectRoute,
-  (state: RouteState) => state.routes[0]
+  (state: RouteState) => state.routes.find(r => r.id === id)
 );
