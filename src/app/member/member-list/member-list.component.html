@@ -1,9 +1,4 @@
-<a
-  mat-icon-button
-  aria-label="Add new"
-  [routerLink]="['../route/', 0]"
-  routerLinkActive="router-link-active"
->
+<a mat-icon-button aria-label="Add new" [routerLink]="['../route/', 0]" routerLinkActive="router-link-active">
   <mat-icon>add</mat-icon>Add new
 </a>
 <button type="button" mat-raised-button (click)="fileInput.click()">
@@ -12,15 +7,8 @@
 <input hidden (change)="onFileSelected()" #fileInput type="file" id="file" />
 
 <div class="table-container">
-  <table
-    mat-table
-    [dataSource]="data"
-    class="table"
-    matSort
-    matSortActive="created"
-    matSortDisableClear
-    matSortDirection="desc"
-  >
+  <table mat-table [dataSource]="data" class="table" matSort matSortActive="name" matSortDisableClear
+    matSortDirection="asc">
     <!-- Number Column -->
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef>#</th>
@@ -29,7 +17,7 @@
 
     <!-- Title Column -->
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
       <td mat-cell *matCellDef="let row">{{ row.name }}</td>
     </ng-container>
 
@@ -47,12 +35,7 @@
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef>Action</th>
       <td mat-cell *matCellDef="let row">
-        <a
-          mat-icon-button
-          aria-label="Edit"
-          [routerLink]="['../route/', row.id]"
-          routerLinkActive="router-link-active"
-        >
+        <a mat-icon-button aria-label="Edit" [routerLink]="['../route/', row.id]" routerLinkActive="router-link-active">
           <mat-icon>edit</mat-icon>
         </a>
       </td>
@@ -70,4 +53,4 @@
   </table>
 </div>
 
-<mat-paginator [length]="resultsLength" [pageSize]="30"></mat-paginator>
+<mat-paginator [length]="resultsLength" [pageSize]="5" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
