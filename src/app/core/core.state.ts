@@ -14,11 +14,14 @@ import { AuthState } from './auth/auth.models';
 import { authReducer } from './auth/auth.reducer';
 import { currentUserReducer } from './current-user/current-user.reducer';
 import { CurrentUserState } from './current-user/current-user.models';
+import { memberReducer } from './member/member.reducer';
+import { MemberState } from './member/member.model';
 // import { RouterStateUrl } from './router/router.state';
 
 export const reducers: ActionReducerMap<AppState> = {
   auth: authReducer,
-  currentUser: currentUserReducer
+  currentUser: currentUserReducer,
+  member: memberReducer
   // router: routerReducer
 };
 
@@ -48,5 +51,6 @@ export const selectRouterState = createFeatureSelector<
 export interface AppState {
   auth: AuthState;
   currentUser: CurrentUserState;
+  member: MemberState;
 //  router: RouterReducerState<RouterStateUrl>;
 }

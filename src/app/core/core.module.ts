@@ -18,6 +18,7 @@ import { CurrentUserEffects } from './current-user/current-user.effects';
 import { EditProfileComponent } from './current-user/edit-profile/edit-profile.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppMaterialModule } from '@app/app-material/app-material.module';
+import { MemberEffects } from './member/member.effects';
 
 @NgModule({
   declarations: [EditProfileComponent],
@@ -30,7 +31,8 @@ import { AppMaterialModule } from '@app/app-material/app-material.module';
     // StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([
       AuthEffects,
-      CurrentUserEffects
+      CurrentUserEffects,
+      MemberEffects
       //  GoogleAnalyticsEffects
     ]),
     environment.production

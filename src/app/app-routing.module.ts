@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: 'callback', component: CallbackComponent },
   { path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
   { path: 'route', loadChildren: () => import('./route/route.module').then(m => m.RouteModule) },
+  { path: 'member', loadChildren: () => import('./member/member.module').then(m => m.MemberModule) },
   {
     path: 'current-user',
     children: [

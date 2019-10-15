@@ -21,6 +21,7 @@
     <mat-nav-list>
       <a mat-list-item routerLink="/admin" *ngIf="(isAdmin$ | async)">Admin</a>
       <a mat-list-item routerLink="/route" *ngIf="(isAuthenticated$ | async)">Route</a>
+      <a mat-list-item routerLink="/member" *ngIf="(isAuthenticated$ | async)">Member</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
