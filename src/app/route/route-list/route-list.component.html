@@ -1,8 +1,21 @@
-<div class="example-table-container">
+<a
+  mat-icon-button
+  aria-label="Add new"
+  [routerLink]="['../route/', 0]"
+  routerLinkActive="router-link-active"
+>
+  <mat-icon>add</mat-icon>Add new
+</a>
+<button type="button" mat-raised-button (click)="fileInput.click()">
+  Batch Create Routes
+</button>
+<input hidden (change)="onFileSelected()" #fileInput type="file" id="file" />
+
+<div class="table-container">
   <table
     mat-table
     [dataSource]="data"
-    class="example-table"
+    class="table"
     matSort
     matSortActive="created"
     matSortDisableClear
@@ -55,19 +68,6 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
-
-  <a
-    mat-icon-button
-    aria-label="Add new"
-    [routerLink]="['../route/', 0]"
-    routerLinkActive="router-link-active"
-  >
-    <mat-icon>add</mat-icon>Add new
-  </a>
-  <button type="button" mat-raised-button (click)="fileInput.click()">
-    Choose File
-  </button>
-  <input hidden (change)="onFileSelected()" #fileInput type="file" id="file" />
 </div>
 
 <mat-paginator [length]="resultsLength" [pageSize]="30"></mat-paginator>

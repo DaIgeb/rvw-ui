@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { selectRouteRoutes } from '../route.selectors';
 import { Route } from '../route.model';
-import { ActionRouteLoad, ActionRouteBatchSave } from '../route.actions';
+import { ActionRouteLoad, ActionRouteSave } from '../route.actions';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import * as papa from 'papaparse';
@@ -96,7 +96,7 @@ export class RouteListComponent implements AfterViewInit, OnInit {
           );
 
           this.store.dispatch(
-            new ActionRouteBatchSave(
+            new ActionRouteSave(
               csv.data.map(d => ({
                 name: d[nameField],
                 distance: parseInt(d[distanceField], 10),

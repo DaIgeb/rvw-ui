@@ -26,8 +26,8 @@ export function routeReducer(
       return {
         ...state,
         routes: [
-          ...state.routes.filter(r => r.id !== action.payload.id),
-          action.payload
+          ...state.routes.filter(r => ! action.payload.some(l => r.id === l.id)),
+          ...action.payload
         ]
       };
     }

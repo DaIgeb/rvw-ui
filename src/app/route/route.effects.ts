@@ -32,25 +32,8 @@ export class RouteEffects {
     ofType<fromRoute.ActionRouteSave>(fromRoute.RouteActionTypes.SAVE),
     switchMap(a =>
       this.routeService.save(a.payload).pipe(
-        map(r => new fromRoute.ActionRouteSaveSuccess(isArray(r) ? r[0] : r)),
+        map(r => new fromRoute.ActionRouteSaveSuccess(isArray(r) ? r : [r])),
         catchError(error => of(new fromRoute.ActionRouteSaveFailure(error)))
-      )
-    )
-  );
-
-  @Effect()
-  batchSave = this.actions$.pipe(
-    ofType<fromRoute.ActionRouteBatchSave>(
-      fromRoute.RouteActionTypes.BATCH_SAVE
-    ),
-    switchMap(a =>
-      this.routeService.save(a.payload).pipe(
-        map(
-          r => new fromRoute.ActionRouteBatchSaveSuccess(isArray(r) ? r : [r])
-        ),
-        catchError(error =>
-          of(new fromRoute.ActionRouteBatchSaveFailure(error))
-        )
       )
     )
   );
