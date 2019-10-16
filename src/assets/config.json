@@ -1,6 +1,6 @@
 {
-  "usersUrl": "https://dev.api.aws.daigeb.ch/rvw-user/",
-  "routesUrl": "https://dev.api.aws.daigeb.ch/rvw-route/",
-  "membersUrl": "https://dev.api.aws.daigeb.ch/rvw-member/",
-  "toursUrl": "https://dev.api.aws.daigeb.ch/rvw-tour/"
+  "usersUrl": "rvw-user/",
+  "routesUrl": "rvw-route/",
+  "membersUrl": "rvw-member/",
+  "toursUrl": "rvw-tour/"
 }

@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 import { Tour } from './tour.model';
 
 export enum TourActionTypes {
-  LOAD = '[Tour] Load2',
+  LOAD = '[Tour] Load',
   LOAD_SUCCESS = '[Tour] Load Success',
   LOAD_FAILURE = '[Tour] Load Failure',
   SAVE = '[Tour] Save',

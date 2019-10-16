@@ -14,7 +14,8 @@ export const environment = {
     SCOPE: 'openid profile email'
   },
   api: {
-    roles: ''
+    roles: '',
+    url: 'https://dev.api.aws.daigeb.ch'
   }
 };
 

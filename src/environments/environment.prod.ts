@@ -6,5 +6,9 @@ export const environment = {
     AUDIENCE: 'https://api.aws.daigeb.ch',
     REDIRECT: 'http://localhost:4200/callback',
     LOGOUT_URL: 'http://localhost:4200'
+  },
+  api: {
+    roles: '',
+    url: 'https://api.aws.daigeb.ch'
   }
 };

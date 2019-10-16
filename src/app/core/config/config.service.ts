@@ -1,21 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Config } from './config';
 import {
-  tap,
-  catchError,
-  share,
   publishReplay,
-  refCount
+  refCount,
+  map
 } from 'rxjs/operators';
 import {
-  throwError,
-  Observable,
-  BehaviorSubject,
-  ReplaySubject,
-  AsyncSubject,
-  of
-} from 'rxjs';
+  Observable} from 'rxjs';
+import { environment } from '@env/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +20,14 @@ export class ConfigService {
     .pipe(
       publishReplay(1),
       refCount()
-    );
+    )
+    .pipe(map(config => ({
+      ...config,
+      membersUrl: `${environment.api.url}/${config.membersUrl}`,
+      usersUrl: `${environment.api.url}/${config.usersUrl}`,
+      routesUrl: `${environment.api.url}/${config.routesUrl}`,
+      toursUrl: `${environment.api.url}/${config.toursUrl}`
+    })));
 
   constructor(private http: HttpClient) {}
 

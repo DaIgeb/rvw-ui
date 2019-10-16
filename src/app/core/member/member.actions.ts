@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 import { Member } from './member.model';
 
 export enum MemberActionTypes {
-  LOAD = '[Member] Load2',
+  LOAD = '[Member] Load',
   LOAD_SUCCESS = '[Member] Load Success',
   LOAD_FAILURE = '[Member] Load Failure',
   SAVE = '[Member] Save',

@@ -9,7 +9,7 @@ import { AppState } from '@app/core';
 import { LoggerService } from '@app/core/logger.service';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import { map, startWith, switchMap, concatMap, tap } from 'rxjs/operators';
+import { map, startWith, switchMap, concatMap, tap, delay } from 'rxjs/operators';
 import { selectTourTours } from '../tour.selectors';
 import { Tour } from '../tour.model';
 import { ActionTourLoad, ActionTourSave } from '../tour.actions';
@@ -19,6 +19,7 @@ import { selectRouteRoutes } from '@app/core/route/route.selectors';
 import { ActionMemberLoad } from '@app/core/member/member.actions';
 import { Route } from '@app/core/route/route.model';
 import { ActionRouteLoad } from '@app/core/route/route.actions';
+import { TableService } from '@app/shared/table.service';
 
 @Component({
   templateUrl: './tour-list.component.html',
@@ -50,7 +51,8 @@ export class TourListComponent implements OnInit, AfterViewInit {
   constructor(
     private store: Store<AppState>,
     private route: Router,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private tableService: TableService
   ) {}
 
   ngOnInit() {
@@ -60,21 +62,6 @@ export class TourListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    const isSort = (obj: any): obj is Sort => {
-      if ((obj as Sort).active) {
-        return true;
-      }
-
-      return false;
-    };
-    const isPage = (obj: any): obj is PageEvent => {
-      if ((obj as PageEvent).pageIndex !== undefined) {
-        return true;
-      }
-
-      return false;
-    };
-
     const tours$ = this.store.select(selectTourTours);
     const members$ = this.store.select(selectMemberMembers).pipe(
       map(data =>
@@ -103,10 +90,11 @@ export class TourListComponent implements OnInit, AfterViewInit {
     merge<Sort, PageEvent>(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
+        delay(0),
         switchMap(s => {
-          if (isSort(s)) {
+          if (this.tableService.isSort(s)) {
             this.currentSort = s;
-          } else if (isPage(s)) {
+          } else if (this.tableService.isPage(s)) {
             this.currentPage = s;
           }
 
@@ -119,16 +107,15 @@ export class TourListComponent implements OnInit, AfterViewInit {
                   item.route && data[2][item.route]
                     ? data[2][item.route].name
                     : '',
-                participants: (item.participants || [])
-                  .map(id => {
-                    const participant = data[1][id];
+                participants: (item.participants || []).map(id => {
+                  const participant = data[1][id];
 
-                    if (participant) {
-                      return `${participant.lastName} ${participant.firstName}`;
-                    }
+                  if (participant) {
+                    return `${participant.lastName} ${participant.firstName}`;
+                  }
 
-                    return '';
-                  })
+                  return '';
+                })
               }))
             )
           );
@@ -139,36 +126,10 @@ export class TourListComponent implements OnInit, AfterViewInit {
           this.isRateLimitReached = false;
           this.resultsLength = data.length;
 
-          const dataSource = data;
-          const sortColumn =
-            this.currentSort === undefined
-              ? 'route'
-              : this.currentSort.active;
-          const sortDirection =
-            this.currentSort === undefined ? 'asc' : this.currentSort.direction;
-
-          dataSource.sort((a, b) => {
-            if (a[sortColumn]) {
-              return (
-                (sortDirection === 'asc' ? 1 : -1) *
-                a[sortColumn].localeCompare(b[sortColumn])
-              );
-            }
-
-            return 0;
-          });
-
-          if (this.currentPage) {
-            const minIdx =
-              this.currentPage.pageIndex * this.currentPage.pageSize;
-            const maxIdx =
-              this.currentPage.pageIndex * this.currentPage.pageSize +
-              this.currentPage.pageSize;
-
-            return dataSource.filter((_, idx) => idx >= minIdx && idx < maxIdx);
-          }
-
-          return dataSource.filter((_, idx) => idx >= 0 && idx < 5);
+          return this.tableService.applyPaging(
+            this.tableService.applySort(data, this.currentSort, 'firstName'),
+            this.currentPage
+          );
         }),
         catchError(err => {
           this.logger.error(err);

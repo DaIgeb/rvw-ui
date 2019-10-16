@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { merge, of as observableOf, Observable } from 'rxjs';
-import { startWith, switchMap, map, catchError } from 'rxjs/operators';
+import { startWith, switchMap, map, catchError, delay } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { selectRouteRoutes } from '../../core/route/route.selectors';
@@ -11,8 +11,8 @@ import { ActionRouteLoad, ActionRouteSave } from '@app/core/route/route.actions'
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import * as papa from 'papaparse';
-import { Input } from '@angular/compiler/src/core';
 import { LoggerService } from '@app/core/logger.service';
+import { TableService } from '@app/shared/table.service';
 
 @Component({
   templateUrl: './route-list.component.html',
@@ -32,25 +32,37 @@ export class RouteListComponent implements AfterViewInit, OnInit {
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: false }) sort: MatSort;
+  currentSort: Sort;
+  currentPage: PageEvent;
 
   constructor(
     private store: Store<AppState>,
     private route: Router,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private tableService: TableService
   ) {}
 
   ngOnInit() {
     this.store.dispatch(new ActionRouteLoad());
-    this.store.select(selectRouteRoutes).subscribe(data => (this.data = data));
   }
 
   ngAfterViewInit() {
-    /*this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.sort.sortChange.subscribe(() => this.paginator.firstPage());
+
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
-        switchMap(() => {
+        delay(0),
+        switchMap(s => {
+          if (this.tableService.isPage(s)) {
+            this.currentPage = s;
+          }
+          if (this.tableService.isSort(s)) {
+            this.currentSort = s;
+          }
+
           this.isLoadingResults = true;
+
           return this.store.select(selectRouteRoutes);
         }),
         map(data => {
@@ -59,16 +71,18 @@ export class RouteListComponent implements AfterViewInit, OnInit {
           this.isRateLimitReached = false;
           this.resultsLength = data.length;
 
-          return data;
+          return this.tableService.applyPaging(
+            this.tableService.applySort(data, this.currentSort, 'firstName'),
+            this.currentPage
+          );
         }),
         catchError(() => {
           this.isLoadingResults = false;
-          // Catch if the GitHub API has reached its rate limit. Return empty data.
           this.isRateLimitReached = true;
           return observableOf([]);
         })
       )
-      .subscribe(data => (this.data = data));*/
+      .subscribe(data => (this.data = data));
   }
 
   editRoute(id: string) {
