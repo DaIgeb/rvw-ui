@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Route } from './route.model';
+import { Route } from '@app/core/route/route.model';
 
 export enum RouteActionTypes {
   LOAD = '[Route] Load',
