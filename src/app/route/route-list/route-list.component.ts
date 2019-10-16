@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
 import { merge, of as observableOf, Observable } from 'rxjs';
 import { startWith, switchMap, map, catchError, delay } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
