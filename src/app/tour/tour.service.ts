@@ -40,12 +40,6 @@ export class TourService {
     return this.configService
       .getConfig()
       .pipe(switchMap(c => this.http.get<Tour[]>(c.toursUrl)))
-      .pipe(tap(i => this.logger.log('Tours: ' + JSON.stringify(i, null, 2))))
-      .pipe(map(_ => ([{
-        routeId: '0a880b34-ab0f-44b9-9502-26c7af859790',
-        points: 20,
-        date: new Date().toISOString(),
-        participantIds: ['0a880b34-ab0f-44b9-9502-26c7af859790']
-      }])));
+      .pipe(tap(i => this.logger.log('Tours: ' + JSON.stringify(i, null, 2))));
   }
 }

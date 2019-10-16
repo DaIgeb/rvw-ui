@@ -2,10 +2,10 @@ import { AppState } from '@app/core';
 
 export interface Tour {
   id?: string;
-  routeId: string;
+  route: string;
   points: number;
   date: string;
-  participantIds: string[];
+  participants: string[];
 }
 
 export interface TourState {

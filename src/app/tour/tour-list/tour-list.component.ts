@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import * as papa from 'papaparse';
-import { Observable, of, merge, forkJoin } from 'rxjs';
+import { Observable, of, merge, forkJoin, timer, combineLatest } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -25,9 +25,15 @@ import { ActionRouteLoad } from '@app/core/route/route.actions';
   styleUrls: ['./tour-list.component.scss']
 })
 export class TourListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['firstName', 'lastName', 'action'];
+  displayedColumns: string[] = [
+    'route',
+    'points',
+    'date',
+    'participants',
+    'action'
+  ];
 
-  data: (Tour & { route: Route; participants: Member[] })[] = [];
+  data: Tour[] = [];
   data$: Observable<Tour[]>;
 
   fileControl = new FormControl();
@@ -45,7 +51,7 @@ export class TourListComponent implements OnInit, AfterViewInit {
     private store: Store<AppState>,
     private route: Router,
     private logger: LoggerService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.store.dispatch(new ActionTourLoad());
@@ -69,28 +75,35 @@ export class TourListComponent implements OnInit, AfterViewInit {
       return false;
     };
 
+    const tours$ = this.store.select(selectTourTours);
+    const members$ = this.store.select(selectMemberMembers).pipe(
+      map(data =>
+        data.reduce(
+          (arr, item) => {
+            arr[item.id] = item;
+            return arr;
+          },
+          {} as { [index: string]: Member }
+        )
+      )
+    );
+    const routes$ = this.store.select(selectRouteRoutes).pipe(
+      map(data =>
+        data.reduce(
+          (arr, item) => {
+            arr[item.id] = item;
+            return arr;
+          },
+          {} as { [index: string]: Route }
+        )
+      )
+    );
 
-    const tours$ = this.store.select(selectTourTours).pipe(tap(data => console.error('Tours', data)));
-    const members$ = this.store.select(selectMemberMembers)
-      .pipe(tap(data => console.error('Members', data)))
-      .pipe(map(data => data.reduce((arr, item) => {
-        arr[item.id] = item;
-        return arr;
-      }, {} as { [index: string]: Member })))
-      .pipe(tap(data => console.error('MappedMembers', data)));
-    const routes$ = this.store.select(selectRouteRoutes)
-      .pipe(tap(data => console.error('Routes', data)))
-      .pipe(map(data => data.reduce((arr, item) => {
-        arr[item.id] = item;
-        return arr;
-      }, {} as { [index: string]: Route })))
-      .pipe(tap(data => console.error('MappedRoutes', data)));
-
-    this.sort.sortChange.subscribe(() => (this.paginator.firstPage()));
+    this.sort.sortChange.subscribe(() => this.paginator.firstPage());
     merge<Sort, PageEvent>(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
-        switchMap((s) => {
+        switchMap(s => {
           if (isSort(s)) {
             this.currentSort = s;
           } else if (isPage(s)) {
@@ -98,16 +111,27 @@ export class TourListComponent implements OnInit, AfterViewInit {
           }
 
           this.isLoadingResults = true;
-          return forkJoin(tours$, members$, routes$, catchError(err => of(err)))
-            .pipe(tap(data => console.error('Forked', data)), catchError(err => of(err)))
-            .pipe(tap(err => console.log(err)))
-            .pipe(map(data => data[0].map(item => (
-              {
+          return combineLatest([tours$, members$, routes$]).pipe(
+            map(data =>
+              data[0].map(item => ({
                 ...item,
-                route: item.routeId ? (data[2][item.routeId]) : undefined,
-                participants: (item.participantIds || []).map(id => data[1][id])
-              }
-            ))));
+                route:
+                  item.route && data[2][item.route]
+                    ? data[2][item.route].name
+                    : '',
+                participants: (item.participants || [])
+                  .map(id => {
+                    const participant = data[1][id];
+
+                    if (participant) {
+                      return `${participant.lastName} ${participant.firstName}`;
+                    }
+
+                    return '';
+                  })
+              }))
+            )
+          );
         }),
         map(data => {
           // Flip flag to show that loading has finished.
@@ -116,38 +140,43 @@ export class TourListComponent implements OnInit, AfterViewInit {
           this.resultsLength = data.length;
 
           const dataSource = data;
-          const sortColumn = this.currentSort === undefined ? 'firstName' : this.currentSort.active;
-          const sortDirection = this.currentSort === undefined ? 'asc' : this.currentSort.direction;
+          const sortColumn =
+            this.currentSort === undefined
+              ? 'route'
+              : this.currentSort.active;
+          const sortDirection =
+            this.currentSort === undefined ? 'asc' : this.currentSort.direction;
 
           dataSource.sort((a, b) => {
-            if (sortColumn === 'fistName') {
-              return (sortDirection === 'asc' ? 1 : -1) * a.date.localeCompare(b.date);
+            if (a[sortColumn]) {
+              return (
+                (sortDirection === 'asc' ? 1 : -1) *
+                a[sortColumn].localeCompare(b[sortColumn])
+              );
             }
 
             return 0;
           });
 
           if (this.currentPage) {
-            const minIdx = this.currentPage.pageIndex * this.currentPage.pageSize;
-            const maxIdx = this.currentPage.pageIndex * this.currentPage.pageSize + this.currentPage.pageSize;
+            const minIdx =
+              this.currentPage.pageIndex * this.currentPage.pageSize;
+            const maxIdx =
+              this.currentPage.pageIndex * this.currentPage.pageSize +
+              this.currentPage.pageSize;
 
-            return dataSource.filter((_, idx) => (
-              idx >= minIdx &&
-              idx < maxIdx
-            ));
+            return dataSource.filter((_, idx) => idx >= minIdx && idx < maxIdx);
           }
 
           return dataSource.filter((_, idx) => idx >= 0 && idx < 5);
         }),
         catchError(err => {
-          console.error(err);
+          this.logger.error(err);
           this.isLoadingResults = false;
-          // Catch if the GitHub API has reached its rate limit. Return empty data.
           this.isRateLimitReached = true;
           return of([]);
         })
       )
-      .pipe(tap(data => console.error(data)))
       .subscribe(data => (this.data = data));
   }
 
