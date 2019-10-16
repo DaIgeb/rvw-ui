@@ -2,9 +2,8 @@ import { AppState } from '@app/core';
 
 export interface Member {
   id?: string;
-  name: string;
-  distance: number;
-  elevation: number;
+  firstName: string;
+  lastName: string;
 }
 
 export interface MemberState {

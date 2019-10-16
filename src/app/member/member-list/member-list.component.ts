@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { map, startWith, switchMap } from 'rxjs/operators';
-import { DataSource } from '@angular/cdk/table';
 
 @Component({
   selector: 'rvw-member-list',
@@ -21,7 +20,7 @@ import { DataSource } from '@angular/cdk/table';
   styleUrls: ['./member-list.component.scss']
 })
 export class MemberListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['name', 'elevation', 'distance', 'action'];
+  displayedColumns: string[] = ['firstName', 'lastName', 'action'];
 
   data: Member[] = [];
   data$: Observable<Member[]>;
@@ -86,10 +85,12 @@ export class MemberListComponent implements OnInit, AfterViewInit {
           this.resultsLength = data.length;
 
           const dataSource = data;
+          const sortColumn = this.currentSort === undefined ? 'firstName' : this.currentSort.active;
+          const sortDirection = this.currentSort === undefined ? 'asc' : this.currentSort.direction;
 
           dataSource.sort((a, b) => {
-            if (this.currentSort === undefined || this.currentSort.active === 'name') {
-              return (this.currentSort === undefined || this.currentSort.direction === 'asc' ? 1 : -1) * a.name.localeCompare(b.name);
+            if (sortColumn === 'fistName') {
+              return (sortDirection === 'asc' ? 1 : -1) * a.firstName.localeCompare(b.firstName);
             }
 
             return 0;
@@ -133,20 +134,16 @@ export class MemberListComponent implements OnInit, AfterViewInit {
         if (csv.errors && csv.errors.length > 0) {
           this.logger.error(JSON.stringify(csv.errors, null, 2));
         } else {
-          const nameField = csv.meta.fields.find(s => s.startsWith('name'));
-          const distanceField = csv.meta.fields.find(s =>
-            s.startsWith('distance')
-          );
-          const elevationField = csv.meta.fields.find(s =>
-            s.startsWith('elevation')
+          const firstNameField = csv.meta.fields.find(s => s.startsWith('firstName'));
+          const lastNameField = csv.meta.fields.find(s =>
+            s.startsWith('lastName')
           );
 
           this.store.dispatch(
             new ActionMemberSave(
               csv.data.map(d => ({
-                name: d[nameField],
-                distance: parseInt(d[distanceField], 10),
-                elevation: parseInt(d[elevationField], 10)
+                firstName: d[firstNameField],
+                lastName: d[lastNameField]
               }))
             )
           );
