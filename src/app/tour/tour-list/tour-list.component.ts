@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import * as papa from 'papaparse';
-import { Observable, of, merge } from 'rxjs';
+import { Observable, of, merge, forkJoin } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -9,10 +9,16 @@ import { AppState } from '@app/core';
 import { LoggerService } from '@app/core/logger.service';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import { map, startWith, switchMap } from 'rxjs/operators';
+import { map, startWith, switchMap, concatMap, tap } from 'rxjs/operators';
 import { selectTourTours } from '../tour.selectors';
 import { Tour } from '../tour.model';
 import { ActionTourLoad, ActionTourSave } from '../tour.actions';
+import { selectMemberMembers } from '@app/core/member/member.selectors';
+import { Member } from '@app/core/member/member.model';
+import { selectRouteRoutes } from '@app/core/route/route.selectors';
+import { ActionMemberLoad } from '@app/core/member/member.actions';
+import { Route } from '@app/core/route/route.model';
+import { ActionRouteLoad } from '@app/core/route/route.actions';
 
 @Component({
   templateUrl: './tour-list.component.html',
@@ -21,7 +27,7 @@ import { ActionTourLoad, ActionTourSave } from '../tour.actions';
 export class TourListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['firstName', 'lastName', 'action'];
 
-  data: Tour[] = [];
+  data: (Tour & { route: Route; participants: Member[] })[] = [];
   data$: Observable<Tour[]>;
 
   fileControl = new FormControl();
@@ -43,29 +49,48 @@ export class TourListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.store.dispatch(new ActionTourLoad());
+    this.store.dispatch(new ActionMemberLoad());
+    this.store.dispatch(new ActionRouteLoad());
   }
 
   ngAfterViewInit() {
+    const isSort = (obj: any): obj is Sort => {
+      if ((obj as Sort).active) {
+        return true;
+      }
+
+      return false;
+    };
+    const isPage = (obj: any): obj is PageEvent => {
+      if ((obj as PageEvent).pageIndex !== undefined) {
+        return true;
+      }
+
+      return false;
+    };
+
+
+    const tours$ = this.store.select(selectTourTours).pipe(tap(data => console.error('Tours', data)));
+    const members$ = this.store.select(selectMemberMembers)
+      .pipe(tap(data => console.error('Members', data)))
+      .pipe(map(data => data.reduce((arr, item) => {
+        arr[item.id] = item;
+        return arr;
+      }, {} as { [index: string]: Member })))
+      .pipe(tap(data => console.error('MappedMembers', data)));
+    const routes$ = this.store.select(selectRouteRoutes)
+      .pipe(tap(data => console.error('Routes', data)))
+      .pipe(map(data => data.reduce((arr, item) => {
+        arr[item.id] = item;
+        return arr;
+      }, {} as { [index: string]: Route })))
+      .pipe(tap(data => console.error('MappedRoutes', data)));
+
     this.sort.sortChange.subscribe(() => (this.paginator.firstPage()));
     merge<Sort, PageEvent>(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
         switchMap((s) => {
-          const isSort = (obj: any): obj is Sort => {
-            if ((obj as Sort).active) {
-              return true;
-            }
-
-            return false;
-          };
-          const isPage = (obj: any): obj is PageEvent => {
-            if ((obj as PageEvent).pageIndex !== undefined) {
-              return true;
-            }
-
-            return false;
-          };
-
           if (isSort(s)) {
             this.currentSort = s;
           } else if (isPage(s)) {
@@ -73,8 +98,16 @@ export class TourListComponent implements OnInit, AfterViewInit {
           }
 
           this.isLoadingResults = true;
-          const dataSource = this.store.select(selectTourTours);
-          return dataSource;
+          return forkJoin(tours$, members$, routes$, catchError(err => of(err)))
+            .pipe(tap(data => console.error('Forked', data)), catchError(err => of(err)))
+            .pipe(tap(err => console.log(err)))
+            .pipe(map(data => data[0].map(item => (
+              {
+                ...item,
+                route: item.routeId ? (data[2][item.routeId]) : undefined,
+                participants: (item.participantIds || []).map(id => data[1][id])
+              }
+            ))));
         }),
         map(data => {
           // Flip flag to show that loading has finished.
@@ -88,7 +121,7 @@ export class TourListComponent implements OnInit, AfterViewInit {
 
           dataSource.sort((a, b) => {
             if (sortColumn === 'fistName') {
-              return (sortDirection === 'asc' ? 1 : -1) * a.firstName.localeCompare(b.firstName);
+              return (sortDirection === 'asc' ? 1 : -1) * a.date.localeCompare(b.date);
             }
 
             return 0;
@@ -106,13 +139,15 @@ export class TourListComponent implements OnInit, AfterViewInit {
 
           return dataSource.filter((_, idx) => idx >= 0 && idx < 5);
         }),
-        catchError(() => {
+        catchError(err => {
+          console.error(err);
           this.isLoadingResults = false;
           // Catch if the GitHub API has reached its rate limit. Return empty data.
           this.isRateLimitReached = true;
           return of([]);
         })
       )
+      .pipe(tap(data => console.error(data)))
       .subscribe(data => (this.data = data));
   }
 

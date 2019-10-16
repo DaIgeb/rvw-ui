@@ -5,7 +5,7 @@ export interface Tour {
   routeId: string;
   points: number;
   date: string;
-  participants: string[];
+  participantIds: string[];
 }
 
 export interface TourState {

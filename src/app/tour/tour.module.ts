@@ -6,12 +6,17 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { TourEffects } from './tour.effects';
 import { tourReducer } from './tour.reducer';
+import { CdkTableModule } from '@angular/cdk/table';
+import { AppMaterialModule } from '@app/app-material/app-material.module';
+import { TourListComponent } from './tour-list/tour-list.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [TourListComponent],
   imports: [
     CommonModule,
     TourRoutingModule,
+    CdkTableModule,
+    AppMaterialModule,
     StoreModule.forFeature('tour', tourReducer),
     EffectsModule.forFeature([TourEffects])
   ]

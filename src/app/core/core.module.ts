@@ -19,6 +19,7 @@ import { EditProfileComponent } from './current-user/edit-profile/edit-profile.c
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppMaterialModule } from '@app/app-material/app-material.module';
 import { MemberEffects } from './member/member.effects';
+import { RouteEffects } from './route/route.effects';
 
 @NgModule({
   declarations: [EditProfileComponent],
@@ -32,7 +33,8 @@ import { MemberEffects } from './member/member.effects';
     EffectsModule.forRoot([
       AuthEffects,
       CurrentUserEffects,
-      MemberEffects
+      MemberEffects,
+      RouteEffects
       //  GoogleAnalyticsEffects
     ]),
     environment.production

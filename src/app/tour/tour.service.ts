@@ -4,7 +4,7 @@ import { Tour } from './tour.model';
 import { HttpClient } from '@angular/common/http';
 import { LoggerService } from '@app/core/logger.service';
 import { ConfigService } from '@app/core/config';
-import { switchMap, tap, catchError } from 'rxjs/operators';
+import { switchMap, tap, catchError, map } from 'rxjs/operators';
 import { isArray } from 'util';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class TourService {
     private logger: LoggerService,
     private configService: ConfigService,
     private http: HttpClient
-  ) {}
+  ) { }
 
   save(payload: Tour | Tour[]): Observable<Tour | Tour[]> {
     return this.configService
@@ -40,6 +40,12 @@ export class TourService {
     return this.configService
       .getConfig()
       .pipe(switchMap(c => this.http.get<Tour[]>(c.toursUrl)))
-      .pipe(tap(i => this.logger.log('Tours: ' + JSON.stringify(i, null, 2))));
+      .pipe(tap(i => this.logger.log('Tours: ' + JSON.stringify(i, null, 2))))
+      .pipe(map(_ => ([{
+        routeId: '0a880b34-ab0f-44b9-9502-26c7af859790',
+        points: 20,
+        date: new Date().toISOString(),
+        participantIds: ['0a880b34-ab0f-44b9-9502-26c7af859790']
+      }])));
   }
 }

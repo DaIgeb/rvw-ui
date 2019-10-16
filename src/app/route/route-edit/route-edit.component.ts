@@ -7,16 +7,16 @@ import {
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
-import { RouteState, Route } from '../route.model';
-import { selectCurrentRouteRoutes } from '../route.selectors';
+import { selectCurrentRouteRoutes } from '../../core/route/route.selectors';
 import { AppState } from '@app/core';
-import { ActionRouteSave } from '../route.actions';
 import {
   ActivatedRouteSnapshot,
   ParamMap,
   ActivatedRoute
 } from '@angular/router';
 import { switchMap, map } from 'rxjs/operators';
+import { Route } from '@app/core/route/route.model';
+import { ActionRouteSave } from '@app/core/route/route.actions';
 
 @Component({
   selector: 'rvw-route-edit',

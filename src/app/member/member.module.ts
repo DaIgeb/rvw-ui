@@ -15,8 +15,7 @@ import { AppMaterialModule } from '@app/app-material/app-material.module';
     ReactiveFormsModule,
     MemberRoutingModule,
     CdkTableModule,
-    AppMaterialModule,
-    
+    AppMaterialModule
   ]
 })
 export class MemberModule { }

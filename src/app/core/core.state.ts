@@ -16,12 +16,15 @@ import { currentUserReducer } from './current-user/current-user.reducer';
 import { CurrentUserState } from './current-user/current-user.models';
 import { memberReducer } from './member/member.reducer';
 import { MemberState } from './member/member.model';
+import { routeReducer } from '@app/core/route/route.reducer';
+import { RouteState } from '@app/core/route/route.model';
 // import { RouterStateUrl } from './router/router.state';
 
 export const reducers: ActionReducerMap<AppState> = {
   auth: authReducer,
   currentUser: currentUserReducer,
-  member: memberReducer
+  member: memberReducer,
+  route: routeReducer
   // router: routerReducer
 };
 
@@ -52,5 +55,6 @@ export interface AppState {
   auth: AuthState;
   currentUser: CurrentUserState;
   member: MemberState;
+  route: RouteState;
 //  router: RouterReducerState<RouterStateUrl>;
 }

@@ -41,5 +41,5 @@ export class RouteService {
       .getConfig()
       .pipe(switchMap(c => this.http.get<Route[]>(c.routesUrl)))
       .pipe(tap(i => this.logger.log('Routes: ' + JSON.stringify(i, null, 2))));
-  };
+  }
 }
