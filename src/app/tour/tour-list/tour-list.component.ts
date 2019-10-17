@@ -140,8 +140,4 @@ export class TourListComponent implements OnInit, AfterViewInit {
       )
       .subscribe(data => (this.data = data));
   }
-
-  editRoute(id: string) {
-    this.route.navigate([`${id}/edit`]);
-  }
 }
