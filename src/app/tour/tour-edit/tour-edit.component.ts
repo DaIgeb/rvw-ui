@@ -6,10 +6,10 @@ import {
   FormGroup,
   FormArray
 } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@app/core';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, startWith, map } from 'rxjs/operators';
 import { Tour } from '../tour.model';
 import { ActivatedRoute } from '@angular/router';
 import { ActionTourSave } from '../tour.actions';
@@ -27,14 +27,15 @@ export class TourEditComponent implements OnInit, OnDestroy {
   private currenttourSubscription: Subscription;
   private tour: Tour;
   private routes: Route[];
+  filteredRoutes: Observable<Route[]>;
   private members: Member[];
+  filteredMembers: Observable<Member[]>[] = [];
+  pointsOptions = [15, 20, 40, 80, 150];
 
   route = new FormControl('', [Validators.required, Validators.minLength(3)]);
   date = new FormControl('', [Validators.required]);
   points = new FormControl('', [Validators.required]);
-  participants = new FormArray([
-    new FormControl('id', Validators.required)
-  ]);
+  participants = new FormArray([this.createParticipant()]);
 
   currentTourFormGroup = new FormGroup({
     route: this.route,
@@ -49,8 +50,12 @@ export class TourEditComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.store.pipe(select(selectRouteRoutes)).subscribe(data => this.routes = data);
-    this.store.pipe(select(selectMemberMembers)).subscribe(data => this.members = data);
+    this.store
+      .pipe(select(selectRouteRoutes))
+      .subscribe(data => (this.routes = data));
+    this.store
+      .pipe(select(selectMemberMembers))
+      .subscribe(data => (this.members = data));
     this.currenttourSubscription = this.tourSnapshot.paramMap
       .pipe(
         switchMap(p =>
@@ -61,6 +66,11 @@ export class TourEditComponent implements OnInit, OnDestroy {
         this.tour = r;
         this.reset();
       });
+
+    this.filteredRoutes = this.route.valueChanges.pipe(
+      startWith({}),
+      map(filterValue => this.filterRoutes(filterValue))
+    );
   }
 
   ngOnDestroy(): void {
@@ -96,12 +106,62 @@ export class TourEditComponent implements OnInit, OnDestroy {
   }
 
   addParticipant() {
-    console.log('Add participant0')
-    this.participants.push(new FormControl())
+    this.participants.push(this.createParticipant());
   }
 
-  displayRoute(args) {
+  private createParticipant() {
+    const formControl = new FormControl(undefined, Validators.required);
+
+    this.filteredMembers.push(
+      formControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      )
+    );
+
+    return new FormGroup({ id: formControl });
+  }
+
+  private _filter(value: string): Member[] {
+    if (value.toLocaleLowerCase) {
+      const filterValue = value.toLowerCase();
+
+      return this.members.filter(
+        option =>
+          this.displayMember(option)
+            .toLowerCase()
+            .indexOf(filterValue) > -1
+      );
+    }
+
+    return this.members;
+  }
+
+  private filterRoutes(value: string): Route[] {
+    if (value.toLocaleLowerCase) {
+      const filterValue = value.toLowerCase();
+
+      return this.routes.filter(
+        option =>
+          this.displayRoute(option)
+            .toLowerCase()
+            .indexOf(filterValue) > -1
+      );
+    }
+
+    return this.routes;
+  }
+
+  displayRoute(args: Route) {
     return args.name;
+  }
+
+  displayMember(args: Member) {
+    if (args) {
+      return `${args.firstName} ${args.lastName}`;
+    }
+
+    return '';
   }
 
   save() {

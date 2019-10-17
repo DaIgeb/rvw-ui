@@ -1,48 +1,108 @@
 <div class="container">
   <form [formGroup]="currentTourFormGroup" (ngSubmit)="save()" class="form">
     <mat-form-field>
-      <input matInput placeholder="Route" formControlName="route" [matAutocomplete]="routeAuto" required />
-      <mat-error *ngIf="route.invalid">{{
-          getErrorMessage(route)
-        }}</mat-error>
+      <input
+        matInput
+        placeholder="Route"
+        formControlName="route"
+        [matAutocomplete]="routeAuto"
+        required
+      />
+      <mat-error *ngIf="route.invalid">{{ getErrorMessage(route) }}</mat-error>
     </mat-form-field>
 
-    <mat-autocomplete #routeAuto="matAutocomplete" [displayWith]="displayRoute">
-      <mat-option *ngFor="let option of routes" [value]="option">{{option.name}}</mat-option>
+    <mat-autocomplete autoActiveFirstOption  #routeAuto="matAutocomplete" [displayWith]="displayRoute">
+      <mat-option *ngFor="let option of filteredRoutes | async" [value]="option">{{
+        displayRoute(option)
+      }}</mat-option>
     </mat-autocomplete>
 
     <mat-form-field>
-      <input matInput input="date" placeholder="Date" formControlName="date" required />
-      <mat-error *ngIf="date.invalid">{{
-            getErrorMessage(date)
-          }}</mat-error>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        placeholder="Choose a date"
+        formControlName="date"
+        required
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="date.invalid">{{ getErrorMessage(date) }}</mat-error>
     </mat-form-field>
 
+    <mat-radio-group
+      aria-labelledby="example-radio-group-label"
+      class="radio-group"
+      formControlName="points"
+    >
+      <mat-radio-button
+        class="example-radio-button"
+        *ngFor="let point of pointsOptions"
+        [value]="point"
+      >
+        {{ point }}
+      </mat-radio-button>
+    </mat-radio-group>
+    <mat-error *ngIf="date.invalid">{{ getErrorMessage(date) }}</mat-error>
+
     <div formArrayName="participants">
-      <div *ngFor="let participant of participants.controls; let i = index">
-        <div >
+      <div
+        *ngFor="let participant of participants.controls; let i = index"
+        formGroupName="{{ i }}"
+      >
+        <div>
           <mat-form-field>
-            <input matInput type="input" placeholder="Participant" formControlName="id" [matAutocomplete]="auto"
-              required />
+            <input
+              matInput
+              type="input"
+              placeholder="Participant"
+              formControlName="id"
+              [matAutocomplete]="auto"
+              required
+            />
           </mat-form-field>
 
-          <mat-autocomplete #auto="matAutocomplete">
-            <mat-option *ngFor="let option of members" [value]="option">{{option.firstName}}</mat-option>
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            [displayWith]="displayMember"
+            autoActiveFirstOption
+          >
+            <mat-option
+              *ngFor="let option of filteredMembers[i] | async"
+              [value]="option"
+              >{{ displayMember(option) }}</mat-option
+            >
           </mat-autocomplete>
         </div>
       </div>
     </div>
-    <button mat-icon-button type="button" aria-label="Example icon-button with a heart icon" (click)="addParticipant()">
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Example icon-button with a heart icon"
+      (click)="addParticipant()"
+    >
       <mat-icon>add</mat-icon>
     </button>
     <div class="button">
       <div class="spacer"></div>
-      <button mat-button type="submit" [disabled]="currentTourFormGroup.invalid || currentTourFormGroup.pristine"
-        color="primary">
+      <button
+        mat-button
+        type="submit"
+        [disabled]="
+          currentTourFormGroup.invalid || currentTourFormGroup.pristine
+        "
+        color="primary"
+      >
         Submit
       </button>
 
-      <button mat-button type="button" [disabled]="currentTourFormGroup.pristine" (click)="reset()">
+      <button
+        mat-button
+        type="button"
+        [disabled]="currentTourFormGroup.pristine"
+        (click)="reset()"
+      >
         Cancel
       </button>
     </div>

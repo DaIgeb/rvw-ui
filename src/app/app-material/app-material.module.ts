@@ -17,7 +17,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSortModule } from '@angular/material/sort';
-import { MatAutocompleteModule } from '@angular/material';
+import { MatAutocompleteModule, MatDatepickerModule, MatNativeDateModule, MatRadioModule } from '@angular/material';
 
 @NgModule({
   declarations: [],
@@ -35,6 +35,9 @@ import { MatAutocompleteModule } from '@angular/material';
     MatMenuModule,
     MatFormFieldModule,
     MatInputModule,
+    MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
