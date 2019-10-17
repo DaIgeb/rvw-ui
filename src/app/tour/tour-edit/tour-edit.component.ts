@@ -116,9 +116,9 @@ export class TourEditComponent implements OnInit, OnDestroy {
     } else {
       this.currentTourFormGroup.patchValue({
         date: this.tour.date,
-        route: this.tour.route,
+        route: this.routes.find(r => r.id === this.tour.route),
         points: this.tour.points,
-        participants: this.tour.participants
+        participants: this.tour.participants.map(p => ({participant: this.members.find(m => m.id === p)}))
       });
     }
   }
