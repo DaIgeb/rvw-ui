@@ -7,13 +7,15 @@ import * as fromTour from './tour.actions';
 import { TourService } from './tour.service';
 import { of } from 'rxjs';
 import { isArray } from 'util';
+import { Location } from '@angular/common';
 
 @Injectable()
 export class TourEffects {
   constructor(
     private actions$: Actions,
     private tourService: TourService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   @Effect()
@@ -43,6 +45,6 @@ export class TourEffects {
     ofType<fromTour.ActionTourSaveSuccess>(
       fromTour.TourActionTypes.SAVE_SUCCESS
     ),
-    tap(a => this.router.navigate(['./tour']))
+    tap(a => this.location.back())
   );
 }

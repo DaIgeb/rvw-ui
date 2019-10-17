@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  test: false,
   auth: {
     CLIENT_ID: 'NBBkdTDcCp2MW07SHvU743q4W505iFtR',
     CLIENT_DOMAIN: 'rvw.eu.auth0.com', // e.g., 'you.auth0.com'

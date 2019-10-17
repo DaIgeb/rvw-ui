@@ -9,7 +9,7 @@ import {
 import { Subscription, Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@app/core';
-import { switchMap, startWith, map } from 'rxjs/operators';
+import { switchMap, startWith, map, tap } from 'rxjs/operators';
 import { Tour } from '../tour.model';
 import { ActivatedRoute } from '@angular/router';
 import { ActionTourSave } from '../tour.actions';
@@ -18,17 +18,35 @@ import { Member } from '@app/core/member/member.model';
 import { selectRouteRoutes } from '@app/core/route/route.selectors';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { selectCurrentTourTours } from '../tour.selectors';
+import {
+  DateAdapter,
+  MAT_DATE_LOCALE,
+  MAT_DATE_FORMATS
+} from '@angular/material';
 
 @Component({
   templateUrl: './tour-edit.component.html',
   styleUrls: ['./tour-edit.component.scss']
+  /*providers: [
+    // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
+    // application's root module. We provide it at the component level here, due to limitations of
+    // our example generation script.
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE]
+    },
+
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+  ]*/
 })
 export class TourEditComponent implements OnInit, OnDestroy {
-  private currenttourSubscription: Subscription;
+  private currentTourSubscription: Subscription;
   private tour: Tour;
   private routes: Route[];
-  filteredRoutes: Observable<Route[]>;
   private members: Member[];
+
+  filteredRoutes: Observable<Route[]>;
   filteredMembers: Observable<Member[]>[] = [];
   pointsOptions = [15, 20, 40, 80, 150];
 
@@ -56,7 +74,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
     this.store
       .pipe(select(selectMemberMembers))
       .subscribe(data => (this.members = data));
-    this.currenttourSubscription = this.tourSnapshot.paramMap
+    this.currentTourSubscription = this.tourSnapshot.paramMap
       .pipe(
         switchMap(p =>
           this.store.pipe(select(selectCurrentTourTours(p.get('id'))))
@@ -74,7 +92,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.currenttourSubscription.unsubscribe();
+    this.currentTourSubscription.unsubscribe();
   }
 
   getErrorMessage(formControl: FormControl) {
@@ -113,21 +131,34 @@ export class TourEditComponent implements OnInit, OnDestroy {
     const formControl = new FormControl(undefined, Validators.required);
 
     this.filteredMembers.push(
-      formControl.valueChanges.pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      )
+      formControl.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this.filterMembers(value))
+        )
+        .pipe(
+          tap(arr =>
+            arr.sort((a, b) =>
+              this.displayMember(a).localeCompare(this.displayMember(b))
+            )
+          )
+        )
     );
 
-    return new FormGroup({ id: formControl });
+    return new FormGroup({ participant: formControl });
   }
 
-  private _filter(value: string): Member[] {
+  private filterMembers(value: string): Member[] {
     if (value.toLocaleLowerCase) {
       const filterValue = value.toLowerCase();
 
+      const alreadySelectedMembers = this.participants.value.map(p =>
+        p.participant ? p.participant.id : undefined
+      );
+
       return this.members.filter(
         option =>
+          alreadySelectedMembers.indexOf(option.id) === -1 &&
           this.displayMember(option)
             .toLowerCase()
             .indexOf(filterValue) > -1
@@ -158,7 +189,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
 
   displayMember(args: Member) {
     if (args) {
-      return `${args.firstName} ${args.lastName}`;
+      return `${args.lastName} ${args.firstName}`;
     }
 
     return '';
@@ -168,10 +199,13 @@ export class TourEditComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       new ActionTourSave({
         id: this.tour ? this.tour.id : undefined,
-        route: this.route.value,
-        date: this.date.value,
+        route: this.route.value.id,
+        date: (typeof this.date.value === 'string'
+          ? this.date.value
+          : this.date.value.toISOString()
+        ).slice(0, 10),
         points: this.points.value,
-        participants: this.participants.value
+        participants: this.participants.value.map(p => p.participant.id)
       })
     );
   }
