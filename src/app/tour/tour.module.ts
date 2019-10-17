@@ -9,11 +9,14 @@ import { tourReducer } from './tour.reducer';
 import { CdkTableModule } from '@angular/cdk/table';
 import { AppMaterialModule } from '@app/app-material/app-material.module';
 import { TourListComponent } from './tour-list/tour-list.component';
+import { TourEditComponent } from './tour-edit/tour-edit.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [TourListComponent],
+  declarations: [TourListComponent, TourEditComponent],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     TourRoutingModule,
     CdkTableModule,
     AppMaterialModule,
