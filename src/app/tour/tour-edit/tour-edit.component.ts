@@ -27,18 +27,6 @@ import {
 @Component({
   templateUrl: './tour-edit.component.html',
   styleUrls: ['./tour-edit.component.scss']
-  /*providers: [
-    // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
-    // application's root module. We provide it at the component level here, due to limitations of
-    // our example generation script.
-    {
-      provide: DateAdapter,
-      useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE]
-    },
-
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]*/
 })
 export class TourEditComponent implements OnInit, OnDestroy {
   private currentTourSubscription: Subscription;
@@ -65,7 +53,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     private tourSnapshot: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.store
@@ -99,10 +87,17 @@ export class TourEditComponent implements OnInit, OnDestroy {
     return formControl.hasError('required')
       ? 'You must enter a value'
       : formControl.hasError('email')
-      ? 'Not a valid email'
-      : formControl.hasError('minlength')
-      ? 'Requires at least ' + formControl.errors.minlength.requiredLength
-      : '';
+        ? 'Not a valid email'
+        : formControl.hasError('minlength')
+          ? 'Requires at least ' + formControl.errors.minlength.requiredLength
+          : '';
+  }
+
+  participantSelected() {
+    console.log(this.participants.value);
+    if (!this.participants.value.some(v => !v.participant)) {
+      this.addParticipant();
+    }
   }
 
   reset() {
@@ -114,12 +109,15 @@ export class TourEditComponent implements OnInit, OnDestroy {
         participants: []
       });
     } else {
+      while (this.participants.length <= this.tour.participants.length) {
+        this.participants.push(this.createParticipant());
+      }
       this.currentTourFormGroup.patchValue({
         date: this.tour.date,
         route: this.routes.find(r => r.id === this.tour.route),
         points: this.tour.points,
-        participants: this.tour.participants.map(p => ({participant: this.members.find(m => m.id === p)}))
-      });
+        participants: this.tour.participants.map(p => ({ participant: this.members.find(m => m.id === p) }))
+      }, { emitEvent: true });
     }
   }
 
@@ -133,7 +131,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
     this.filteredMembers.push(
       formControl.valueChanges
         .pipe(
-          startWith(''),
+          startWith({}),
           map(value => this.filterMembers(value))
         )
         .pipe(
@@ -148,24 +146,37 @@ export class TourEditComponent implements OnInit, OnDestroy {
     return new FormGroup({ participant: formControl });
   }
 
-  private filterMembers(value: string): Member[] {
-    if (value.toLocaleLowerCase) {
-      const filterValue = value.toLowerCase();
-
-      const alreadySelectedMembers = this.participants.value.map(p =>
-        p.participant ? p.participant.id : undefined
-      );
-
-      return this.members.filter(
-        option =>
-          alreadySelectedMembers.indexOf(option.id) === -1 &&
-          this.displayMember(option)
-            .toLowerCase()
-            .indexOf(filterValue) > -1
-      );
+  private isMember(obj: any): obj is Member {
+    if (obj && (obj as Member).id) {
+      return true;
     }
 
-    return this.members;
+    return false;
+  }
+
+  private filterMembers(value: string): Member[] {
+    let filterValue: string;
+    if (!value) {
+      filterValue = ''
+    }
+    else if (this.isMember(value)) {
+      filterValue = this.displayMember(value).toLocaleLowerCase()
+    }
+    else if (value.toLocaleLowerCase) {
+      filterValue = value.toLocaleLowerCase();
+    }
+
+    const alreadySelectedMembers = this.participants.value.map(p =>
+      p.participant ? p.participant.id : undefined
+    );
+
+    return this.members.filter(
+      option =>
+        alreadySelectedMembers.indexOf(option.id) === -1 &&
+        this.displayMember(option)
+          .toLocaleLowerCase()
+          .indexOf(filterValue) > -1
+    );
   }
 
   private filterRoutes(value: string): Route[] {
