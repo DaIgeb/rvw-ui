@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import * as papa from 'papaparse';
 import { Observable, of, merge, forkJoin, timer, combineLatest } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
