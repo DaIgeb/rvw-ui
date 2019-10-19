@@ -124,8 +124,4 @@ export class RouteListComponent implements AfterViewInit, OnInit {
       reader.readAsText(inputNode.files[0]);
     }
   }
-
-  uploadFile() {
-    console.log(this.fileControl.value);
-  }
 }

@@ -10,10 +10,11 @@ import { Observable } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
 
 import { AuthService } from '../auth/auth.service';
+import { LoggerService } from '../logger.service';
 
 @Injectable()
 export class HttpAuthInterceptor implements HttpInterceptor {
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private logger: LoggerService) {}
   // function which will be called for all http calls
   intercept(
     request: HttpRequest<any>,
@@ -27,19 +28,29 @@ export class HttpAuthInterceptor implements HttpInterceptor {
             headers: request.headers.set('Authorization', 'Bearer ' + t)
           });
           // logging the updated Parameters to browser's console
-          console.log('Before making api call : ', updatedRequest);
+          this.logger.log(
+            'Before making api call : ' +
+              JSON.stringify(updatedRequest, null, 2),
+            'debug'
+          );
           return next.handle(updatedRequest).pipe(
             tap(
               event => {
-                // logging the http response to browser's console in case of a success
+                // logging the http response to browser's this.logger in case of a succe, 'debug'ss
                 if (event instanceof HttpResponse) {
-                  console.log('api call success :', event);
+                  this.logger.log(
+                    'api call success :' + JSON.stringify(event, null, 2),
+                    'debug'
+                  );
                 }
               },
               error => {
-                // logging the http response to browser's console in case of a failuer
-                if (event instanceof HttpResponse) {
-                  console.log('api call error :', event);
+                // logging the http response to browser's this.logger in case of a failu, 'debug'er
+                if (error instanceof HttpResponse) {
+                  this.logger.log(
+                    'api call error :' + JSON.stringify(error, null, 2),
+                    'debug'
+                  );
                 }
               }
             )

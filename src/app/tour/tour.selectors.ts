@@ -2,23 +2,26 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { TourState, State, Tour } from './tour.model';
 
-export const selectTourState = createFeatureSelector<State, TourState>(
-  'tour'
-);
+export const selectTourState = createFeatureSelector<State, TourState>('tour');
 
-export const selectTour = createSelector(
+export const selectTourLoading = createSelector(
   selectTourState,
-  (state: TourState) => state
+  (state: TourState) => state.loading
 );
 
 export const selectTourTours = createSelector(
-  selectTour,
+  selectTourState,
   (state: TourState) => state.tours
 );
 
-export const selectCurrentTourTours = (id: string) => {
+export const selectTourToursTour = (id: string) => {
   return createSelector(
     selectTourTours,
     (state: Tour[]) => state.find(r => r.id === id)
   );
 };
+
+export const selectTourYear = createSelector(
+  selectTourState,
+  state => state.year
+);

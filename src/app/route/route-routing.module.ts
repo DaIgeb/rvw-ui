@@ -4,9 +4,8 @@ import { RouteListComponent } from './route-list/route-list.component';
 import { RouteEditComponent } from './route-edit/route-edit.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'list', pathMatch: 'full' },
-  { path: 'route/:id', component: RouteEditComponent },
-  { path: 'list', component: RouteListComponent }
+  { path: ':id', component: RouteEditComponent },
+  { path: '', component: RouteListComponent }
 ];
 
 @NgModule({

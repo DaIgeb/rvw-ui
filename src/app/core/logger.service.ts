@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
-import { ConfigService } from './config';
 import { TLogLevel, isEnabled } from './logger.model';
+import { environment } from '@env/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoggerService {
-  logLevel: any;
-  constructor(private config: ConfigService) {
-    this.config.getConfig().subscribe(c => this.logLevel = c.logLevel)
+  private logLevel: TLogLevel = 'log';
+  constructor() {
+    this.logLevel = environment.log.level;
   }
 
   log(msg: string, level: TLogLevel = 'log') {
     if (isEnabled(level, this.logLevel)) {
       switch (level) {
-        case "debug":
+        case 'debug':
           console.debug(msg);
           break;
         case 'info':

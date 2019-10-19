@@ -26,7 +26,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
           const elapsed = Date.now() - started;
           const msg = `${req.method} "${req.urlWithParams}"
              ${ok} in ${elapsed} ms.`;
-          this.logger.log(msg);
+          this.logger.log(msg, 'debug');
         })
       );
   }

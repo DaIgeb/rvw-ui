@@ -22,6 +22,7 @@ import { ActionRouteLoad } from '@app/core/route/route.actions';
 import { TableService } from '@app/shared/table.service';
 
 @Component({
+  selector: 'rvw-tour-list',
   templateUrl: './tour-list.component.html',
   styleUrls: ['./tour-list.component.scss']
 })

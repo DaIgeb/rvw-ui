@@ -6,10 +6,11 @@ import { MemberListComponent } from './member-list/member-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CdkTableModule } from '@angular/cdk/table';
 import { AppMaterialModule } from '@app/app-material/app-material.module';
+import { MemberEditComponent } from './member-edit/member-edit.component';
 
 
 @NgModule({
-  declarations: [MemberListComponent],
+  declarations: [MemberListComponent, MemberEditComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,

@@ -10,6 +10,9 @@ export interface Tour {
 
 export interface TourState {
   tours: Tour[];
+  year: number;
+  loading: boolean;
+  loaded: boolean;
 }
 
 export interface State extends AppState {

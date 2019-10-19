@@ -40,6 +40,7 @@ export class TourService {
     return this.configService
       .getConfig()
       .pipe(switchMap(c => this.http.get<Tour[]>(c.toursUrl)))
-      .pipe(tap(i => this.logger.log('Tours: ' + JSON.stringify(i, null, 2))));
+      .pipe(tap(i => this.logger.log('Tours: ' + JSON.stringify(i, null, 2))))
+      ;
   }
 }

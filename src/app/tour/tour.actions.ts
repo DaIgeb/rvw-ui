@@ -8,6 +8,13 @@ export enum TourActionTypes {
   SAVE = '[Tour] Save',
   SAVE_SUCCESS = '[Tour] Save Success',
   SAVE_FAILURE = '[Tour] Save Failure',
+  SET_YEAR = '[Tour] Set Year'
+}
+
+export class ActionTourSetYear implements Action {
+  readonly type = TourActionTypes.SET_YEAR;
+
+  constructor(public payload: number) {}
 }
 
 export class ActionTourLoad implements Action {
@@ -51,4 +58,4 @@ export type TourActions =
   | ActionTourSave
   | ActionTourSaveSuccess
   | ActionTourSaveFailure
- ;
+  | ActionTourSetYear;

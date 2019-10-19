@@ -9,6 +9,7 @@ import { LocalStorageService } from '../local-storage/local-storage.service';
 import * as fromAuth from './auth.actions';
 import { AuthService } from './auth.service';
 import { of, EMPTY } from 'rxjs';
+import { LoggerService } from '../logger.service';
 
 export const AUTH_KEY = 'AUTH';
 
@@ -18,7 +19,8 @@ export class AuthEffects {
     private actions$: Actions<Action>,
     private localStorageService: LocalStorageService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private logger: LoggerService
   ) {}
 
   @Effect({ dispatch: false })
@@ -44,7 +46,7 @@ export class AuthEffects {
     exhaustMap(() => {
       return this.authService.parseHash$().pipe(
         map(authResult => {
-          console.log(authResult);
+          this.logger.log(JSON.stringify(authResult, null, 2), 'debug');
           if (authResult && authResult.accessToken) {
             this.authService.setAuth(authResult);
             return new fromAuth.ActionAuthLoginSuccess({
@@ -78,9 +80,9 @@ export class AuthEffects {
     map(action => action.payload),
     tap((err: any) => {
       if (err.error_description) {
-        console.error(`Error: ${err.error_description}`);
+        this.logger.error(`Error: ${err.error_description}`);
       } else {
-        console.error(`Error: ${JSON.stringify(err)}`);
+        this.logger.error(`Error: ${JSON.stringify(err)}`);
       }
       this.router.navigate([this.authService.onAuthFailureUrl]);
     })
@@ -96,7 +98,8 @@ export class AuthEffects {
             if (authResult && authResult.accessToken) {
               this.authService.setAuth(authResult);
               return new fromAuth.ActionAuthLoginSuccess({
-                profile: authResult.idTokenPayload
+                profile: authResult.idTokenPayload,
+                redirectUrl: this.router.url
               });
             }
 

@@ -1,8 +1,10 @@
+import { TEnvironment } from './model';
+
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+export const environment: TEnvironment = {
   production: true,
   test: false,
   auth: {
@@ -14,8 +16,10 @@ export const environment = {
     SCOPE: 'openid profile email'
   },
   api: {
-    roles: '',
     url: 'https://dev.api.aws.daigeb.ch'
+  },
+  log: {
+    level: 'debug'
   }
 };
 

@@ -16,7 +16,6 @@ import { Router } from '@angular/router';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { map, startWith, switchMap, tap, delay } from 'rxjs/operators';
-import { isNumber } from 'util';
 import { TableService } from '@app/shared/table.service';
 
 @Component({

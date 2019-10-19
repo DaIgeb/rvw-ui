@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, bindNodeCallback, of } from 'rxjs';
+import { BehaviorSubject, Observable, bindNodeCallback, of, ReplaySubject } from 'rxjs';
 import { WebAuth, Auth0DecodedHash, Auth0ParseHashError } from 'auth0-js';
 import { environment } from '@env/environment';
 import { Router } from '@angular/router';
@@ -19,8 +19,8 @@ export class AuthService {
   });
 
   private authFlag = 'isLoggedIn';
-  private token$ = new BehaviorSubject<string>(null);
-  private userProfile$ = new BehaviorSubject<any>(null);
+  private token$ = new ReplaySubject<string>(1);
+  private userProfile$ = new ReplaySubject<any>(1);
 
   // Authentication navigation
   onAuthSuccessUrl = '/';

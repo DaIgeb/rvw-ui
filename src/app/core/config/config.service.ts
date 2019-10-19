@@ -4,10 +4,11 @@ import { Config } from './config';
 import {
   publishReplay,
   refCount,
-  map
+  map,
+  catchError
 } from 'rxjs/operators';
 import {
-  Observable} from 'rxjs';
+  Observable, of} from 'rxjs';
 import { environment } from '@env/environment';
 
 @Injectable({
@@ -30,7 +31,8 @@ export class ConfigService {
       logLevel: config.logLevel || environment.log.level
     })));
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getConfig(): Observable<Config> {
     return this.config$;

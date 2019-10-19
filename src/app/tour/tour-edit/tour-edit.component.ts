@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   FormControl,
   Validators,
-  FormBuilder,
   FormGroup,
-  FormArray
+  FormArray,
+  ValidatorFn
 } from '@angular/forms';
 import { Subscription, Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
@@ -12,17 +12,28 @@ import { AppState } from '@app/core';
 import { switchMap, startWith, map, tap } from 'rxjs/operators';
 import { Tour } from '../tour.model';
 import { ActivatedRoute } from '@angular/router';
-import { ActionTourSave } from '../tour.actions';
+import { ActionTourSave, ActionTourLoad } from '../tour.actions';
 import { Route } from '@app/core/route/route.model';
 import { Member } from '@app/core/member/member.model';
 import { selectRouteRoutes } from '@app/core/route/route.selectors';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
-import { selectCurrentTourTours } from '../tour.selectors';
-import {
-  DateAdapter,
-  MAT_DATE_LOCALE,
-  MAT_DATE_FORMATS
-} from '@angular/material';
+import { selectTourToursTour } from '../tour.selectors';
+import { ActionMemberLoad } from '@app/core/member/member.actions';
+import { ActionRouteLoad } from '@app/core/route/route.actions';
+
+function arrayValidation(
+  validationFn: (item: any) => boolean,
+  minValidRows: number,
+  maxInvalidRows: number
+): ValidatorFn {
+  return (control: FormArray): { [key: string]: any } | null => {
+    const setParticipants = control.value.filter(v => validationFn(v)).length;
+    const notSetParticipants = control.value.length - setParticipants;
+    return setParticipants < minValidRows || notSetParticipants > maxInvalidRows
+      ? { arrayValidation: { value: control.value } }
+      : null;
+  };
+}
 
 @Component({
   templateUrl: './tour-edit.component.html',
@@ -41,7 +52,10 @@ export class TourEditComponent implements OnInit, OnDestroy {
   route = new FormControl('', [Validators.required, Validators.minLength(3)]);
   date = new FormControl('', [Validators.required]);
   points = new FormControl('', [Validators.required]);
-  participants = new FormArray([this.createParticipant()]);
+  participants = new FormArray(
+    [this.createParticipant()],
+    arrayValidation(v => v.participant, 1, 1)
+  );
 
   currentTourFormGroup = new FormGroup({
     route: this.route,
@@ -53,9 +67,13 @@ export class TourEditComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     private tourSnapshot: ActivatedRoute
-  ) { }
+  ) {}
 
   ngOnInit() {
+    this.store.dispatch(new ActionTourLoad());
+    this.store.dispatch(new ActionMemberLoad());
+    this.store.dispatch(new ActionRouteLoad());
+
     this.store
       .pipe(select(selectRouteRoutes))
       .subscribe(data => (this.routes = data));
@@ -65,7 +83,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
     this.currentTourSubscription = this.tourSnapshot.paramMap
       .pipe(
         switchMap(p =>
-          this.store.pipe(select(selectCurrentTourTours(p.get('id'))))
+          this.store.pipe(select(selectTourToursTour(p.get('id'))))
         )
       )
       .subscribe(r => {
@@ -87,15 +105,20 @@ export class TourEditComponent implements OnInit, OnDestroy {
     return formControl.hasError('required')
       ? 'You must enter a value'
       : formControl.hasError('email')
-        ? 'Not a valid email'
-        : formControl.hasError('minlength')
-          ? 'Requires at least ' + formControl.errors.minlength.requiredLength
-          : '';
+      ? 'Not a valid email'
+      : formControl.hasError('minlength')
+      ? 'Requires at least ' + formControl.errors.minlength.requiredLength
+      : formControl.hasError('arrayValidation')
+      ? 'Requires at least one valid participant and not more than 1 invalid'
+      : '';
   }
 
   participantSelected() {
-    console.log(this.participants.value);
-    if (!this.participants.value.some(v => !v.participant)) {
+    if (
+      !this.participants.value.some(
+        (v: { participant: Member }) => !v.participant
+      )
+    ) {
       this.addParticipant();
     }
   }
@@ -112,12 +135,17 @@ export class TourEditComponent implements OnInit, OnDestroy {
       while (this.participants.length <= this.tour.participants.length) {
         this.participants.push(this.createParticipant());
       }
-      this.currentTourFormGroup.patchValue({
-        date: this.tour.date,
-        route: this.routes.find(r => r.id === this.tour.route),
-        points: this.tour.points,
-        participants: this.tour.participants.map(p => ({ participant: this.members.find(m => m.id === p) }))
-      }, { emitEvent: true });
+      this.currentTourFormGroup.patchValue(
+        {
+          date: this.tour.date,
+          route: this.routes.find(r => r.id === this.tour.route),
+          points: this.tour.points,
+          participants: this.tour.participants.map(p => ({
+            participant: this.members.find(m => m.id === p)
+          }))
+        },
+        { emitEvent: true }
+      );
     }
   }
 
@@ -125,8 +153,13 @@ export class TourEditComponent implements OnInit, OnDestroy {
     this.participants.push(this.createParticipant());
   }
 
+  removeParticipant(i: number) {
+    this.participants.removeAt(i);
+    this.filteredMembers.splice(i, 1);
+  }
+
   private createParticipant() {
-    const formControl = new FormControl(undefined, Validators.required);
+    const formControl = new FormControl(undefined);
 
     this.filteredMembers.push(
       formControl.valueChanges
@@ -157,12 +190,10 @@ export class TourEditComponent implements OnInit, OnDestroy {
   private filterMembers(value: string): Member[] {
     let filterValue: string;
     if (!value) {
-      filterValue = ''
-    }
-    else if (this.isMember(value)) {
-      filterValue = this.displayMember(value).toLocaleLowerCase()
-    }
-    else if (value.toLocaleLowerCase) {
+      filterValue = '';
+    } else if (this.isMember(value)) {
+      filterValue = this.displayMember(value).toLocaleLowerCase();
+    } else if (value.toLocaleLowerCase) {
       filterValue = value.toLocaleLowerCase();
     }
 
@@ -216,7 +247,9 @@ export class TourEditComponent implements OnInit, OnDestroy {
           : this.date.value.toISOString()
         ).slice(0, 10),
         points: this.points.value,
-        participants: this.participants.value.map(p => p.participant.id)
+        participants: this.participants.value
+          .filter(p => p.participant)
+          .map(p => p.participant.id)
       })
     );
   }

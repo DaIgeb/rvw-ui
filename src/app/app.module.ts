@@ -16,6 +16,7 @@ import { CallbackComponent } from './callback/callback.component';
 
 import { CoreModule } from '@app/core';
 import { NavigationModule } from './navigation/navigation.module';
+import { HomeComponent } from './home/home.component';
 
 registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
 
@@ -23,7 +24,8 @@ registerLocaleData(localeDeCh, 'de-CH', localeDeChExtra);
   declarations: [
     AppComponent,
     PageNotFoundComponent,
-    CallbackComponent
+    CallbackComponent,
+    HomeComponent
   ],
   imports: [
     BrowserAnimationsModule,

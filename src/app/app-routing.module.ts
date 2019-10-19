@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { CallbackComponent } from './callback/callback.component';
 import { EditProfileComponent } from './core/current-user/edit-profile/edit-profile.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
   { path: 'callback', component: CallbackComponent },
@@ -16,6 +17,7 @@ const routes: Routes = [
       { path: 'profile', component: EditProfileComponent }
     ]
   },
+  { path: '', component: HomeComponent },
   { path: '**', component: PageNotFoundComponent }
 ];
 

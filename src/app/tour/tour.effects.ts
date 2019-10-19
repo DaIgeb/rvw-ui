@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { tap, map, catchError, switchMap } from 'rxjs/operators';
+import { tap, map, catchError, switchMap, exhaustMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 import * as fromTour from './tour.actions';
@@ -8,6 +8,8 @@ import { TourService } from './tour.service';
 import { of } from 'rxjs';
 import { isArray } from 'util';
 import { Location } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { AppState } from '@app/core';
 
 @Injectable()
 export class TourEffects {
@@ -15,7 +17,8 @@ export class TourEffects {
     private actions$: Actions,
     private tourService: TourService,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private store: Store<AppState>
   ) {}
 
   @Effect()

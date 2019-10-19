@@ -30,15 +30,19 @@
         <div>
           <mat-form-field>
             <input matInput type="input" placeholder="Participant {{i + 1}}" formControlName="participant"
-              [matAutocomplete]="auto" required />
+              [matAutocomplete]="auto" />
           </mat-form-field>
 
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayMember" autoActiveFirstOption (optionSelected)="participantSelected()">
             <mat-option *ngFor="let option of filteredMembers[i] | async" [value]="option">{{ displayMember(option) }}
             </mat-option>
           </mat-autocomplete>
+          <button mat-icon-button type="button" (click)="removeParticipant(i)"><mat-icon>delete</mat-icon></button>
+          <mat-error *ngIf="participant.invalid">{{ getErrorMessage(participant) }}</mat-error>
+          <mat-error *ngIf="participants.controls[i].invalid">{{ getErrorMessage(participants.controls[i]) }}</mat-error>
         </div>
       </div>
+      <mat-error *ngIf="participants.invalid">{{ getErrorMessage(participants) }}</mat-error>
     </div>
     <button mat-icon-button type="button" aria-label="Example icon-button with a heart icon" (click)="addParticipant()">
       <mat-icon>add</mat-icon>

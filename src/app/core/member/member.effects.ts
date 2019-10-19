@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { tap, map, catchError, switchMap } from 'rxjs/operators';
+import { tap, map, catchError, switchMap, exhaustMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 import * as fromMember from './member.actions';
