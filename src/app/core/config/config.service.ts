@@ -26,7 +26,8 @@ export class ConfigService {
       membersUrl: `${environment.api.url}/${config.membersUrl}`,
       usersUrl: `${environment.api.url}/${config.usersUrl}`,
       routesUrl: `${environment.api.url}/${config.routesUrl}`,
-      toursUrl: `${environment.api.url}/${config.toursUrl}`
+      toursUrl: `${environment.api.url}/${config.toursUrl}`,
+      logLevel: config.logLevel || environment.log.level
     })));
 
   constructor(private http: HttpClient) {}
