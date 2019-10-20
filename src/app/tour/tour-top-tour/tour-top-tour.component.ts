@@ -21,12 +21,17 @@ import highcharts3D from 'highcharts/highcharts-3d.src';
 import HC_exporting from 'highcharts/modules/exporting';
 import HC_offlineExporting from 'highcharts/modules/offline-exporting';
 import HC_exportData from 'highcharts/modules/export-data';
+import { FormControl, FormGroup } from '@angular/forms';
 HC_exporting(Highcharts);
 HC_offlineExporting(Highcharts);
 HC_exportData(Highcharts);
 highcharts3D(Highcharts);
 
-type TData = Tour & { participantCount: number };
+type TData = Tour & {
+  participantCount: number;
+  distance: number;
+  elevation: number;
+};
 
 @Component({
   selector: 'rvw-tour-top-tour',
@@ -60,21 +65,49 @@ export class TourTopTourComponent implements OnInit {
       categories: [] as string[],
       crosshair: true
     },
-    yAxis: {
-      title: {
-        text: ''
+    yAxis: [
+      {
+        title: {
+          text: ''
+        }
+      },
+      {
+        title: {
+          text: ''
+        }
+      },
+      {
+        title: {
+          text: ''
+        }
       }
-    },
+    ],
     exporting: {
       allowHTML: true,
       sourceWidth: 800,
       sourceHeight: 320
     },
+    legend: {
+      align: 'left',
+      layout: 'vertical'
+    },
     series: [
       {
         type: 'column',
         name: 'Top Participants',
-        showInLegend: false,
+        yAxis: 0,
+        data: [] as number[]
+      },
+      {
+        type: 'column',
+        name: 'Top Distance',
+        yAxis: 1,
+        data: [] as number[]
+      },
+      {
+        type: 'column',
+        name: 'Top Elevation',
+        yAxis: 2,
         data: [] as number[]
       }
     ],
@@ -85,8 +118,20 @@ export class TourTopTourComponent implements OnInit {
 
   private chart: Chart;
 
-  routes$: Observable<{ [index: string]: Route }>;
-  tours$: Observable<Tour[]>;
+  columns = [
+    { name: 'Points', column: 'participantCount' },
+    { name: 'Distance', column: 'distance' },
+    { name: 'Elevation', column: 'elevation' }
+  ];
+
+  sortOrder = new FormControl('participantCount');
+
+  formGroup = new FormGroup({ sortOrder: this.sortOrder });
+
+  aggregatedData$: Observable<{
+    data: TData[];
+    sort: string;
+  }>;
 
   constructor(
     private store: Store<AppState>,
@@ -98,17 +143,19 @@ export class TourTopTourComponent implements OnInit {
     this.store.dispatch(new ActionTourLoad());
     this.store.dispatch(new ActionRouteLoad());
 
-    this.tours$ = combineLatest([
+    const tours$ = combineLatest([
       this.store.select(selectTourYear),
       this.store.select(selectTourTours)
     ]).pipe(
       map(data => {
         const year = data[0];
-        return data[1].filter(item => item.date.startsWith(year.toString()));
+        return data[1].filter(item =>
+          item.date.startsWith(year.toString())
+        ) as Tour[];
       })
     );
 
-    this.routes$ = this.store.select(selectRouteRoutes).pipe(
+    const routes$ = this.store.select(selectRouteRoutes).pipe(
       map(data =>
         data.reduce(
           (arr, item) => {
@@ -120,25 +167,48 @@ export class TourTopTourComponent implements OnInit {
       )
     );
 
-    combineLatest([this.tours$, this.routes$])
+    this.aggregatedData$ = combineLatest([
+      tours$,
+      routes$,
+      this.sortOrder.valueChanges.pipe(
+        startWith('participantCount'),
+        map(item => item)
+      )
+    ]).pipe(
+      map(data => {
+        if (this.chart) {
+          this.chart.showLoading();
+        }
+
+        return {
+          data: data[0].map(t => {
+            const route = data[1][t.route];
+            return {
+              ...t,
+              route: `${route ? route.name : ''} (${t.date})`,
+              participantCount: t.participants.length,
+              distance: t.participants.length * (route ? route.distance : 0),
+              elevation: t.participants.length * (route ? route.elevation : 0)
+            } as TData;
+          }),
+          sort: data[2]
+        };
+      })
+    );
+
+    this.aggregatedData$
       .pipe(
         map(
           data =>
             this.tableService.applyPaging(
-              this.tableService.applySort(
-                data[0].map(
-                  t =>
-                    ({
-                      ...t,
-                      route: `${(data[1][t.route] || { name: '' }).name} (${
-                        t.date
-                      })`,
-                      participantCount: t.participants.length
-                    } as TData)
-                ),
-                undefined,
-                'participantCount'
-              ),
+              this.tableService.applySort(data.data, undefined, [
+                data.sort,
+                'participantCount',
+                'distance',
+                'elevation',
+                'route',
+                'data'
+              ]),
               undefined,
               10
             ) || []
@@ -155,16 +225,20 @@ export class TourTopTourComponent implements OnInit {
                 {
                   ...this.chartOptions.series[0],
                   data: data.map(d => d.participantCount)
+                },
+                {
+                  ...this.chartOptions.series[1],
+                  data: data.map(d => d.distance)
+                },
+                {
+                  ...this.chartOptions.series[2],
+                  data: data.map(d => d.elevation)
                 }
               ]
             } as Highcharts.Options)
         )
       )
       .subscribe(data => {
-        if (this.chart) {
-          this.chart.showLoading();
-        }
-
         this.chartOptions = data;
 
         if (this.chart) {
