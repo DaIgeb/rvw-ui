@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Sort, PageEvent } from '@angular/material';
+import { isArray } from 'highcharts';
 
 @Injectable({
   providedIn: 'root'
@@ -36,21 +37,30 @@ export class TableService {
     return data.filter((_, idx) => idx >= minIdx && idx < maxIdx);
   }
 
-  applySort<T>(data: T[], sort: Sort, defaultColumn?: string): T[] {
+  applySort<T>(data: T[], sort: Sort, defaultColumn?: string | string[]): T[] {
     if (!data) {
       return data;
     }
     if (data.length > 0) {
-      defaultColumn = defaultColumn || Object.keys(data[0])[0];
-
-      const sortColumn = sort === undefined ? defaultColumn : sort.active;
       const sortDirection = sort === undefined ? 'asc' : sort.direction;
 
-      data.sort((a, b) => {
-        const valueA = a[sortColumn];
-        const valueB = b[sortColumn];
+      const sortColumns: string[] = sort === undefined ? [] : [sort.active];
+      if (isArray(defaultColumn)) {
+        sortColumns.push(...defaultColumn);
+      } else {
+        sortColumns.push( (defaultColumn || Object.keys(data[0])[0]) as string);
+      }
 
-        const comparison = this.compareTo(valueA, valueB);
+      data.sort((a, b) => {
+        let comparison: number;
+        const sortableColumns = [...sortColumns];
+        do {
+          const sortColumn = sortableColumns.splice(0, 1)[0];
+          const valueA = a[sortColumn];
+          const valueB = b[sortColumn];
+
+          comparison = this.compareTo(valueA, valueB);
+        } while (comparison === 0 && sortableColumns.length > 0);
 
         return sortDirection === 'asc' ? comparison : -1 * comparison;
       });

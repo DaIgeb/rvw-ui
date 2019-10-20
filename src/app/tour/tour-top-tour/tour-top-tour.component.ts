@@ -18,6 +18,12 @@ import { Route } from '@app/core/route/route.model';
 import * as Highcharts from 'highcharts';
 import { Chart } from 'highcharts';
 import highcharts3D from 'highcharts/highcharts-3d.src';
+import HC_exporting from 'highcharts/modules/exporting';
+import HC_offlineExporting from 'highcharts/modules/offline-exporting';
+import HC_exportData from 'highcharts/modules/export-data';
+HC_exporting(Highcharts);
+HC_offlineExporting(Highcharts);
+HC_exportData(Highcharts);
 highcharts3D(Highcharts);
 
 type TData = Tour & { participantCount: number };
@@ -27,15 +33,8 @@ type TData = Tour & { participantCount: number };
   templateUrl: './tour-top-tour.component.html',
   styleUrls: ['./tour-top-tour.component.scss']
 })
-export class TourTopTourComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = [
-    'route',
-    'date',
-    'points',
-    'participantCount'
-  ];
-
-  Highcharts: typeof Highcharts = Highcharts; // required
+export class TourTopTourComponent implements OnInit {
+  Highcharts: typeof Highcharts = Highcharts;
   chartOptions: Highcharts.Options = {
     chart: {
       renderTo: 'container',
@@ -43,48 +42,60 @@ export class TourTopTourComponent implements OnInit, AfterViewInit {
       margin: 75,
       options3d: {
         enabled: true,
-        alpha: 15,
-        beta: 15,
+        alpha: 20,
+        beta: 20,
         depth: 50,
         viewDistance: 25
       }
     },
     title: {
-      text: 'Top Tours'
+      text: 'Top Participants'
     },
     plotOptions: {
       column: {
         depth: 25
       }
     },
+    xAxis: {
+      categories: [] as string[],
+      crosshair: true
+    },
+    yAxis: {
+      title: {
+        text: ''
+      }
+    },
+    exporting: {
+      allowHTML: true,
+      sourceWidth: 800,
+      sourceHeight: 320
+    },
     series: [
-      { data: [] }
-    ]
+      {
+        type: 'column',
+        name: 'Top Participants',
+        showInLegend: false,
+        data: [] as number[]
+      }
+    ],
+    credits: {
+      enabled: false
+    }
   }; // required
 
   private chart: Chart;
 
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  currentSort: Sort | undefined;
-  currentPage: PageEvent;
-  resultsLength = 0;
-  isLoadingResults = true;
-  isRateLimitReached = false;
   routes$: Observable<{ [index: string]: Route }>;
   tours$: Observable<Tour[]>;
-  members$: Observable<{ [index: string]: Member }>;
-  data: TData[];
 
   constructor(
     private store: Store<AppState>,
     private tableService: TableService,
     private logger: LoggerService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.store.dispatch(new ActionTourLoad());
-    this.store.dispatch(new ActionMemberLoad());
     this.store.dispatch(new ActionRouteLoad());
 
     this.tours$ = combineLatest([
@@ -96,17 +107,7 @@ export class TourTopTourComponent implements OnInit, AfterViewInit {
         return data[1].filter(item => item.date.startsWith(year.toString()));
       })
     );
-    this.members$ = this.store.select(selectMemberMembers).pipe(
-      map(data =>
-        data.reduce(
-          (arr, item) => {
-            arr[item.id] = item;
-            return arr;
-          },
-          {} as { [index: string]: Member }
-        )
-      )
-    );
+
     this.routes$ = this.store.select(selectRouteRoutes).pipe(
       map(data =>
         data.reduce(
@@ -118,83 +119,61 @@ export class TourTopTourComponent implements OnInit, AfterViewInit {
         )
       )
     );
-  }
 
-  ngAfterViewInit() {
-    this.sort.sortChange.subscribe(() => this.paginator.firstPage());
-    merge<Sort, PageEvent>(this.sort.sortChange, this.paginator.page)
+    combineLatest([this.tours$, this.routes$])
       .pipe(
-        startWith({}),
-        delay(0),
-        switchMap(s => {
-          if (this.tableService.isSort(s)) {
-            this.currentSort = s;
-          } else if (this.tableService.isPage(s)) {
-            this.currentPage = s;
-          }
-
-          this.isLoadingResults = true;
-          return combineLatest([this.tours$, this.members$, this.routes$]).pipe(
-            map(data =>
-              data[0].map(
-                t =>
-                  ({
-                    ...t,
-                    route: (data[2][t.route] || { name: '' }).name,
-                    participantCount: t.participants.length,
-                    participants: t.participants.map(
-                      p => {
-                        const participant = data[1][p] || { lastName: '', firstName: '' };
-                        return `${participant.lastName} ${participant.firstName}`;
-                      }
-                    )
-                  } as TData)
-              )
-            )
-          );
-        }),
-        map((data: TData[]) => {
-          // Flip flag to show that loading has finished.
-          this.isLoadingResults = false;
-          this.isRateLimitReached = false;
-          this.resultsLength = data.length;
-
-          return this.tableService.applyPaging(
-            this.tableService.applySort(data, this.currentSort, 'participantCount'),
-            this.currentPage
-          );
-        }),
-        catchError(err => {
-          this.logger.error(err);
-          this.isLoadingResults = false;
-          this.isRateLimitReached = true;
-          return of([]);
-        })
+        map(
+          data =>
+            this.tableService.applyPaging(
+              this.tableService.applySort(
+                data[0].map(
+                  t =>
+                    ({
+                      ...t,
+                      route: `${(data[1][t.route] || { name: '' }).name} (${
+                        t.date
+                      })`,
+                      participantCount: t.participants.length
+                    } as TData)
+                ),
+                undefined,
+                'participantCount'
+              ),
+              undefined,
+              10
+            ) || []
+        ),
+        map(
+          data =>
+            ({
+              ...this.chartOptions,
+              xAxis: {
+                ...this.chartOptions.xAxis,
+                categories: data.map(d => d.route)
+              },
+              series: [
+                {
+                  ...this.chartOptions.series[0],
+                  data: data.map(d => d.participantCount)
+                }
+              ]
+            } as Highcharts.Options)
+        )
       )
       .subscribe(data => {
         if (this.chart) {
           this.chart.showLoading();
         }
-        if (data) {
-          this.chartOptions = {
-            ...this.chartOptions,
-            series: [
-              {
-                data: data.map(d => d.participantCount)
-              }
-            ]
-          };
-        }
+
+        this.chartOptions = data;
+
         if (this.chart) {
           this.chart.hideLoading();
         }
-        return this.data = data;
-
       });
   }
 
   chartCallback(chart: Chart) {
-    console.error(chart);
     this.chart = chart;
   }
 }
