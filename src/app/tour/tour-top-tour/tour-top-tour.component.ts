@@ -15,6 +15,10 @@ import { selectTourYear, selectTourTours } from '../tour.selectors';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { selectRouteRoutes } from '@app/core/route/route.selectors';
 import { Route } from '@app/core/route/route.model';
+import * as Highcharts from 'highcharts';
+import { Chart } from 'highcharts';
+import highcharts3D from 'highcharts/highcharts-3d.src';
+highcharts3D(Highcharts);
 
 type TData = Tour & { participantCount: number };
 
@@ -30,6 +34,35 @@ export class TourTopTourComponent implements OnInit, AfterViewInit {
     'points',
     'participantCount'
   ];
+
+  Highcharts: typeof Highcharts = Highcharts; // required
+  chartOptions: Highcharts.Options = {
+    chart: {
+      renderTo: 'container',
+      type: 'column',
+      margin: 75,
+      options3d: {
+        enabled: true,
+        alpha: 15,
+        beta: 15,
+        depth: 50,
+        viewDistance: 25
+      }
+    },
+    title: {
+      text: 'Top Tours'
+    },
+    plotOptions: {
+      column: {
+        depth: 25
+      }
+    },
+    series: [
+      { data: [] }
+    ]
+  }; // required
+
+  private chart: Chart;
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -47,7 +80,7 @@ export class TourTopTourComponent implements OnInit, AfterViewInit {
     private store: Store<AppState>,
     private tableService: TableService,
     private logger: LoggerService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.store.dispatch(new ActionTourLoad());
@@ -107,10 +140,13 @@ export class TourTopTourComponent implements OnInit, AfterViewInit {
                 t =>
                   ({
                     ...t,
-                    route: data[2][t.route].name,
+                    route: (data[2][t.route] || { name: '' }).name,
                     participantCount: t.participants.length,
                     participants: t.participants.map(
-                      p => `${data[1][p].lastName} ${data[1][p].firstName}`
+                      p => {
+                        const participant = data[1][p] || { lastName: '', firstName: '' };
+                        return `${participant.lastName} ${participant.firstName}`;
+                      }
                     )
                   } as TData)
               )
@@ -135,6 +171,30 @@ export class TourTopTourComponent implements OnInit, AfterViewInit {
           return of([]);
         })
       )
-      .subscribe(data => (this.data = data));
+      .subscribe(data => {
+        if (this.chart) {
+          this.chart.showLoading();
+        }
+        if (data) {
+          this.chartOptions = {
+            ...this.chartOptions,
+            series: [
+              {
+                data: data.map(d => d.participantCount)
+              }
+            ]
+          };
+        }
+        if (this.chart) {
+          this.chart.hideLoading();
+        }
+        return this.data = data;
+
+      });
+  }
+
+  chartCallback(chart: Chart) {
+    console.error(chart);
+    this.chart = chart;
   }
 }

@@ -15,6 +15,7 @@ import { SharedModule } from '@app/shared/shared.module';
 import { TourHomeComponent } from './tour-home/tour-home.component';
 import { TourTopMemberComponent } from './tour-top-member/tour-top-member.component';
 import { TourTopTourComponent } from './tour-top-tour/tour-top-tour.component';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 @NgModule({
   declarations: [
@@ -30,9 +31,10 @@ import { TourTopTourComponent } from './tour-top-tour/tour-top-tour.component';
     TourRoutingModule,
     CdkTableModule,
     AppMaterialModule,
+    HighchartsChartModule,
     SharedModule,
     StoreModule.forFeature('tour', tourReducer),
     EffectsModule.forFeature([TourEffects])
   ]
 })
-export class TourModule {}
+export class TourModule { }
