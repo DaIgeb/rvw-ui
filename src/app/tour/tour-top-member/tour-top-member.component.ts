@@ -27,7 +27,7 @@ HC_offlineExporting(Highcharts);
 HC_exportData(Highcharts);
 highcharts3D(Highcharts);
 
-type TData = Member & { tours: string; tourCount: number; points: number };
+type TData = Member & { tourCount: number; points: number };
 
 @Component({
   selector: 'rvw-tour-top-member',
@@ -111,8 +111,10 @@ export class TourTopMemberComponent implements OnInit {
 
   private chart: Chart;
 
-  tours$: Observable<{ toursById: { [index: string]: Tour }; tours: Tour[] }>;
-  members$: Observable<Member[]>;
+  aggregatedData$: Observable<{
+    data: TData[];
+    sort: string;
+  }>;
 
   constructor(
     private store: Store<AppState>,
@@ -124,7 +126,7 @@ export class TourTopMemberComponent implements OnInit {
     this.store.dispatch(new ActionTourLoad());
     this.store.dispatch(new ActionMemberLoad());
 
-    this.tours$ = combineLatest([
+    const tours$ = combineLatest([
       this.store.select(selectTourYear),
       this.store.select(selectTourTours)
     ]).pipe(
@@ -146,50 +148,58 @@ export class TourTopMemberComponent implements OnInit {
         };
       })
     );
-    this.members$ = this.store.select(selectMemberMembers);
+    const members$ = this.store.select(selectMemberMembers);
 
-    combineLatest([
-      this.tours$,
-      this.members$,
+    this.aggregatedData$ = combineLatest([
+      tours$,
+      members$,
       this.sortOrder.valueChanges.pipe(
         startWith('points'),
         map(item => item)
       )
-    ])
-      .pipe(
-        map(data => {
-          const toursByMember = data[0].tours.reduce(
-            (prev, cur) => {
-              cur.participants.forEach(
-                p => (prev[p] = [...(prev[p] || []), cur])
-              );
+    ]).pipe(
+      map(data => {
+        const toursByMember = data[0].tours.reduce(
+          (prev, cur) => {
+            cur.participants.forEach(
+              p => (prev[p] = [...(prev[p] || []), cur])
+            );
 
-              return prev;
-            },
-            {} as { [index: string]: Tour[] }
-          );
+            return prev;
+          },
+          {} as { [index: string]: Tour[] }
+        );
 
-          const aggregatedData = data[1].map(m => ({
+        return {
+          data: data[1].map(m => ({
             ...m,
             tourCount: (toursByMember[m.id] || []).length,
             points: (toursByMember[m.id] || []).reduce(
               (prev, cur) => prev + cur.points,
               0
             )
-          }));
+          })),
+          sort: data[2]
+        };
+      })
+    );
 
-          return (
+    this.aggregatedData$
+      .pipe(
+        map(
+          data =>
             this.tableService.applyPaging(
-              this.tableService.applySort(aggregatedData, undefined, [
-                data[2],
+              this.tableService.applySort(data.data, undefined, [
+                data.sort,
                 'points',
-                'tourCount'
+                'tourCount',
+                'lastName',
+                'firstName'
               ]),
               undefined,
               10
             ) || []
-          );
-        }),
+        ),
         map(
           data =>
             ({
