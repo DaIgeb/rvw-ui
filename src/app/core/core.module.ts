@@ -10,7 +10,7 @@ import { environment } from '@env/environment';
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { httpInterceptorProviders } from './http-interceptors';
 
-// import { GoogleAnalyticsEffects } from './google-analytics/google-analytics.effects';
+import { GoogleAnalyticsEffects } from './google-analytics/google-analytics.effects';
 
 import { reducers, metaReducers } from './core.state';
 import { AuthEffects } from './auth/auth.effects';
@@ -34,8 +34,8 @@ import { RouteEffects } from './route/route.effects';
       AuthEffects,
       CurrentUserEffects,
       MemberEffects,
-      RouteEffects
-      //  GoogleAnalyticsEffects
+      RouteEffects,
+      GoogleAnalyticsEffects
     ]),
     environment.production
       ? []
