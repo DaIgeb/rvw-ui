@@ -13,7 +13,7 @@
 
     <mat-form-field>
       <input matInput [matDatepicker]="picker" placeholder="Choose a date" formControlName="date" required />
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker-toggle matSuffix [for]="picker" tabindex=-1></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
       <mat-error *ngIf="date.invalid">{{ getErrorMessage(date) }}</mat-error>
     </mat-form-field>
@@ -23,7 +23,7 @@
         {{ point }}
       </mat-radio-button>
     </mat-radio-group>
-    <mat-error *ngIf="date.invalid">{{ getErrorMessage(date) }}</mat-error>
+    <mat-error *ngIf="points.invalid">{{ getErrorMessage(points) }}</mat-error>
 
     <div formArrayName="participants">
       <div *ngFor="let participant of participants.controls; let i = index" formGroupName="{{ i }}">
@@ -37,7 +37,7 @@
             <mat-option *ngFor="let option of filteredMembers[i] | async" [value]="option">{{ displayMember(option) }}
             </mat-option>
           </mat-autocomplete>
-          <button mat-icon-button type="button" (click)="removeParticipant(i)"><mat-icon>delete</mat-icon></button>
+          <button mat-icon-button type="button" (click)="removeParticipant(i)" tabindex=-1><mat-icon>delete</mat-icon></button>
           <mat-error *ngIf="participant.invalid">{{ getErrorMessage(participant) }}</mat-error>
           <mat-error *ngIf="participants.controls[i].invalid">{{ getErrorMessage(participants.controls[i]) }}</mat-error>
         </div>
