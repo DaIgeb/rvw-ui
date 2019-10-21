@@ -189,12 +189,12 @@ export class TourTopMemberComponent implements OnInit {
         map(
           data =>
             this.tableService.applyPaging(
-              this.tableService.applySort(data.data, undefined, [
-                data.sort,
-                'points',
-                'tourCount',
-                'lastName',
-                'firstName'
+              this.tableService.applySort(data.data, [
+                { active: data.sort, direction: 'desc' },
+                { active: 'points', direction: 'desc' },
+                { active: 'tourCount', direction: 'desc' },
+                { active: 'lastName', direction: 'desc' },
+                { active: 'firstName', direction: 'desc' }
               ]),
               undefined,
               10

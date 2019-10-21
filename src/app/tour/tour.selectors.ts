@@ -25,3 +25,10 @@ export const selectTourYear = createSelector(
   selectTourState,
   state => state.year
 );
+
+
+export const selectTourListSort = createSelector(
+  selectTourState,
+  state => state.list.sort
+);
+

@@ -37,32 +37,31 @@ export class TableService {
     return data.filter((_, idx) => idx >= minIdx && idx < maxIdx);
   }
 
-  applySort<T>(data: T[], sort: Sort, defaultColumn?: string | string[]): T[] {
+  applySort<T>(data: T[], sort: Sort | Sort[]): T[] {
     if (!data) {
       return data;
     }
     if (data.length > 0) {
-      const sortDirection = sort === undefined ? 'asc' : sort.direction;
-
-      const sortColumns: string[] = sort === undefined ? [] : [sort.active];
-      if (isArray(defaultColumn)) {
-        sortColumns.push(...defaultColumn);
-      } else {
-        sortColumns.push( (defaultColumn || Object.keys(data[0])[0]) as string);
-      }
+      const sortColumns: Sort[] =
+        sort === undefined
+          ? []
+          : isArray(sort)
+          ? (sort as Sort[])
+          : [sort as Sort];
 
       data.sort((a, b) => {
         let comparison: number;
+        let sortColumn: Sort;
         const sortableColumns = [...sortColumns];
         do {
-          const sortColumn = sortableColumns.splice(0, 1)[0];
-          const valueA = a[sortColumn];
-          const valueB = b[sortColumn];
+          sortColumn = sortableColumns.splice(0, 1)[0];
+          const valueA = a[sortColumn.active];
+          const valueB = b[sortColumn.active];
 
           comparison = this.compareTo(valueA, valueB);
         } while (comparison === 0 && sortableColumns.length > 0);
 
-        return sortDirection === 'asc' ? comparison : -1 * comparison;
+        return sortColumn.direction === 'asc' ? comparison : -1 * comparison;
       });
 
       return data;
@@ -79,9 +78,9 @@ export class TableService {
     }
 
     if (a < b) {
-      return 1;
+      return -1;
     }
 
-    return -1;
-  };
+    return 1;
+  }
 }

@@ -1,22 +1,25 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { merge, of as observableOf, Observable } from 'rxjs';
-import { startWith, switchMap, map, catchError, delay } from 'rxjs/operators';
+import { merge, of as observableOf, Observable, timer, combineLatest } from 'rxjs';
+import { startWith, switchMap, map, catchError, delay, debounce } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { selectRouteRoutes } from '../../core/route/route.selectors';
 import { Route } from '@app/core/route/route.model';
-import { ActionRouteLoad, ActionRouteSave } from '@app/core/route/route.actions';
+import {
+  ActionRouteLoad,
+  ActionRouteSave
+} from '@app/core/route/route.actions';
 import { Router } from '@angular/router';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import * as papa from 'papaparse';
 import { LoggerService } from '@app/core/logger.service';
 import { TableService } from '@app/shared/table.service';
 
 @Component({
   templateUrl: './route-list.component.html',
-  styleUrls: ['./route-list.component.css']
+  styleUrls: ['./route-list.component.scss']
 })
 export class RouteListComponent implements AfterViewInit, OnInit {
   displayedColumns: string[] = ['name', 'elevation', 'distance', 'action'];
@@ -24,7 +27,12 @@ export class RouteListComponent implements AfterViewInit, OnInit {
   data: Route[] = [];
   data$: Observable<Route[]>;
 
-  fileControl = new FormControl();
+  private filter = new FormControl('');
+  private filter$: Observable<string>;
+
+  formGroup = new FormGroup({
+    filter: this.filter
+  });
 
   resultsLength = 0;
   isLoadingResults = true;
@@ -44,6 +52,12 @@ export class RouteListComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.store.dispatch(new ActionRouteLoad());
+
+    this.filter$ = this.filter.valueChanges.pipe(
+      startWith(''),
+      debounce(() => timer(500)),
+      map(s => s.toLocaleLowerCase())
+    );
   }
 
   ngAfterViewInit() {
@@ -63,7 +77,12 @@ export class RouteListComponent implements AfterViewInit, OnInit {
 
           this.isLoadingResults = true;
 
-          return this.store.select(selectRouteRoutes);
+          return combineLatest([
+            this.store.select(selectRouteRoutes),
+            this.filter$
+          ]).pipe(
+            map(data => data[0].filter(i => i.name.toLocaleLowerCase().indexOf(data[1]) !== -1))
+          );
         }),
         map(data => {
           // Flip flag to show that loading has finished.
@@ -72,7 +91,10 @@ export class RouteListComponent implements AfterViewInit, OnInit {
           this.resultsLength = data.length;
 
           return this.tableService.applyPaging(
-            this.tableService.applySort(data, this.currentSort, 'firstName'),
+            this.tableService.applySort(data, this.currentSort || {
+              active: 'firstName',
+              direction: 'asc'
+            }),
             this.currentPage
           );
         }),

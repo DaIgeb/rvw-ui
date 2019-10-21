@@ -1,4 +1,5 @@
 import { AppState } from '@app/core';
+import { Sort } from '@angular/material/sort';
 
 export interface Tour {
   id?: string;
@@ -13,6 +14,9 @@ export interface TourState {
   year: number;
   loading: boolean;
   loaded: boolean;
+  list: {
+    sort: Sort[];
+  };
 }
 
 export interface State extends AppState {

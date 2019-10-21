@@ -1,1 +1,31 @@
-<p>member-edit works!</p>
+<div class="container">
+  <form [formGroup]="formGroup" (ngSubmit)="save()" class="form">
+    <mat-form-field>
+      <input matInput placeholder="First Name" formControlName="firstName" required minlength="3" />
+      <mat-error *ngIf="firstName.invalid">{{ getErrorMessage(firstName) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="Last Name" formControlName="lastName" required minlength="3" />
+      <mat-error *ngIf="lastName.invalid">{{ getErrorMessage(lastName) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput type="email" placeholder="Email" formControlName="email" required />
+      <mat-error *ngIf="email.invalid">{{ getErrorMessage(email) }}</mat-error>
+    </mat-form-field>
+
+    <div class="button">
+      <div class="spacer"></div>
+      <button mat-button type="submit" [disabled]="
+          formGroup.invalid || formGroup.pristine
+        " color="primary">
+        Submit
+      </button>
+
+      <button mat-button type="button" [disabled]="formGroup.pristine" (click)="reset()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

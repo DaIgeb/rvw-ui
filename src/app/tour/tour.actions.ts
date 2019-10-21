@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Tour } from './tour.model';
+import { Sort } from '@angular/material/sort';
 
 export enum TourActionTypes {
   LOAD = '[Tour] Load',
@@ -8,7 +9,14 @@ export enum TourActionTypes {
   SAVE = '[Tour] Save',
   SAVE_SUCCESS = '[Tour] Save Success',
   SAVE_FAILURE = '[Tour] Save Failure',
-  SET_YEAR = '[Tour] Set Year'
+  SET_YEAR = '[Tour] Set Year',
+  SAVE_LIST_SORT = '[Tour] Save list sort'
+}
+
+export class ActionTourSaveListSort implements Action {
+  readonly type = TourActionTypes.SAVE_LIST_SORT;
+
+  constructor(public payload: Sort) {}
 }
 
 export class ActionTourSetYear implements Action {
@@ -58,4 +66,5 @@ export type TourActions =
   | ActionTourSave
   | ActionTourSaveSuccess
   | ActionTourSaveFailure
-  | ActionTourSetYear;
+  | ActionTourSetYear
+  | ActionTourSaveListSort;

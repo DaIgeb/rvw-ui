@@ -5,8 +5,8 @@ import {
   ActionMemberLoad
 } from '@app/core/member/member.actions';
 import { Member } from '@app/core/member/member.model';
-import { Observable, of, merge } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { Observable, of, merge, timer, combineLatest } from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Store, select } from '@ngrx/store';
@@ -15,7 +15,14 @@ import { LoggerService } from '@app/core/logger.service';
 import { Router } from '@angular/router';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import { map, startWith, switchMap, tap, delay } from 'rxjs/operators';
+import {
+  map,
+  startWith,
+  switchMap,
+  tap,
+  delay,
+  debounce
+} from 'rxjs/operators';
 import { TableService } from '@app/shared/table.service';
 
 @Component({
@@ -29,7 +36,12 @@ export class MemberListComponent implements OnInit, AfterViewInit {
   data: Member[] = [];
   data$: Observable<Member[]>;
 
-  fileControl = new FormControl();
+  private filter = new FormControl('');
+  private filter$: Observable<string>;
+
+  formGroup = new FormGroup({
+    filter: this.filter
+  });
 
   resultsLength = 0;
   isLoadingResults = true;
@@ -49,6 +61,12 @@ export class MemberListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.store.dispatch(new ActionMemberLoad());
+
+    this.filter$ = this.filter.valueChanges.pipe(
+      startWith(''),
+      debounce(() => timer(500)),
+      map(s => s.toLocaleLowerCase())
+    );
   }
 
   ngAfterViewInit() {
@@ -65,7 +83,14 @@ export class MemberListComponent implements OnInit, AfterViewInit {
           }
 
           this.isLoadingResults = true;
-          return this.store.select(selectMemberMembers);
+          return combineLatest([
+            this.store.select(selectMemberMembers),
+            this.filter$
+          ]).pipe(
+            map(data => data[0].filter(i => i.email.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
+              i.lastName.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
+              i.firstName.toLocaleLowerCase().indexOf(data[1]) !== -1))
+          );
         }),
         map(data => {
           // Flip flag to show that loading has finished.
@@ -74,7 +99,13 @@ export class MemberListComponent implements OnInit, AfterViewInit {
           this.resultsLength = data.length;
 
           return this.tableService.applyPaging(
-            this.tableService.applySort(data, this.currentSort, 'firstName'),
+            this.tableService.applySort(
+              data,
+              this.currentSort || {
+                active: 'firstName',
+                direction: 'asc'
+              }
+            ),
             this.currentPage
           );
         }),

@@ -1,17 +1,24 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Observable, of, merge, forkJoin, timer, combineLatest } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { Observable, of, combineLatest, timer } from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { LoggerService } from '@app/core/logger.service';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import { map, startWith, switchMap, concatMap, tap, delay } from 'rxjs/operators';
-import { selectTourTours } from '../tour.selectors';
+import {
+  map,
+  startWith,
+  switchMap,
+  tap,
+  delay,
+  debounce
+} from 'rxjs/operators';
+import { selectTourTours, selectTourListSort } from '../tour.selectors';
 import { Tour } from '../tour.model';
-import { ActionTourLoad, ActionTourSave } from '../tour.actions';
+import { ActionTourLoad, ActionTourSaveListSort } from '../tour.actions';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { Member } from '@app/core/member/member.model';
 import { selectRouteRoutes } from '@app/core/route/route.selectors';
@@ -37,7 +44,13 @@ export class TourListComponent implements OnInit, AfterViewInit {
   data: Tour[] = [];
   data$: Observable<Tour[]>;
 
-  fileControl = new FormControl();
+  private sort$: Observable<Sort[]>;
+  private filter = new FormControl('');
+  private filter$: Observable<string>;
+
+  formGroup = new FormGroup({
+    filter: this.filter
+  });
 
   resultsLength = 0;
   isLoadingResults = true;
@@ -50,7 +63,6 @@ export class TourListComponent implements OnInit, AfterViewInit {
 
   constructor(
     private store: Store<AppState>,
-    private route: Router,
     private logger: LoggerService,
     private tableService: TableService
   ) {}
@@ -59,6 +71,27 @@ export class TourListComponent implements OnInit, AfterViewInit {
     this.store.dispatch(new ActionTourLoad());
     this.store.dispatch(new ActionMemberLoad());
     this.store.dispatch(new ActionRouteLoad());
+
+    this.sort$ = this.store.select(selectTourListSort);
+
+    this.sort$.subscribe(s => {
+      if (
+        this.sort.active !== s[0].active ||
+        this.sort.direction !== s[0].direction
+      ) {
+        this.sort.sort({
+          id: s[0].active,
+          start: s[0].direction || 'asc',
+          disableClear: true
+        });
+      }
+    });
+
+    this.filter$ = this.filter.valueChanges.pipe(
+      startWith(''),
+      debounce(() => timer(500)),
+      map(s => s.toLocaleLowerCase())
+    );
   }
 
   ngAfterViewInit() {
@@ -86,20 +119,20 @@ export class TourListComponent implements OnInit, AfterViewInit {
       )
     );
 
-    this.sort.sortChange.subscribe(() => this.paginator.firstPage());
-    merge<Sort, PageEvent>(this.sort.sortChange, this.paginator.page)
+    this.sort.sortChange
+      .pipe(tap(s => this.store.dispatch(new ActionTourSaveListSort(s))))
+      .subscribe(() => this.paginator.firstPage());
+    this.paginator.page
       .pipe(
         startWith({}),
         delay(0),
         switchMap(s => {
-          if (this.tableService.isSort(s)) {
-            this.currentSort = s;
-          } else if (this.tableService.isPage(s)) {
+          if (this.tableService.isPage(s)) {
             this.currentPage = s;
           }
 
           this.isLoadingResults = true;
-          return combineLatest([tours$, members$, routes$]).pipe(
+          const combineData = combineLatest([tours$, members$, routes$]).pipe(
             map(data =>
               data[0].map(item => ({
                 ...item,
@@ -119,6 +152,21 @@ export class TourListComponent implements OnInit, AfterViewInit {
               }))
             )
           );
+          const filteredData = combineLatest([combineData, this.filter$]).pipe(
+            map(data =>
+              data[0].filter(
+                i =>
+                  i.date.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
+                  i.route.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
+                  i.participants.some(
+                    p => p.toLocaleLowerCase().indexOf(data[1]) !== -1
+                  )
+              )
+            )
+          );
+          return combineLatest([filteredData, this.sort$]).pipe(
+            map(data => this.tableService.applySort(data[0], data[1]) || [])
+          );
         }),
         map(data => {
           // Flip flag to show that loading has finished.
@@ -126,10 +174,7 @@ export class TourListComponent implements OnInit, AfterViewInit {
           this.isRateLimitReached = false;
           this.resultsLength = data.length;
 
-          return this.tableService.applyPaging(
-            this.tableService.applySort(data, this.currentSort, 'firstName'),
-            this.currentPage
-          );
+          return this.tableService.applyPaging(data, this.currentPage);
         }),
         catchError(err => {
           this.logger.error(err);

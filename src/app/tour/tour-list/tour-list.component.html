@@ -11,14 +11,17 @@
   </mat-card-header>
   <mat-card-content>
     <div class="table-container">
+        <mat-form-field [formGroup]="formGroup">
+            <input matInput formControlName="filter" placeholder="Filter" />
+          </mat-form-field>
       <table
         mat-table
         [dataSource]="data"
         class="table"
         matSort
-        matSortActive="route"
+        matSortActive="date"
         matSortDisableClear
-        matSortDirection="asc"
+        matSortDirection="desc"
       >
         <!-- Number Column -->
         <ng-container matColumnDef="id">

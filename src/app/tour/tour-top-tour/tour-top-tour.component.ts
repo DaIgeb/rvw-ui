@@ -119,7 +119,7 @@ export class TourTopTourComponent implements OnInit {
   private chart: Chart;
 
   columns = [
-    { name: 'Points', column: 'participantCount' },
+    { name: 'Participants', column: 'participantCount' },
     { name: 'Distance', column: 'distance' },
     { name: 'Elevation', column: 'elevation' }
   ];
@@ -172,7 +172,7 @@ export class TourTopTourComponent implements OnInit {
       routes$,
       this.sortOrder.valueChanges.pipe(
         startWith('participantCount'),
-        map(item => item)
+        map(item => item as string)
       )
     ]).pipe(
       map(data => {
@@ -201,13 +201,13 @@ export class TourTopTourComponent implements OnInit {
         map(
           data =>
             this.tableService.applyPaging(
-              this.tableService.applySort(data.data, undefined, [
-                data.sort,
-                'participantCount',
-                'distance',
-                'elevation',
-                'route',
-                'data'
+              this.tableService.applySort(data.data, [
+                { active: data.sort, direction: 'desc' },
+                { active: 'participantCount', direction: 'desc' },
+                { active: 'distance', direction: 'desc' },
+                { active: 'elevation', direction: 'desc' },
+                { active: 'route', direction: 'desc' },
+                { active: 'data', direction: 'desc' }
               ]),
               undefined,
               10

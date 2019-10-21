@@ -20,6 +20,15 @@ import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { selectTourToursTour } from '../tour.selectors';
 import { ActionMemberLoad } from '@app/core/member/member.actions';
 import { ActionRouteLoad } from '@app/core/route/route.actions';
+import {
+  MAT_MOMENT_DATE_FORMATS,
+  MomentDateAdapter
+} from '@angular/material-moment-adapter';
+import {
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE
+} from '@angular/material/core';
 
 function arrayValidation(
   validationFn: (item: any) => boolean,
@@ -35,9 +44,19 @@ function arrayValidation(
   };
 }
 
+import * as moment from 'moment';
+
 @Component({
   templateUrl: './tour-edit.component.html',
-  styleUrls: ['./tour-edit.component.scss']
+  styleUrls: ['./tour-edit.component.scss'],
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE]
+    },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS }
+  ]
 })
 export class TourEditComponent implements OnInit, OnDestroy {
   private currentTourSubscription: Subscription;
@@ -50,7 +69,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
   pointsOptions = [15, 20, 40, 80, 150];
 
   route = new FormControl('', [Validators.required, Validators.minLength(3)]);
-  date = new FormControl('', [Validators.required]);
+  date = new FormControl(moment(), [Validators.required]);
   points = new FormControl('', [Validators.required]);
   participants = new FormArray(
     [this.createParticipant()],
@@ -126,7 +145,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
   reset() {
     if (!this.tour) {
       this.currentTourFormGroup.patchValue({
-        date: new Date().toISOString(),
+        date: moment(),
         route: '',
         points: 15,
         participants: []
@@ -137,7 +156,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
       }
       this.currentTourFormGroup.patchValue(
         {
-          date: this.tour.date,
+          date: moment(this.tour.date),
           route: this.routes.find(r => r.id === this.tour.route),
           points: this.tour.points,
           participants: this.tour.participants.map(p => ({
@@ -242,10 +261,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
       new ActionTourSave({
         id: this.tour ? this.tour.id : undefined,
         route: this.route.value.id,
-        date: (typeof this.date.value === 'string'
-          ? this.date.value
-          : this.date.value.toISOString()
-        ).slice(0, 10),
+        date: moment(this.date.value).format('YYYY-MM-DD'),
         points: this.points.value,
         participants: this.participants.value
           .filter(p => p.participant)

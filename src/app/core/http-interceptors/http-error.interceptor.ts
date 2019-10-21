@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError, retry } from 'rxjs/operators';
+import { environment } from '@env/environment';
 
 /** Passes HttpErrorResponse to application-wide error handler */
 @Injectable()
@@ -27,11 +28,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           errorMessage = `Error: ${error.error.message}`;
         } else {
           // server-side error
-          errorMessage = `Error Code: ${error.status}\nMessage: ${
-            error.message
-          }`;
+          errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
         }
-        window.alert(errorMessage);
+        if (!environment.production) {
+          window.alert(errorMessage);
+        }
         return throwError(errorMessage);
       })
     );
