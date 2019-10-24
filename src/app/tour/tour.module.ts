@@ -16,6 +16,7 @@ import { TourHomeComponent } from './tour-home/tour-home.component';
 import { TourTopMemberComponent } from './tour-top-member/tour-top-member.component';
 import { TourTopTourComponent } from './tour-top-tour/tour-top-tour.component';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { ByDateComponent } from './by-date/by-date.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     TourEditComponent,
     TourHomeComponent,
     TourTopMemberComponent,
-    TourTopTourComponent
+    TourTopTourComponent,
+    ByDateComponent
   ],
   imports: [
     CommonModule,
