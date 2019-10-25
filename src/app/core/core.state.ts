@@ -3,8 +3,11 @@ import {
   MetaReducer,
   createFeatureSelector
 } from '@ngrx/store';
-// import { routerReducer, RouterReducerState } from '@ngrx/router-store';
-// import { storeFreeze } from 'ngrx-store-freeze';
+
+import { createMiddleware, createMetaReducer } from 'redux-beacon';
+import GoogleAnalyticsGtag, { trackEvent, trackPageView } from '@redux-beacon/google-analytics-gtag';
+
+import logger from '@redux-beacon/logger'; // optional
 
 import { environment } from '@env/environment';
 
@@ -18,18 +21,41 @@ import { memberReducer } from './member/member.reducer';
 import { MemberState } from './member/member.model';
 import { routeReducer } from '@app/core/route/route.reducer';
 import { RouteState } from '@app/core/route/route.model';
-// import { RouterStateUrl } from './router/router.state';
+
+import { ROUTER_NAVIGATION, routerReducer, RouterReducerState } from '@ngrx/router-store';
+
+// Create or import an events map.
+// See "getting started" pages for instructions.
+const trackingId = 'UA-150593477-1';
+const ga = GoogleAnalyticsGtag(trackingId);
+
+const eventsMap = {
+  [ROUTER_NAVIGATION]: trackPageView(action => ({
+    path: action.payload.routerState.url,
+  })),
+  '*': trackEvent(action => ({
+    category: 'redux',
+    action: action.type,
+  })),
+}
+
+const gaMetaReducer = createMetaReducer(eventsMap, ga);
 
 export const reducers: ActionReducerMap<AppState> = {
   auth: authReducer,
   currentUser: currentUserReducer,
   member: memberReducer,
-  route: routeReducer
-  // router: routerReducer
+  route: routeReducer,
+  router: routerReducer
 };
 
+export function analyticsMetaReducer(reducer) {
+  return gaMetaReducer(reducer);
+}
+
 export const metaReducers: MetaReducer<AppState>[] = [
-  initStateFromLocalStorage
+  initStateFromLocalStorage,
+  analyticsMetaReducer
 ];
 if (!environment.production) {
   // metaReducers.unshift(storeFreeze);
@@ -56,5 +82,5 @@ export interface AppState {
   currentUser: CurrentUserState;
   member: MemberState;
   route: RouteState;
-//  router: RouterReducerState<RouterStateUrl>;
+  router: RouterReducerState<any>;
 }

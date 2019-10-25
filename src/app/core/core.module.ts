@@ -4,13 +4,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 import { environment } from '@env/environment';
 
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { httpInterceptorProviders } from './http-interceptors';
-
-import { GoogleAnalyticsEffects } from './google-analytics/google-analytics.effects';
 
 import { reducers, metaReducers } from './core.state';
 import { AuthEffects } from './auth/auth.effects';
@@ -29,19 +28,18 @@ import { RouteEffects } from './route/route.effects';
     ReactiveFormsModule,
     AppMaterialModule,
     StoreModule.forRoot(reducers, { metaReducers }),
-    // StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([
       AuthEffects,
       CurrentUserEffects,
       MemberEffects,
-      RouteEffects,
-      GoogleAnalyticsEffects
+      RouteEffects
     ]),
     environment.production
       ? []
       : StoreDevtoolsModule.instrument({
-          name: 'RVW - Apps'
-        })
+        name: 'RVW - Apps'
+      }),
+    StoreRouterConnectingModule.forRoot()
   ],
   exports: [EditProfileComponent],
   providers: [httpInterceptorProviders]

@@ -20,7 +20,8 @@ export const environment: TEnvironment = {
   },
   log: {
     level: 'log'
-  }
+  },
+  analytics: 'UA-150593477-1'
 };
 
 /*

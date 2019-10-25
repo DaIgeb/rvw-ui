@@ -16,5 +16,6 @@ export const environment: TEnvironment = {
   },
   log: {
     level: 'error'
-  }
+  },
+  analytics: 'UA-150593477-1'
 };

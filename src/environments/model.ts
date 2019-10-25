@@ -17,4 +17,5 @@ export type TEnvironment = {
   log: {
     level: TLogLevel;
   };
+  analytics: string;
 };
