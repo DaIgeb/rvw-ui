@@ -41,5 +41,5 @@ export class MemberService {
       .getConfig()
       .pipe(switchMap(c => this.http.get<Member[]>(c.membersUrl)))
       .pipe(tap(i => this.logger.log('Members: ' + JSON.stringify(i, null, 2))));
-  };
+  }
 }

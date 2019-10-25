@@ -1,10 +1,10 @@
-import { TEnvironment } from './model';
+import { Environment } from './model';
 
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment: TEnvironment = {
+export const environment: Environment = {
   production: false,
   test: true,
   auth: {

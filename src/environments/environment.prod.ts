@@ -1,6 +1,6 @@
-import { TEnvironment } from './model';
+import { Environment } from './model';
 
-export const environment: TEnvironment = {
+export const environment: Environment = {
   production: true,
   test: false,
   auth: {

@@ -48,7 +48,7 @@ export class TourTopTourComponent implements OnInit {
   ];
 
   aggregatedData$: Observable<TData[]>;
-  
+
   constructor(
     private store: Store<AppState>,
     private tableService: TableService,
@@ -58,7 +58,7 @@ export class TourTopTourComponent implements OnInit {
   ngOnInit() {
     this.store.dispatch(new ActionTourLoad());
     this.store.dispatch(new ActionRouteLoad());
-  
+
     const tours$ = combineLatest([
       this.store.select(selectTourYear),
       this.store.select(selectTourTours)
@@ -89,16 +89,16 @@ export class TourTopTourComponent implements OnInit {
     ]).pipe(
       map(data => {
         return data[0].map(t => {
-            const route = data[1][t.route];
-            return {
-              ...t,
-              display: route ? route.name : '',
-              route: `${route ? route.name : ''} (${t.date})`,
-              participantCount: t.participants.length,
-              distance: t.participants.length * (route ? route.distance : 0),
-              elevation: t.participants.length * (route ? route.elevation : 0)
-            } as TData;
-          });
+          const route = data[1][t.route];
+          return {
+            ...t,
+            display: route ? route.name : '',
+            route: `${route ? route.name : ''} (${t.date})`,
+            participantCount: t.participants.length,
+            distance: t.participants.length * (route ? route.distance : 0),
+            elevation: t.participants.length * (route ? route.elevation : 0)
+          } as TData;
+        });
       })
     );
   }

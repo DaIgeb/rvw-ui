@@ -17,10 +17,10 @@ HC_offlineExporting(Highcharts);
 HC_exportData(Highcharts);
 highcharts3D(Highcharts);
 
-type TData = {
+interface Data {
   display: string;
   [index: string]: any;
-};
+}
 
 @Component({
   selector: 'rvw-chart',
@@ -64,21 +64,21 @@ export class ChartComponent implements OnInit {
   formGroup = new FormGroup({ sortOrder: this.sortOrder });
 
   @Input()
-  data: Observable<TData[]>;
+  data: Observable<Data[]>;
 
   @Input()
   title: string;
 
   @Input()
-  type?: string = 'column';
+  type?= 'column';
 
   @Input()
-  enable3d?: boolean = true;
+  enable3d?= true;
 
   @Input()
-  columns: { name: string; column: string; }[] = []
+  columns: { name: string; column: string; }[] = [];
 
-  aggregatedData: TData[];
+  aggregatedData: Data[];
 
   private chart: Chart;
 
@@ -171,7 +171,7 @@ export class ChartComponent implements OnInit {
     element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(content)}`);
     element.setAttribute('download', 'data.csv');
 
-    var event = new MouseEvent("click");
+    const event = new MouseEvent('click');
     element.dispatchEvent(event);
   }
 }

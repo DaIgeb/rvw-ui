@@ -1,6 +1,6 @@
 import { TLogLevel } from '@app/core/logger.model';
 
-export type TEnvironment = {
+export interface Environment {
   production: boolean;
   test: boolean;
   auth: {
@@ -18,4 +18,4 @@ export type TEnvironment = {
     level: TLogLevel;
   };
   analytics: string;
-};
+}

@@ -1,23 +1,32 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActionTourLoad } from '../tour.actions';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { ActionMemberLoad } from '@app/core/member/member.actions';
 import { ActionRouteLoad } from '@app/core/route/route.actions';
-import { MatPaginator, MatSort, Sort, PageEvent } from '@angular/material';
 import { selectTourTours, selectTourYear } from '../tour.selectors';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
-import { delay, map, startWith, switchMap, catchError, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Member } from '@app/core/member/member.model';
 import { selectRouteRoutes } from '@app/core/route/route.selectors';
-import { merge, combineLatest, of, Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { TableService } from '@app/shared/table.service';
 import { Route } from '@app/core/route/route.model';
 import { Tour } from '../tour.model';
 import { LoggerService } from '@app/core/logger.service';
 
-type TAggregatedData = { firstName: string, lastName: string, email: string, distance: number, elevation: number, tourCount: number; points: number };
-type TData = Member & TAggregatedData;
+interface AggregatedData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  distance: number;
+  elevation: number;
+  tourCount: number;
+  points: number;
+}
+interface Data extends Member, AggregatedData {
+
+}
 
 @Component({
   selector: 'rvw-tour-top-member',
@@ -33,14 +42,11 @@ export class TourTopMemberComponent implements OnInit {
     { name: 'Elevation', column: 'elevation' }
   ];
 
-  aggregatedData$: Observable<TData[]>;
-  aggregatedData: TData[];
+  aggregatedData$: Observable<Data[]>;
+  aggregatedData: Data[];
 
   constructor(
-    private store: Store<AppState>,
-    private tableService: TableService,
-    private logger: LoggerService
-  ) { }
+    private store: Store<AppState>  ) { }
 
   ngOnInit() {
     this.store.dispatch(new ActionTourLoad());
@@ -87,11 +93,13 @@ export class TourTopMemberComponent implements OnInit {
         const toursByMember = data[0].tours.reduce(
           (prev, cur) => {
             cur.participants.forEach(
-              p => (prev[p] = [...(prev[p] || []), { ...cur, r2: data[2][cur.route] || {
-                distance: 0,
-                elevation: 0,
-                name: ''
-              } }])
+              p => (prev[p] = [...(prev[p] || []), {
+                ...cur, r2: data[2][cur.route] || {
+                  distance: 0,
+                  elevation: 0,
+                  name: ''
+                }
+              }])
             );
 
             return prev;
@@ -99,18 +107,18 @@ export class TourTopMemberComponent implements OnInit {
           {} as { [index: string]: (Tour & { r2: Route })[] }
         );
 
-        return  data[1].map(m => {
-            const tours = toursByMember[m.id] || [];
-            return ({
-              firstName: m.firstName,
-              lastName: m.lastName,
-              email: m.email,
-              tourCount: (tours).length,
-              points: (tours).reduce((prev, cur) => prev + cur.points, 0),
-              distance: tours.reduce((prev, cur) => prev + cur.r2.distance, 0),
-              elevation: tours.reduce((prev, cur) => prev + cur.r2.elevation, 0)
-            });
-          })        ;
+        return data[1].map(m => {
+          const tours = toursByMember[m.id] || [];
+          return ({
+            firstName: m.firstName,
+            lastName: m.lastName,
+            email: m.email,
+            tourCount: (tours).length,
+            points: (tours).reduce((prev, cur) => prev + cur.points, 0),
+            distance: tours.reduce((prev, cur) => prev + cur.r2.distance, 0),
+            elevation: tours.reduce((prev, cur) => prev + cur.r2.elevation, 0)
+          });
+        });
       })
     );
 

@@ -37,7 +37,7 @@ const eventsMap = {
     category: 'redux',
     action: action.type,
   })),
-}
+};
 
 const gaMetaReducer = createMetaReducer(eventsMap, ga);
 
