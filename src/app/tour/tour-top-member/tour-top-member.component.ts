@@ -10,15 +10,18 @@ import { map } from 'rxjs/operators';
 import { Member } from '@app/core/member/member.model';
 import { selectRouteRoutes } from '@app/core/route/route.selectors';
 import { combineLatest, Observable } from 'rxjs';
-import { TableService } from '@app/shared/table.service';
 import { Route } from '@app/core/route/route.model';
 import { Tour } from '../tour.model';
-import { LoggerService } from '@app/core/logger.service';
 
 interface AggregatedData {
   firstName: string;
   lastName: string;
-  email: string;
+  email?: string;
+  address?: string;
+  zipCode?: number;
+  city?: string;
+  enlistment?: string;
+  gender?: 'female' | 'male' | 'unkown';
   distance: number;
   elevation: number;
   tourCount: number;

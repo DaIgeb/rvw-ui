@@ -20,15 +20,6 @@ import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { selectTourToursTour } from '../tour.selectors';
 import { ActionMemberLoad } from '@app/core/member/member.actions';
 import { ActionRouteLoad } from '@app/core/route/route.actions';
-import {
-  MAT_MOMENT_DATE_FORMATS,
-  MomentDateAdapter
-} from '@angular/material-moment-adapter';
-import {
-  DateAdapter,
-  MAT_DATE_FORMATS,
-  MAT_DATE_LOCALE
-} from '@angular/material/core';
 
 function arrayValidation(
   validationFn: (item: any) => boolean,
@@ -49,14 +40,6 @@ import * as moment from 'moment';
 @Component({
   templateUrl: './tour-edit.component.html',
   styleUrls: ['./tour-edit.component.scss'],
-  providers: [
-    {
-      provide: DateAdapter,
-      useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE]
-    },
-    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS }
-  ]
 })
 export class TourEditComponent implements OnInit, OnDestroy {
   private currentTourSubscription: Subscription;
