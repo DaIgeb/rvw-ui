@@ -21,7 +21,7 @@ interface AggregatedData {
   zipCode?: number;
   city?: string;
   enlistment?: string;
-  gender?: 'female' | 'male' | 'unkown';
+  gender?: 'female' | 'male' | 'unknown';
   distance: number;
   elevation: number;
   tourCount: number;

@@ -112,16 +112,16 @@ export class ChartComponent implements OnInit {
           data =>
             ({
               ...this.chartOptions,
-              options3d: this.enable3d ? {
-                enabled: true,
-                alpha: 20,
-                beta: 20,
-                depth: 50,
-                viewDistance: 25
-              } : {},
               chart: {
                 ...this.chartOptions.chart,
-                type: this.type
+                type: this.type,
+                options3d: this.enable3d ? {
+                  enabled: true,
+                  alpha: 20,
+                  beta: 20,
+                  depth: 50,
+                  viewDistance: 25
+                } : {}
               },
               title: {
                 text: this.title
