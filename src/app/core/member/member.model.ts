@@ -9,7 +9,7 @@ export interface Member {
   zipCode?: number;
   city?: string;
   enlistment?: string;
-  gender?: 'female' | 'male' | 'unkown';
+  gender?: 'female' | 'male' | 'unknown';
 }
 
 export interface MemberState {

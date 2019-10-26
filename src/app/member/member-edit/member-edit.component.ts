@@ -86,7 +86,7 @@ export class MemberEditComponent implements OnInit {
         zipCode: '',
         city: '',
         enlistment: moment(),
-        gender: 'unkown'
+        gender: 'unknown'
       });
     } else {
       this.formGroup.patchValue(
