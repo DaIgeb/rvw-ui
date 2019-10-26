@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormControl,
-  Validators,
-  FormGroup
-} from '@angular/forms';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { ActivatedRoute } from '@angular/router';
@@ -51,16 +47,16 @@ export class MemberEditComponent implements OnInit {
   currentMember$: Observable<Member>;
   member: Member;
 
-  genderOptions= [
-    {value: 'male', label: 'Male'},
-    {value: 'female', label: 'Female'},
-    {value: 'unknown', label: 'Unknown'}
-  ]
+  genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'unknown', label: 'Unknown' }
+  ];
 
   constructor(
     private store: Store<AppState>,
     private tourSnapshot: ActivatedRoute
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.store.dispatch(new ActionMemberLoad());
@@ -115,7 +111,9 @@ export class MemberEditComponent implements OnInit {
         address: this.address.value,
         zipCode: this.zipCode.value,
         city: this.city.value,
-        enlistment: this.enlistment.value ? moment(this.enlistment.value).format('YYYY-MM-DD') : undefined,
+        enlistment: this.enlistment.value
+          ? moment(this.enlistment.value).format('YYYY-MM-DD')
+          : undefined,
         gender: this.gender.value
       })
     );
@@ -125,9 +123,9 @@ export class MemberEditComponent implements OnInit {
     return formControl.hasError('required')
       ? 'You must enter a value'
       : formControl.hasError('email')
-        ? 'Not a valid email'
-        : formControl.hasError('minlength')
-          ? 'Requires at least ' + formControl.errors.minlength.requiredLength
-          : '';
+      ? 'Not a valid email'
+      : formControl.hasError('minlength')
+      ? 'Requires at least ' + formControl.errors.minlength.requiredLength
+      : '';
   }
 }

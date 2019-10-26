@@ -8,16 +8,28 @@
     >
       <mat-icon>add</mat-icon>Add new
     </a>
-    <button type="button" mat-raised-button (click)="fileInput.click()">
-      Batch Create Routes
+    <button type="button" mat-raised-button (click)="createFileInput.click()">
+      Batch Create
     </button>
     <input
       hidden
-      (change)="onFileSelected()"
-      #fileInput
+      (change)="onCreateFileSelected()"
+      #createFileInput
       type="file"
-      id="file"
+      id="createFile"
     />
+    <button type="button" mat-raised-button (click)="updateFileInput.click()">
+        Batch Update
+      </button>
+      <input
+        hidden
+        (change)="onUpdateFileSelected()"
+        #updateFileInput
+        type="file"
+        id="updateFile"
+      />
+
+      <rvw-export [items]="sortedData" fileName="members.csv"></rvw-export>
   </mat-card-header>
   <mat-card-content>
     <div class="table-container">

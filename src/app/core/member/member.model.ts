@@ -6,7 +6,7 @@ export interface Member {
   lastName: string;
   email?: string;
   address?: string;
-  zipCode?: number;
+  zipCode?: string;
   city?: string;
   enlistment?: string;
   gender?: 'female' | 'male' | 'unknown';

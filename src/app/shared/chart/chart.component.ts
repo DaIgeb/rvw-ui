@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import * as Papa from 'papaparse';
 import * as Highcharts from 'highcharts';
 import { Chart } from 'highcharts';
 import highcharts3D from 'highcharts/highcharts-3d.src';
@@ -57,7 +56,7 @@ export class ChartComponent implements OnInit {
     credits: {
       enabled: false
     }
-  }; // required
+  };
 
   sortOrder = new FormControl('points');
 
@@ -160,18 +159,5 @@ export class ChartComponent implements OnInit {
 
   chartCallback(chart: Chart) {
     this.chart = chart;
-  }
-
-  exportAll() {
-    const content = Papa.unparse(this.aggregatedData, {});
-
-    const dynamicDownload = document.createElement('a');
-    const element = dynamicDownload;
-    const fileType = 'text/csv';
-    element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(content)}`);
-    element.setAttribute('download', 'data.csv');
-
-    const event = new MouseEvent('click');
-    element.dispatchEvent(event);
   }
 }

@@ -5,15 +5,16 @@ import { ChartComponent } from './chart/chart.component';
 import { AppMaterialModule } from '@app/app-material/app-material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { ExportComponent } from './export/export.component';
 
 @NgModule({
-  declarations: [LogPipe, ChartComponent],
+  declarations: [LogPipe, ChartComponent, ExportComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     HighchartsChartModule,
     AppMaterialModule
   ],
-  exports: [LogPipe, ChartComponent]
+  exports: [LogPipe, ChartComponent, ExportComponent]
 })
 export class SharedModule {}

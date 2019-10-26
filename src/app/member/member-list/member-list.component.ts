@@ -9,21 +9,16 @@ import { Observable, of, merge, timer, combineLatest } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { LoggerService } from '@app/core/logger.service';
 import { Router } from '@angular/router';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import {
-  map,
-  startWith,
-  switchMap,
-  tap,
-  delay,
-  debounce
-} from 'rxjs/operators';
+import { map, startWith, switchMap, delay, debounce } from 'rxjs/operators';
 import { TableService } from '@app/shared/table.service';
+import { ParseResult } from 'papaparse';
+import * as moment from 'moment';
 
 @Component({
   selector: 'rvw-member-list',
@@ -51,6 +46,7 @@ export class MemberListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   currentSort: Sort;
   currentPage: PageEvent;
+  sortedData: Member[] = [];
 
   constructor(
     private store: Store<AppState>,
@@ -87,9 +83,14 @@ export class MemberListComponent implements OnInit, AfterViewInit {
             this.store.select(selectMemberMembers),
             this.filter$
           ]).pipe(
-            map(data => data[0].filter(i => i.email.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
-              i.lastName.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
-              i.firstName.toLocaleLowerCase().indexOf(data[1]) !== -1))
+            map(data =>
+              data[0].filter(
+                i =>
+                  i.email.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
+                  i.lastName.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
+                  i.firstName.toLocaleLowerCase().indexOf(data[1]) !== -1
+              )
+            )
           );
         }),
         map(data => {
@@ -98,14 +99,16 @@ export class MemberListComponent implements OnInit, AfterViewInit {
           this.isRateLimitReached = false;
           this.resultsLength = data.length;
 
+          this.sortedData = this.tableService.applySort(
+            data,
+            this.currentSort || {
+              active: 'firstName',
+              direction: 'asc'
+            }
+          );
+
           return this.tableService.applyPaging(
-            this.tableService.applySort(
-              data,
-              this.currentSort || {
-                active: 'firstName',
-                direction: 'asc'
-              }
-            ),
+            this.sortedData,
             this.currentPage
           );
         }),
@@ -122,9 +125,10 @@ export class MemberListComponent implements OnInit, AfterViewInit {
     this.route.navigate([`${id}/edit`]);
   }
 
-  onFileSelected() {
-    const inputNode: any = document.querySelector('#file');
-
+  private parseFile(
+    inputNode: HTMLInputElement,
+    handleContent: (csv: ParseResult) => void
+  ) {
     if (typeof FileReader !== 'undefined') {
       const reader = new FileReader();
 
@@ -134,27 +138,71 @@ export class MemberListComponent implements OnInit, AfterViewInit {
         if (csv.errors && csv.errors.length > 0) {
           this.logger.error(JSON.stringify(csv.errors, null, 2));
         } else {
-          const firstNameField = csv.meta.fields.find(s =>
-            s.startsWith('firstName')
-          );
-          const lastNameField = csv.meta.fields.find(s =>
-            s.startsWith('lastName')
-          );
-          const emailField = csv.meta.fields.find(s => s.startsWith('email'));
-
-          this.store.dispatch(
-            new ActionMemberSave(
-              csv.data.map(d => ({
-                firstName: d[firstNameField],
-                lastName: d[lastNameField],
-                email: d[emailField]
-              }))
-            )
-          );
+          handleContent(csv);
         }
       };
 
       reader.readAsText(inputNode.files[0]);
     }
+  }
+
+  onUpdateFileSelected() {
+    const inputNode = document.querySelector<HTMLInputElement>('#updateFile');
+
+    this.parseFile(inputNode, csv => {
+      const firstNameField = csv.meta.fields.find(s =>
+        s.startsWith('firstName')
+      );
+      const idField = csv.meta.fields.find(s => s.startsWith('id'));
+      const lastNameField = csv.meta.fields.find(s => s.startsWith('lastName'));
+      const emailField = csv.meta.fields.find(s => s.startsWith('email'));
+      const addressField = csv.meta.fields.find(s => s.startsWith('address'));
+      const zipCodeField = csv.meta.fields.find(s => s.startsWith('zipCode'));
+      const cityField = csv.meta.fields.find(s => s.startsWith('city'));
+      const enlistmentField = csv.meta.fields.find(s =>
+        s.startsWith('enlistment')
+      );
+      const genderField = csv.meta.fields.find(s => s.startsWith('gender'));
+
+      this.store.dispatch(
+        new ActionMemberSave(
+          csv.data.map(d => ({
+            id: d[idField],
+            firstName: d[firstNameField],
+            lastName: d[lastNameField],
+            email: d[emailField] ? d[emailField] : undefined,
+            address: d[addressField] ? d[addressField] : undefined,
+            zipCode: d[zipCodeField] ? d[zipCodeField] : undefined,
+            city: d[cityField] ? d[cityField] : undefined,
+            enlistment: d[enlistmentField]
+              ? moment(d[enlistmentField]).format('YYYY-MM-DD')
+              : undefined,
+            gender: d[genderField] ? d[genderField] : undefined
+          }))
+        )
+      );
+    });
+  }
+
+  onCreateFileSelected() {
+    const inputNode = document.querySelector<HTMLInputElement>('#createFile');
+
+    this.parseFile(inputNode, csv => {
+      const firstNameField = csv.meta.fields.find(s =>
+        s.startsWith('firstName')
+      );
+      const lastNameField = csv.meta.fields.find(s => s.startsWith('lastName'));
+      const emailField = csv.meta.fields.find(s => s.startsWith('email'));
+
+      this.store.dispatch(
+        new ActionMemberSave(
+          csv.data.map(d => ({
+            firstName: d[firstNameField],
+            lastName: d[lastNameField],
+            email: d[emailField]
+          }))
+        )
+      );
+    });
   }
 }

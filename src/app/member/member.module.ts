@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CdkTableModule } from '@angular/cdk/table';
 import { AppMaterialModule } from '@app/app-material/app-material.module';
 import { MemberEditComponent } from './member-edit/member-edit.component';
+import { SharedModule } from '@app/shared/shared.module';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { MemberEditComponent } from './member-edit/member-edit.component';
     ReactiveFormsModule,
     MemberRoutingModule,
     CdkTableModule,
+    SharedModule,
     AppMaterialModule
   ]
 })
