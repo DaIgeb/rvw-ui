@@ -15,10 +15,22 @@ import { LoggerService } from '@app/core/logger.service';
 import { Router } from '@angular/router';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import { map, startWith, switchMap, delay, debounce } from 'rxjs/operators';
+import {
+  map,
+  startWith,
+  switchMap,
+  delay,
+  debounce,
+  filter
+} from 'rxjs/operators';
 import { TableService } from '@app/shared/table.service';
 import { ParseResult } from 'papaparse';
 import * as moment from 'moment';
+
+interface Data extends Member {
+  isGuest: boolean;
+  isActive: boolean;
+}
 
 @Component({
   selector: 'rvw-member-list',
@@ -26,10 +38,17 @@ import * as moment from 'moment';
   styleUrls: ['./member-list.component.scss']
 })
 export class MemberListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['firstName', 'lastName', 'email', 'action'];
+  displayedColumns: string[] = [
+    'firstName',
+    'lastName',
+    'email',
+    'isGuest',
+    'isActive',
+    'action'
+  ];
 
-  data: Member[] = [];
-  data$: Observable<Member[]>;
+  data: Data[] = [];
+  data$: Observable<Data[]>;
 
   private filter = new FormControl('');
   private filter$: Observable<string>;
@@ -46,7 +65,7 @@ export class MemberListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   currentSort: Sort;
   currentPage: PageEvent;
-  sortedData: Member[] = [];
+  sortedData: Data[] = [];
 
   constructor(
     private store: Store<AppState>,
@@ -89,6 +108,18 @@ export class MemberListComponent implements OnInit, AfterViewInit {
                   i.email.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
                   i.lastName.toLocaleLowerCase().indexOf(data[1]) !== -1 ||
                   i.firstName.toLocaleLowerCase().indexOf(data[1]) !== -1
+              )
+            ),
+            map(data =>
+              data.map(
+                item =>
+                  ({
+                    ...item,
+                    isGuest: item.membership.length === 0,
+                    isActive: item.membership.some(
+                      ms => !ms.to && moment(ms.from).isBefore(moment())
+                    )
+                  } as Data)
               )
             )
           );
@@ -149,60 +180,63 @@ export class MemberListComponent implements OnInit, AfterViewInit {
   onUpdateFileSelected() {
     const inputNode = document.querySelector<HTMLInputElement>('#updateFile');
 
-    this.parseFile(inputNode, csv => {
-      const firstNameField = csv.meta.fields.find(s =>
-        s.startsWith('firstName')
-      );
-      const idField = csv.meta.fields.find(s => s.startsWith('id'));
-      const lastNameField = csv.meta.fields.find(s => s.startsWith('lastName'));
-      const emailField = csv.meta.fields.find(s => s.startsWith('email'));
-      const addressField = csv.meta.fields.find(s => s.startsWith('address'));
-      const zipCodeField = csv.meta.fields.find(s => s.startsWith('zipCode'));
-      const cityField = csv.meta.fields.find(s => s.startsWith('city'));
-      const enlistmentField = csv.meta.fields.find(s =>
-        s.startsWith('enlistment')
-      );
-      const genderField = csv.meta.fields.find(s => s.startsWith('gender'));
-
-      this.store.dispatch(
-        new ActionMemberSave(
-          csv.data.map(d => ({
-            id: d[idField],
-            firstName: d[firstNameField],
-            lastName: d[lastNameField],
-            email: d[emailField] ? d[emailField] : undefined,
-            address: d[addressField] ? d[addressField] : undefined,
-            zipCode: d[zipCodeField] ? d[zipCodeField] : undefined,
-            city: d[cityField] ? d[cityField] : undefined,
-            enlistment: d[enlistmentField]
-              ? moment(d[enlistmentField]).format('YYYY-MM-DD')
-              : undefined,
-            gender: d[genderField] ? d[genderField] : undefined
-          }))
-        )
-      );
-    });
+    this.parseFile(inputNode, csv =>
+      this.store.dispatch(new ActionMemberSave(this.map(csv, true)))
+    );
   }
 
   onCreateFileSelected() {
     const inputNode = document.querySelector<HTMLInputElement>('#createFile');
 
-    this.parseFile(inputNode, csv => {
-      const firstNameField = csv.meta.fields.find(s =>
-        s.startsWith('firstName')
-      );
-      const lastNameField = csv.meta.fields.find(s => s.startsWith('lastName'));
-      const emailField = csv.meta.fields.find(s => s.startsWith('email'));
+    this.parseFile(inputNode, csv =>
+      this.store.dispatch(new ActionMemberSave(this.map(csv, false)))
+    );
+  }
 
-      this.store.dispatch(
-        new ActionMemberSave(
-          csv.data.map(d => ({
-            firstName: d[firstNameField],
-            lastName: d[lastNameField],
-            email: d[emailField]
-          }))
-        )
-      );
-    });
+  private map(csv: ParseResult, includeId: boolean) {
+    const headers = this.parseHeader(csv);
+
+    return csv.data.map(
+      d =>
+        ({
+          id: includeId ? d[headers.idField] : undefined,
+          firstName: d[headers.firstNameField],
+          lastName: d[headers.lastNameField],
+          email: d[headers.emailField] ? d[headers.emailField] : undefined,
+          address: d[headers.addressField]
+            ? d[headers.addressField]
+            : undefined,
+          zipCode: d[headers.zipCodeField]
+            ? d[headers.zipCodeField]
+            : undefined,
+          city: d[headers.cityField] ? d[headers.cityField] : undefined,
+          membership: d[headers.enlistmentField]
+            ? [
+                {
+                  from: moment(d[headers.enlistmentField]).format('YYYY-MM-DD'),
+                  to: d[headers.withdrawalField]
+                    ? moment(d[headers.withdrawalField]).format('YYYY-MM-DD')
+                    : undefined
+                }
+              ]
+            : [],
+          gender: d[headers.genderField] ? d[headers.genderField] : undefined
+        } as Member)
+    );
+  }
+
+  private parseHeader(csv: ParseResult) {
+    return {
+      idField: csv.meta.fields.find(s => s.startsWith('id')),
+      firstNameField: csv.meta.fields.find(s => s.startsWith('firstName')),
+      lastNameField: csv.meta.fields.find(s => s.startsWith('lastName')),
+      emailField: csv.meta.fields.find(s => s.startsWith('email')),
+      addressField: csv.meta.fields.find(s => s.startsWith('address')),
+      zipCodeField: csv.meta.fields.find(s => s.startsWith('zipCode')),
+      cityField: csv.meta.fields.find(s => s.startsWith('city')),
+      enlistmentField: csv.meta.fields.find(s => s.startsWith('enlistment')),
+      genderField: csv.meta.fields.find(s => s.startsWith('gender')),
+      withdrawalField: csv.meta.fields.find(s => s.startsWith('withdrawal'))
+    };
   }
 }

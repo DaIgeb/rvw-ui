@@ -8,7 +8,10 @@ export interface Member {
   address?: string;
   zipCode?: string;
   city?: string;
-  enlistment?: string;
+  membership: {
+    from: string;
+    to?: string;
+  }[];
   gender?: 'female' | 'male' | 'unknown';
 }
 

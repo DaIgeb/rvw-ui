@@ -1,28 +1,58 @@
 <div class="container">
   <form [formGroup]="formGroup" (ngSubmit)="save()" class="form">
     <mat-form-field>
-      <input matInput placeholder="First Name" formControlName="firstName" required minlength="3" />
-      <mat-error *ngIf="firstName.invalid">{{ getErrorMessage(firstName) }}</mat-error>
+      <input
+        matInput
+        placeholder="First Name"
+        formControlName="firstName"
+        required
+        minlength="3"
+      />
+      <mat-error *ngIf="firstName.invalid">{{
+        getErrorMessage(firstName)
+      }}</mat-error>
     </mat-form-field>
 
     <mat-form-field>
-      <input matInput placeholder="Last Name" formControlName="lastName" required minlength="3" />
-      <mat-error *ngIf="lastName.invalid">{{ getErrorMessage(lastName) }}</mat-error>
+      <input
+        matInput
+        placeholder="Last Name"
+        formControlName="lastName"
+        required
+        minlength="3"
+      />
+      <mat-error *ngIf="lastName.invalid">{{
+        getErrorMessage(lastName)
+      }}</mat-error>
     </mat-form-field>
 
     <mat-form-field>
-      <input matInput type="email" placeholder="Email" formControlName="email" />
+      <input
+        matInput
+        type="email"
+        placeholder="Email"
+        formControlName="email"
+      />
       <mat-error *ngIf="email.invalid">{{ getErrorMessage(email) }}</mat-error>
     </mat-form-field>
 
     <mat-form-field>
-      <input matInput type="address" placeholder="Address" formControlName="address" />
-      <mat-error *ngIf="address.invalid">{{ getErrorMessage(address) }}</mat-error>
+      <input
+        matInput
+        type="address"
+        placeholder="Address"
+        formControlName="address"
+      />
+      <mat-error *ngIf="address.invalid">{{
+        getErrorMessage(address)
+      }}</mat-error>
     </mat-form-field>
 
     <mat-form-field>
       <input matInput placeholder="zipCode" formControlName="zipCode" />
-      <mat-error *ngIf="zipCode.invalid">{{ getErrorMessage(zipCode) }}</mat-error>
+      <mat-error *ngIf="zipCode.invalid">{{
+        getErrorMessage(zipCode)
+      }}</mat-error>
     </mat-form-field>
 
     <mat-form-field>
@@ -30,30 +60,92 @@
       <mat-error *ngIf="city.invalid">{{ getErrorMessage(city) }}</mat-error>
     </mat-form-field>
 
-    <mat-form-field>
-      <input matInput [matDatepicker]="picker" placeholder="Choose a date" formControlName="enlistment"  />
-      <mat-datepicker-toggle matSuffix [for]="picker" tabindex=-1></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      <mat-error *ngIf="enlistment.invalid">{{ getErrorMessage(enlistment) }}</mat-error>
-    </mat-form-field>
-
     <label id="gender-radio-label">Gender</label>
-    <mat-radio-group aria-labelledby="gender-radio-label" formControlName="gender">
-      <mat-radio-button class="example-radio-button" *ngFor="let option of genderOptions" [value]="option.value">
+    <mat-radio-group
+      aria-labelledby="gender-radio-label"
+      formControlName="gender"
+    >
+      <mat-radio-button
+        class="example-radio-button"
+        *ngFor="let option of genderOptions"
+        [value]="option.value"
+      >
         {{ option.label }}
       </mat-radio-button>
     </mat-radio-group>
     <mat-error *ngIf="gender.invalid">{{ getErrorMessage(gender) }}</mat-error>
+    <div formArrayName="memberships">
+      <div
+        *ngFor="let membership of memberships.controls; let i = index"
+        formGroupName="{{ i }}"
+      >
+        <div>
+          <mat-form-field ngClass="half-size">
+            <input
+              matInput
+              [matDatepicker]="fromPicker"
+              placeholder="From"
+              formControlName="from"
+              required
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="fromPicker"
+              tabindex="-1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #fromPicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field ngClass="half-size">
+            <input
+              matInput
+              [matDatepicker]="picker"
+              placeholder="To"
+              formControlName="to"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+              tabindex="-1"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          <button
+            mat-icon-button
+            type="button"
+            (click)="removeMembership(i)"
+            tabindex="-1"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Example icon-button with a heart icon"
+      (click)="addMembership()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
 
     <div class="button">
       <div class="spacer"></div>
-      <button mat-button type="submit" [disabled]="
-          formGroup.invalid || formGroup.pristine
-        " color="primary">
+      <button
+        mat-button
+        type="submit"
+        [disabled]="formGroup.invalid || formGroup.pristine"
+        color="primary"
+      >
         Submit
       </button>
 
-      <button mat-button type="button" [disabled]="formGroup.pristine" (click)="reset()">
+      <button
+        mat-button
+        type="button"
+        [disabled]="formGroup.pristine"
+        (click)="reset()"
+      >
         Cancel
       </button>
     </div>

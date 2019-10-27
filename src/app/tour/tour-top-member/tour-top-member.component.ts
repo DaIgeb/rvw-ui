@@ -12,23 +12,23 @@ import { selectRouteRoutes } from '@app/core/route/route.selectors';
 import { combineLatest, Observable } from 'rxjs';
 import { Route } from '@app/core/route/route.model';
 import { Tour } from '../tour.model';
+import * as moment from 'moment';
 
-interface AggregatedData {
+interface Data {
+  display: string;
   firstName: string;
   lastName: string;
   email?: string;
   address?: string;
   zipCode?: string;
   city?: string;
-  enlistment?: string;
+  isActive: boolean;
+  isGuest: boolean;
   gender?: 'female' | 'male' | 'unknown';
   distance: number;
   elevation: number;
   tourCount: number;
   points: number;
-}
-interface Data extends Member, AggregatedData {
-
 }
 
 @Component({
@@ -113,9 +113,15 @@ export class TourTopMemberComponent implements OnInit {
         return data[1].map(m => {
           const tours = toursByMember[m.id] || [];
           return ({
+            display: `${m.lastName} ${m.firstName}`,
             firstName: m.firstName,
             lastName: m.lastName,
             email: m.email,
+            address: m.address,
+            zipCode: m.zipCode,
+            city: m.city,
+            isGuest: m.membership.length === 0,
+            isActive: m.membership.some(ms => moment(ms.from).isBefore(moment()) && (!ms.to || moment(ms.to).isAfter(moment()))),
             tourCount: (tours).length,
             points: (tours).reduce((prev, cur) => prev + cur.points, 0),
             distance: tours.reduce((prev, cur) => prev + cur.r2.distance, 0),
@@ -124,6 +130,5 @@ export class TourTopMemberComponent implements OnInit {
         });
       })
     );
-
   }
 }

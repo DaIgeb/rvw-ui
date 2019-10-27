@@ -4,7 +4,7 @@ import { Member } from './member.model';
 import { HttpClient } from '@angular/common/http';
 import { LoggerService } from '@app/core/logger.service';
 import { ConfigService } from '@app/core/config';
-import { switchMap, tap, catchError } from 'rxjs/operators';
+import { switchMap, tap, catchError, map } from 'rxjs/operators';
 import { isArray } from 'util';
 
 @Injectable({
@@ -58,7 +58,11 @@ export class MemberService {
       .getConfig()
       .pipe(switchMap(c => this.http.get<Member[]>(c.membersUrl)))
       .pipe(
-        tap(i => this.logger.log('Members: ' + JSON.stringify(i, null, 2)))
+        tap(i => this.logger.log('Members: ' + JSON.stringify(i, null, 2))),
+        map(m => m.map(d => ({
+          ...d,
+          membership: d.membership || []
+        })))
       );
-  };
+  }
 }

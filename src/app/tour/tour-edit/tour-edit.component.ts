@@ -39,7 +39,7 @@ import * as moment from 'moment';
 
 @Component({
   templateUrl: './tour-edit.component.html',
-  styleUrls: ['./tour-edit.component.scss'],
+  styleUrls: ['./tour-edit.component.scss']
 })
 export class TourEditComponent implements OnInit, OnDestroy {
   private currentTourSubscription: Subscription;

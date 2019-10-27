@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { FormControl, Validators, FormGroup, FormArray } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { ActivatedRoute } from '@angular/router';
@@ -14,7 +14,6 @@ import { selectCurrentMemberMembers } from '@app/core/member/member.selectors';
 import * as moment from 'moment';
 
 @Component({
-  selector: 'rvw-member-edit',
   templateUrl: './member-edit.component.html',
   styleUrls: ['./member-edit.component.scss']
 })
@@ -31,8 +30,8 @@ export class MemberEditComponent implements OnInit {
   address = new FormControl('', []);
   zipCode = new FormControl('', []);
   city = new FormControl('', []);
-  enlistment = new FormControl('', []);
   gender = new FormControl('', []);
+  memberships = new FormArray([]);
 
   formGroup = new FormGroup({
     firstName: this.firstName,
@@ -41,7 +40,7 @@ export class MemberEditComponent implements OnInit {
     address: this.address,
     zipCode: this.zipCode,
     city: this.city,
-    enlistment: this.enlistment,
+    memberships: this.memberships,
     gender: this.gender
   });
   currentMember$: Observable<Member>;
@@ -73,6 +72,10 @@ export class MemberEditComponent implements OnInit {
   }
 
   reset() {
+    while (this.memberships.length !== 0) {
+      this.memberships.removeAt(0);
+    }
+
     if (!this.member) {
       this.formGroup.patchValue({
         firstName: '',
@@ -81,10 +84,14 @@ export class MemberEditComponent implements OnInit {
         address: '',
         zipCode: '',
         city: '',
-        enlistment: moment(),
+        memberships: [],
         gender: 'unknown'
       });
     } else {
+      while (this.memberships.length < this.member.membership.length) {
+        this.memberships.push(this.createMembership());
+      }
+
       this.formGroup.patchValue(
         {
           firstName: this.member.firstName,
@@ -93,7 +100,10 @@ export class MemberEditComponent implements OnInit {
           address: this.member.address,
           zipCode: this.member.zipCode,
           city: this.member.city,
-          enlistment: this.member.enlistment,
+          memberships: this.member.membership.map(ms => ({
+            from: moment(ms.from),
+            to: ms.to ? moment(ms.to) : undefined
+          })),
           gender: this.member.gender
         },
         { emitEvent: true }
@@ -111,10 +121,11 @@ export class MemberEditComponent implements OnInit {
         address: this.address.value,
         zipCode: this.zipCode.value,
         city: this.city.value,
-        enlistment: this.enlistment.value
-          ? moment(this.enlistment.value).format('YYYY-MM-DD')
-          : undefined,
-        gender: this.gender.value
+        gender: this.gender.value,
+        membership: this.memberships.value.map(p => ({
+          from: moment(p.from).format('YYYY-MM-DD'),
+          to: p.to ? moment(p.to).format('YYYY-MM-DD') : undefined
+        }))
       })
     );
   }
@@ -127,5 +138,20 @@ export class MemberEditComponent implements OnInit {
       : formControl.hasError('minlength')
       ? 'Requires at least ' + formControl.errors.minlength.requiredLength
       : '';
+  }
+
+  addMembership() {
+    this.memberships.push(this.createMembership());
+  }
+
+  removeMembership(i: number) {
+    this.memberships.removeAt(i);
+  }
+
+  private createMembership() {
+    const from = new FormControl(undefined, [Validators.required]);
+    const to = new FormControl(undefined);
+
+    return new FormGroup({ from, to });
   }
 }
