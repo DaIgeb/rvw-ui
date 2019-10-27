@@ -2,5 +2,6 @@
   "usersUrl": "rvw-user/",
   "routesUrl": "rvw-route/",
   "membersUrl": "rvw-member/",
-  "toursUrl": "rvw-tour/"
+  "toursUrl": "rvw-tour/",
+  "locationsUrl": "rvw-location/"
 }

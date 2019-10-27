@@ -30,6 +30,7 @@
     "@ngrx/store-devtools": "^8.4.0",
     "@redux-beacon/google-analytics-gtag": "^1.0.5",
     "@redux-beacon/logger": "^1.0.0",
+    "@types/googlemaps": "^3.38.0",
     "@types/papaparse": "^5.0.1",
     "auth0-js": "^9.11.3",
     "core-js": "^2.6.9",

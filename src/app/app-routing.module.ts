@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: 'route', loadChildren: () => import('./route/route.module').then(m => m.RouteModule) },
   { path: 'member', loadChildren: () => import('./member/member.module').then(m => m.MemberModule) },
   { path: 'tour', loadChildren: () => import('./tour/tour.module').then(m => m.TourModule) },
+  { path: 'location', loadChildren: () => import('./location/location.module').then(m => m.LocationModule) },
   {
     path: 'current-user',
     children: [

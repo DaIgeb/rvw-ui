@@ -4,11 +4,9 @@ import { Config } from './config';
 import {
   publishReplay,
   refCount,
-  map,
-  catchError
-} from 'rxjs/operators';
+  map} from 'rxjs/operators';
 import {
-  Observable, of} from 'rxjs';
+  Observable} from 'rxjs';
 import { environment } from '@env/environment';
 
 @Injectable({
@@ -28,6 +26,7 @@ export class ConfigService {
       usersUrl: `${environment.api.url}/${config.usersUrl}`,
       routesUrl: `${environment.api.url}/${config.routesUrl}`,
       toursUrl: `${environment.api.url}/${config.toursUrl}`,
+      locationsUrl: `${environment.api.url}/${config.locationsUrl}`,
       logLevel: config.logLevel || environment.log.level
     })));
 

@@ -5,5 +5,6 @@ export interface Config {
   routesUrl: string;
   membersUrl: string;
   toursUrl: string;
+  locationsUrl: string;
   logLevel: TLogLevel;
 }
