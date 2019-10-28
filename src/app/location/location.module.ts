@@ -10,6 +10,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { locationReducer } from './location.reducer';
 import { LocationEffects } from './location.effects';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '@app/shared/shared.module';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     AppMaterialModule,
     ReactiveFormsModule,
     LocationRoutingModule,
+    SharedModule,
     StoreModule.forFeature('location', locationReducer),
     EffectsModule.forFeature([LocationEffects])
   ]

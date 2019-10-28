@@ -1,91 +1,167 @@
 <div class="container">
-    <form [formGroup]="formGroup" (ngSubmit)="save()" class="form">
-      <mat-form-field>
-        <input
-          matInput
-          placeholder="Name"
-          formControlName="name"
-          required
-          minlength="3"
-        />
-        <mat-error *ngIf="name.invalid">{{
+  <form [formGroup]="formGroup" (ngSubmit)="save()" class="form">
+    <mat-form-field>
+      <input matInput placeholder="Name" formControlName="name" required minlength="3" />
+      <mat-error *ngIf="name.invalid">{{
           getErrorMessage(name)
         }}</mat-error>
-      </mat-form-field>
+    </mat-form-field>
 
-      <label id="type-radio-label">Type</label>
-      <mat-radio-group
-        aria-labelledby="type-radio-label"
-        formControlName="type"
-      >
-        <mat-radio-button
-          class="example-radio-button"
-          *ngFor="let option of typeOptions"
-          [value]="option.value"
-        >
-          {{ option.label }}
-        </mat-radio-button>
-      </mat-radio-group>
-      <mat-error *ngIf="type.invalid">{{ getErrorMessage(type) }}</mat-error>
+    <label id="type-radio-label">Type</label>
+    <mat-radio-group aria-labelledby="type-radio-label" formControlName="type">
+      <mat-radio-button class="example-radio-button" *ngFor="let option of typeOptions" [value]="option.value">
+        {{ option.label }}
+      </mat-radio-button>
+    </mat-radio-group>
+    <mat-error *ngIf="type.invalid">{{ getErrorMessage(type) }}</mat-error>
 
-      <mat-form-field>
-        <input
-          matInput
-          placeholder="Street"
-          formControlName="street"
-        />
-        <mat-error *ngIf="street.invalid">{{
+    <mat-form-field>
+      <input matInput placeholder="Street" formControlName="street" />
+      <mat-error *ngIf="street.invalid">{{
           getErrorMessage(street)
         }}</mat-error>
-      </mat-form-field>
+    </mat-form-field>
 
-      <mat-form-field>
-        <input matInput placeholder="zipCode" formControlName="zipCode" />
-        <mat-error *ngIf="zipCode.invalid">{{
+    <mat-form-field>
+      <input matInput placeholder="country" formControlName="country" />
+      <mat-error *ngIf="country.invalid">{{
+            getErrorMessage(country)
+          }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="zipCode" formControlName="zipCode" />
+      <mat-error *ngIf="zipCode.invalid">{{
           getErrorMessage(zipCode)
         }}</mat-error>
-      </mat-form-field>
+    </mat-form-field>
 
-      <mat-form-field>
-        <input matInput placeholder="city" formControlName="city" />
-        <mat-error *ngIf="city.invalid">{{ getErrorMessage(city) }}</mat-error>
-      </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="city" formControlName="city" />
+      <mat-error *ngIf="city.invalid">{{ getErrorMessage(city) }}</mat-error>
+    </mat-form-field>
 
-      <mat-form-field>
-          <input matInput type="number" placeholder="longitude" formControlName="longitude" required/>
-          <mat-error *ngIf="longitude.invalid">{{
+    <mat-form-field>
+      <input matInput type="number" placeholder="longitude" formControlName="longitude" required />
+      <mat-error *ngIf="longitude.invalid">{{
             getErrorMessage(longitude)
           }}</mat-error>
-        </mat-form-field>
+    </mat-form-field>
 
-        <mat-form-field>
-            <input matInput type="number" placeholder="latitude" formControlName="latitude" required/>
-            <mat-error *ngIf="latitude.invalid">{{
+    <mat-form-field>
+      <input matInput type="number" placeholder="latitude" formControlName="latitude" required />
+      <mat-error *ngIf="latitude.invalid">{{
               getErrorMessage(latitude)
             }}</mat-error>
-          </mat-form-field>
+    </mat-form-field>
 
-      <div class="button">
-        <div class="spacer"></div>
-        <button
-          mat-button
-          type="submit"
-          [disabled]="formGroup.invalid || formGroup.pristine"
-          color="primary"
-        >
-          Submit
-        </button>
 
-        <button
-          mat-button
-          type="button"
-          [disabled]="formGroup.pristine"
-          (click)="reset()"
-        >
-          Cancel
-        </button>
+    <div *ngIf="type.value === 'restaurant'">
+      <div formArrayName="timelines">
+        <div *ngFor="let timeline of timelines.controls; let i = index" formGroupName="{{ i }}">
+          <div>
+            <mat-form-field>
+              <input matInput [matDatepicker]="fromPicker" placeholder="From" formControlName="from" required />
+              <mat-datepicker-toggle matSuffix [for]="fromPicker" tabindex=-1></mat-datepicker-toggle>
+              <mat-datepicker #fromPicker></mat-datepicker>
+              <mat-error *ngIf="timeline.controls['from'].invalid">{{ getErrorMessage(timeline.controls['from']) }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput [matDatepicker]="untilPicker" placeholder="Until" formControlName="until" />
+              <mat-datepicker-toggle matSuffix [for]="untilPicker" tabindex=-1></mat-datepicker-toggle>
+              <mat-datepicker #untilPicker></mat-datepicker>
+              <mat-error *ngIf="timeline.controls['until'].invalid">{{ getErrorMessage(timeline.controls['until']) }}
+              </mat-error>
+            </mat-form-field>
+
+
+            <mat-form-field>
+              <input matInput placeholder="phone" formControlName="phone" />
+              <mat-error *ngIf="getErrorMessage(timeline.controls['phone']).invalid">
+                {{ getErrorMessage(getErrorMessage(timeline.controls['phone'])) }}</mat-error>
+            </mat-form-field>
+
+
+            <mat-form-field>
+              <input matInput placeholder="notes" formControlName="notes" />
+              <mat-error *ngIf="getErrorMessage(timeline.controls['notes']).invalid">
+                {{ getErrorMessage(getErrorMessage(timeline.controls['notes'])) }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          {{timeline.controls['businessHours'].controls |log}}
+          <div formArrayName="businessHours">
+            <div *ngFor="let businessHour of timeline.controls['businessHours'].controls; let j = index"
+              formGroupName="{{ j }}">
+              {{businessHour|log}}
+              <div>
+                <mat-form-field>
+                  <input matInput [matDatepicker]="fromPicker" placeholder="From" formControlName="from" required />
+                  <mat-datepicker-toggle matSuffix [for]="fromPicker" tabindex=-1></mat-datepicker-toggle>
+                  <mat-datepicker #fromPicker></mat-datepicker>
+                  <mat-error *ngIf="businessHour.controls['from'].invalid">
+                    {{ getErrorMessage(businessHour.controls['from']) }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <input matInput [matDatepicker]="untilPicker" placeholder="Until" formControlName="until" required />
+                  <mat-datepicker-toggle matSuffix [for]="untilPicker" tabindex=-1></mat-datepicker-toggle>
+                  <mat-datepicker #untilPicker></mat-datepicker>
+                  <mat-error *ngIf="businessHour.controls['until'].invalid">
+                    {{ getErrorMessage(businessHour.controls['until']) }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Weekday</mat-label>
+                  <mat-select>
+                    <mat-option *ngFor="let weekday of weekdays" [value]="weekday" formControlName="weekday" required>
+                      {{weekday}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+
+                <button mat-button type="button" aria-label="Example icon-button with a heart icon"
+                  (click)="addBusinessHours(i, j)">
+                  <mat-icon>add</mat-icon>
+                  Add Business Hours
+                </button>
+              </div>
+              <mat-error *ngIf="timelines.invalid">{{ getErrorMessage(timelines) }}</mat-error>
+            </div>
+            <button mat-button type="button" aria-label="Example icon-button with a heart icon"
+              (click)="addBusinessHours(i, j)">
+              <mat-icon>add</mat-icon>
+              Add Business Hours
+            </button>
+          </div>
+          <button mat-button type="button" aria-label="Example icon-button with a heart icon" (click)="addTimeline(i)">
+            <mat-icon>add</mat-icon>Add Timeline
+          </button>
+
+        </div>
+        <mat-error *ngIf="timelines.invalid">{{ getErrorMessage(timelines) }}</mat-error>
       </div>
-    </form>
-  </div>
+      <button mat-button type="button" aria-label="Example icon-button with a heart icon" (click)="addTimeline(i)">
+        <mat-icon>add</mat-icon>Add Timeline
+      </button>
+    </div>
+    <div class="button">
+      <div class="spacer"></div>
+      <button mat-button type="submit" [disabled]="formGroup.invalid || formGroup.pristine" color="primary">
+        Submit
+      </button>
 
-  <div #gmap style="width:100%;height:400px"></div>
+      <button mat-button type="button" [disabled]="formGroup.pristine" (click)="reset()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+
+
+<div #gmap style="width:100%;height:400px"></div>
