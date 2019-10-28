@@ -33,11 +33,15 @@ const eventsMap = {
   [ROUTER_NAVIGATION]: trackPageView(action => ({
     path: action.payload.routerState.url,
   })),
-  '*': trackEvent(action => ({
+  '*': trackEvent(action => {
+    const matches = /\[(.*)\]/.exec(action.type);
+    return {
     category: 'redux',
+    label: matches ? matches[1] : undefined,
     action: action.type,
-  })),
-};
+    };
+  })
+}
 
 const gaMetaReducer = createMetaReducer(eventsMap, ga);
 
