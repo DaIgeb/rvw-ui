@@ -1,4 +1,6 @@
-import { MapOptions } from 'googlemaps';
+/// <reference types="@types/googlemaps" />
+
+// import { } from 'googlemaps';
 import {
   Component,
   OnInit,
@@ -60,7 +62,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
   constructor(
     private store: Store<AppState>,
     private snapshot: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.store.dispatch(new ActionLocationLoad());
@@ -75,7 +77,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const mapProperties: MapOptions = {
+    const mapProperties: google.maps.MapOptions = {
       zoom: 15,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
@@ -186,10 +188,10 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
     return formControl.hasError('required')
       ? 'You must enter a value'
       : formControl.hasError('email')
-      ? 'Not a valid email'
-      : formControl.hasError('minlength')
-      ? 'Requires at least ' + formControl.errors.minlength.requiredLength
-      : '';
+        ? 'Not a valid email'
+        : formControl.hasError('minlength')
+          ? 'Requires at least ' + formControl.errors.minlength.requiredLength
+          : '';
   }
 
   addTimeline(index: number) {
@@ -209,15 +211,15 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
       until: new FormControl('', []),
       notes: new FormControl('', []),
       phone: new FormControl('', []),
-      businessHours: new FormArray([]),
+      businessHours: new FormArray([], [Validators.required, Validators.minLength(1)]),
     });
   }
 
   private createBusinessHours() {
     return new FormGroup({
       from: new FormControl('', [Validators.required]),
-      until: new FormControl('', []),
-      weekday: new FormControl('', [])
-    });    
+      until: new FormControl('', [Validators.required]),
+      weekday: new FormControl('', [Validators.required])
+    });
   }
 }

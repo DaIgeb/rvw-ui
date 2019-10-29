@@ -96,6 +96,7 @@
             <div *ngFor="let businessHour of timeline.controls['businessHours'].controls; let j = index"
               formGroupName="{{ j }}">
               {{businessHour|log}}
+              {{timeline.controls['businessHours']|log}}
               <div>
                 <mat-form-field>
                   <input matInput [matDatepicker]="fromPicker" placeholder="From" formControlName="from" required />
@@ -117,11 +118,14 @@
 
                 <mat-form-field>
                   <mat-label>Weekday</mat-label>
-                  <mat-select>
-                    <mat-option *ngFor="let weekday of weekdays" [value]="weekday" formControlName="weekday" required>
+                  <mat-select  formControlName="weekday">
+                    <mat-option *ngFor="let weekday of weekdays" [value]="weekday" required>
                       {{weekday}}
                     </mat-option>
                   </mat-select>
+                  <mat-error *ngIf="businessHour.controls['weekday'].invalid">
+                      {{ getErrorMessage(businessHour.controls['weekday']) }}
+                    </mat-error>
                 </mat-form-field>
 
 
