@@ -27,6 +27,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatAutocompleteModule, MatDatepickerModule, MatNativeDateModule, MatRadioModule, MatCheckboxModule,  MatSelectModule } from '@angular/material';
+import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 
 @NgModule({
   declarations: [],
@@ -52,7 +53,8 @@ import { MatAutocompleteModule, MatDatepickerModule, MatNativeDateModule, MatRad
     MatSortModule,
     MatAutocompleteModule,
     MatCheckboxModule,
-    MatSelectModule
+    MatSelectModule,
+    NgxMaterialTimepickerModule
   ],
   providers: [
     {

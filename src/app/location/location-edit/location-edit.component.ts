@@ -173,12 +173,17 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
           notes: tl.notes,
           phone: tl.phone,
           businessHours: tl.businessHours.map(bh => ({
-            from: bh.from,
-            until: bh.until,
+            from: moment(bh.from, 'HH:mm').format('HH:mm:ss'),
+            until: moment(bh.until, 'HH:mm').format('HH:mm:ss'),
             weekday: bh.weekday
           }))
         }))
       };
+
+      const time = moment(location.timelines[0].businessHours[0].until);
+
+      console.log(time);
+      console.log(time.format('HH:mm:ss'));
     }
 
     this.store.dispatch(new ActionLocationSave(location));

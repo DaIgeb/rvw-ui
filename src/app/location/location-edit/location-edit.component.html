@@ -98,34 +98,28 @@
               {{businessHour|log}}
               {{timeline.controls['businessHours']|log}}
               <div>
-                <mat-form-field>
-                  <input matInput [matDatepicker]="fromPicker" placeholder="From" formControlName="from" required />
-                  <mat-datepicker-toggle matSuffix [for]="fromPicker" tabindex=-1></mat-datepicker-toggle>
-                  <mat-datepicker #fromPicker></mat-datepicker>
-                  <mat-error *ngIf="businessHour.controls['from'].invalid">
-                    {{ getErrorMessage(businessHour.controls['from']) }}
-                  </mat-error>
-                </mat-form-field>
+                <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" formControlName="from">
+                </ngx-timepicker-field>
+                <mat-error *ngIf="businessHour.controls['from'].invalid">
+                  {{ getErrorMessage(businessHour.controls['from']) }}
+                </mat-error>
 
-                <mat-form-field>
-                  <input matInput [matDatepicker]="untilPicker" placeholder="Until" formControlName="until" required />
-                  <mat-datepicker-toggle matSuffix [for]="untilPicker" tabindex=-1></mat-datepicker-toggle>
-                  <mat-datepicker #untilPicker></mat-datepicker>
-                  <mat-error *ngIf="businessHour.controls['until'].invalid">
-                    {{ getErrorMessage(businessHour.controls['until']) }}
-                  </mat-error>
-                </mat-form-field>
+                <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" formControlName="until">
+                </ngx-timepicker-field>
+                <mat-error *ngIf="businessHour.controls['until'].invalid">
+                  {{ getErrorMessage(businessHour.controls['until']) }}
+                </mat-error>
 
                 <mat-form-field>
                   <mat-label>Weekday</mat-label>
-                  <mat-select  formControlName="weekday">
+                  <mat-select formControlName="weekday">
                     <mat-option *ngFor="let weekday of weekdays" [value]="weekday" required>
                       {{weekday}}
                     </mat-option>
                   </mat-select>
                   <mat-error *ngIf="businessHour.controls['weekday'].invalid">
-                      {{ getErrorMessage(businessHour.controls['weekday']) }}
-                    </mat-error>
+                    {{ getErrorMessage(businessHour.controls['weekday']) }}
+                  </mat-error>
                 </mat-form-field>
 
 
