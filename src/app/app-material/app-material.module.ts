@@ -26,8 +26,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSortModule } from '@angular/material/sort';
-import { MatAutocompleteModule, MatDatepickerModule, MatNativeDateModule, MatRadioModule, MatCheckboxModule,  MatSelectModule } from '@angular/material';
-import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { MatAutocompleteModule, MatDatepickerModule, MatNativeDateModule, MatRadioModule, MatCheckboxModule, MatSelectModule, MatTabsModule } from '@angular/material';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @NgModule({
   declarations: [],
@@ -54,7 +54,8 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
     MatAutocompleteModule,
     MatCheckboxModule,
     MatSelectModule,
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    MatTabsModule
   ],
   providers: [
     {

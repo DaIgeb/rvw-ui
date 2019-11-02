@@ -8,9 +8,9 @@ import {
   ElementRef,
   AfterViewInit
 } from '@angular/core';
-import { FormControl, Validators, FormArray, FormGroup } from '@angular/forms';
+import { FormControl, Validators, FormArray, FormGroup, AbstractControl } from '@angular/forms';
 import { Observable, combineLatest } from 'rxjs';
-import { Location } from '../location.model';
+import { Location, Timeline } from '../location.model';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { ActivatedRoute } from '@angular/router';
@@ -18,6 +18,7 @@ import { ActionLocationSave, ActionLocationLoad } from '../location.actions';
 import { switchMap, startWith } from 'rxjs/operators';
 import { selectLocationById } from '../location.selectors';
 import * as moment from 'moment';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
 @Component({
   templateUrl: './location-edit.component.html',
@@ -32,7 +33,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
   country = new FormControl('', []);
   longitude = new FormControl('', []);
   latitude = new FormControl('', []);
-  timelines = new FormArray([]);
+  timelines = new FormArray([], [Validators.required, Validators.minLength(1)]);
 
   formGroup = new FormGroup({
     name: this.name,
@@ -72,6 +73,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
     );
     this.currentLocation$.subscribe(r => {
       this.location = r;
+      // this.timelines = r && r.type === 'restaurant' ? r.timelines : [];
       this.reset();
     });
   }
@@ -121,6 +123,8 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
   }
 
   reset() {
+    this.timelines.clear();
+
     if (!this.location) {
       this.formGroup.patchValue({
         name: '',
@@ -133,6 +137,12 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
         latitude: ''
       });
     } else {
+      if (this.location.type === 'restaurant') {
+        this.location.timelines.forEach(timeline => {
+          this.timelines.push(new FormControl(timeline));
+        });
+      }
+
       this.formGroup.patchValue(
         {
           name: this.location.name,
@@ -142,7 +152,8 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
           city: this.location.city,
           country: this.location.country,
           longitude: this.location.longitude,
-          latitude: this.location.latitude
+          latitude: this.location.latitude,
+          timelines: this.location.type === 'restaurant' ? this.location.timelines : []
         },
         { emitEvent: true }
       );
@@ -168,10 +179,10 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
         ...location,
         type: 'restaurant',
         timelines: this.timelines.value.map(tl => ({
-          from: tl.from,
-          until: tl.until,
-          notes: tl.notes,
-          phone: tl.phone,
+          from: moment(tl.from).format('YYYY-MM-DD'),
+          until: tl.until ? moment(tl.until).format('YYYY-MM-DD') : undefined,
+          notes: tl.notes || undefined,
+          phone: tl.phone || undefined,
           businessHours: tl.businessHours.map(bh => ({
             from: moment(bh.from, 'HH:mm').format('HH:mm:ss'),
             until: moment(bh.until, 'HH:mm').format('HH:mm:ss'),
@@ -179,11 +190,6 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
           }))
         }))
       };
-
-      const time = moment(location.timelines[0].businessHours[0].until);
-
-      console.log(time);
-      console.log(time.format('HH:mm:ss'));
     }
 
     this.store.dispatch(new ActionLocationSave(location));
@@ -199,32 +205,36 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
           : '';
   }
 
-  addTimeline(index: number) {
-    const formGroup = this.createTimeline();
-    this.timelines.insert(index, formGroup);
+  addTimeline() {
+    const sorted = [...this.timelines.controls].sort((a, b) => -1 * moment(a.value.from).diff(moment(b.value.from)));
+    const relevantControl = sorted[0];
+    let nextFrom: string;
+
+    if (!relevantControl.value.until) {
+      const until = moment(relevantControl.value.from).add(1, 'days').format('YYYY-MM-DD');
+      nextFrom = moment(relevantControl.value.from).add(2, 'days').format('YYYY-MM-DD');
+      relevantControl.patchValue({ until }, { emitEvent: false });
+    } else {
+      nextFrom = moment(relevantControl.value.until).add(1, 'days').format('YYYY-MM-DD')
+    }
+
+    this.timelines.push(new FormControl({
+      from: nextFrom
+    }));
   }
 
-  addBusinessHours(index: number, businessHours: number) {
-    const formGroup = this.createBusinessHours();
-    const timeline = this.timelines.controls[index] as FormGroup;
-    (timeline.controls.businessHours as FormArray).insert(businessHours, formGroup);
-  }
+  getTimelineTitel(item: AbstractControl) {
+    const from = item.value.from;
+    const until = item.value.until || '-';
 
-  private createTimeline() {
-    return new FormGroup({
-      from: new FormControl('', [Validators.required]),
-      until: new FormControl('', []),
-      notes: new FormControl('', []),
-      phone: new FormControl('', []),
-      businessHours: new FormArray([], [Validators.required, Validators.minLength(1)]),
-    });
-  }
+    if (from) {
+      if (until) {
+        return `${from} / ${until}`
+      }
 
-  private createBusinessHours() {
-    return new FormGroup({
-      from: new FormControl('', [Validators.required]),
-      until: new FormControl('', [Validators.required]),
-      weekday: new FormControl('', [Validators.required])
-    });
+      return `${from} / -`;
+    }
+
+    return '';
   }
 }

@@ -11,10 +11,12 @@ import { locationReducer } from './location.reducer';
 import { LocationEffects } from './location.effects';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@app/shared/shared.module';
+import { LocationEditTimelineComponent } from './location-edit-timeline/location-edit-timeline.component';
+import { LocationEditBusinesshourComponent } from './location-edit-businesshour/location-edit-businesshour.component';
 
 
 @NgModule({
-  declarations: [LocationListComponent, LocationEditComponent],
+  declarations: [LocationListComponent, LocationEditComponent, LocationEditTimelineComponent, LocationEditBusinesshourComponent],
   imports: [
     CommonModule,
     AppMaterialModule,

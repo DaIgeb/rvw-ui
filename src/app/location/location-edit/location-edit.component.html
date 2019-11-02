@@ -55,98 +55,19 @@
             }}</mat-error>
     </mat-form-field>
 
-
     <div *ngIf="type.value === 'restaurant'">
-      <div formArrayName="timelines">
-        <div *ngFor="let timeline of timelines.controls; let i = index" formGroupName="{{ i }}">
-          <div>
-            <mat-form-field>
-              <input matInput [matDatepicker]="fromPicker" placeholder="From" formControlName="from" required />
-              <mat-datepicker-toggle matSuffix [for]="fromPicker" tabindex=-1></mat-datepicker-toggle>
-              <mat-datepicker #fromPicker></mat-datepicker>
-              <mat-error *ngIf="timeline.controls['from'].invalid">{{ getErrorMessage(timeline.controls['from']) }}
-              </mat-error>
-            </mat-form-field>
+      <h2>
+        Timelines <button mat-flat-button type="button" (click)="addTimeline()">Add</button>
+      </h2>
+      <mat-tab-group formArrayName="timelines">
+        <ng-template ngFor let-item [ngForOf]="timelines.controls" ; let-i="index">
+          <mat-tab [label]="getTimelineTitel(item)">
+            <rvw-location-edit-timeline [formControlName]="i"></rvw-location-edit-timeline>
+          </mat-tab>
+        </ng-template>
 
-            <mat-form-field>
-              <input matInput [matDatepicker]="untilPicker" placeholder="Until" formControlName="until" />
-              <mat-datepicker-toggle matSuffix [for]="untilPicker" tabindex=-1></mat-datepicker-toggle>
-              <mat-datepicker #untilPicker></mat-datepicker>
-              <mat-error *ngIf="timeline.controls['until'].invalid">{{ getErrorMessage(timeline.controls['until']) }}
-              </mat-error>
-            </mat-form-field>
+      </mat-tab-group>
 
-
-            <mat-form-field>
-              <input matInput placeholder="phone" formControlName="phone" />
-              <mat-error *ngIf="getErrorMessage(timeline.controls['phone']).invalid">
-                {{ getErrorMessage(getErrorMessage(timeline.controls['phone'])) }}</mat-error>
-            </mat-form-field>
-
-
-            <mat-form-field>
-              <input matInput placeholder="notes" formControlName="notes" />
-              <mat-error *ngIf="getErrorMessage(timeline.controls['notes']).invalid">
-                {{ getErrorMessage(getErrorMessage(timeline.controls['notes'])) }}</mat-error>
-            </mat-form-field>
-          </div>
-
-          {{timeline.controls['businessHours'].controls |log}}
-          <div formArrayName="businessHours">
-            <div *ngFor="let businessHour of timeline.controls['businessHours'].controls; let j = index"
-              formGroupName="{{ j }}">
-              {{businessHour|log}}
-              {{timeline.controls['businessHours']|log}}
-              <div>
-                <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" formControlName="from">
-                </ngx-timepicker-field>
-                <mat-error *ngIf="businessHour.controls['from'].invalid">
-                  {{ getErrorMessage(businessHour.controls['from']) }}
-                </mat-error>
-
-                <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" formControlName="until">
-                </ngx-timepicker-field>
-                <mat-error *ngIf="businessHour.controls['until'].invalid">
-                  {{ getErrorMessage(businessHour.controls['until']) }}
-                </mat-error>
-
-                <mat-form-field>
-                  <mat-label>Weekday</mat-label>
-                  <mat-select formControlName="weekday">
-                    <mat-option *ngFor="let weekday of weekdays" [value]="weekday" required>
-                      {{weekday}}
-                    </mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="businessHour.controls['weekday'].invalid">
-                    {{ getErrorMessage(businessHour.controls['weekday']) }}
-                  </mat-error>
-                </mat-form-field>
-
-
-                <button mat-button type="button" aria-label="Example icon-button with a heart icon"
-                  (click)="addBusinessHours(i, j)">
-                  <mat-icon>add</mat-icon>
-                  Add Business Hours
-                </button>
-              </div>
-              <mat-error *ngIf="timelines.invalid">{{ getErrorMessage(timelines) }}</mat-error>
-            </div>
-            <button mat-button type="button" aria-label="Example icon-button with a heart icon"
-              (click)="addBusinessHours(i, j)">
-              <mat-icon>add</mat-icon>
-              Add Business Hours
-            </button>
-          </div>
-          <button mat-button type="button" aria-label="Example icon-button with a heart icon" (click)="addTimeline(i)">
-            <mat-icon>add</mat-icon>Add Timeline
-          </button>
-
-        </div>
-        <mat-error *ngIf="timelines.invalid">{{ getErrorMessage(timelines) }}</mat-error>
-      </div>
-      <button mat-button type="button" aria-label="Example icon-button with a heart icon" (click)="addTimeline(i)">
-        <mat-icon>add</mat-icon>Add Timeline
-      </button>
     </div>
     <div class="button">
       <div class="spacer"></div>

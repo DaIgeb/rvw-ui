@@ -3,26 +3,31 @@ import { AppState } from '@app/core';
 interface Position {
   type: 'position';
 }
+
+export interface BusinessHour {
+  from: string;
+  until: string;
+  weekday:
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday'
+  | 'Sunday';
+}
+
+export interface Timeline {
+  from: string;
+  until?: string;
+  notes?: string;
+  phone?: string;
+  businessHours: BusinessHour[];
+}
+
 interface Restaurant {
   type: 'restaurant';
-  timelines: {
-    from: string;
-    until?: string;
-    notes?: string;
-    phone?: string;
-    businessHours: {
-      from: string;
-      until: string;
-      weekday:
-        | 'Monday'
-        | 'Tuesday'
-        | 'Wednesday'
-        | 'Thursday'
-        | 'Friday'
-        | 'Saturday'
-        | 'Sunday';
-    }[];
-  }[];
+  timelines: Timeline[];
 }
 
 export type Location = {

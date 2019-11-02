@@ -1,0 +1,25 @@
+<div [formGroup]="formGroup" ngClass="container">
+    <mat-form-field ngClass="field">
+        <mat-label>Weekday</mat-label>
+        <mat-select formControlName="weekday">
+            <mat-option *ngFor="let weekday of weekdays" [value]="weekday" required>
+                {{weekday}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="weekday.invalid">
+            {{ getErrorMessage(weekday) }}
+        </mat-error>
+    </mat-form-field>
+
+    <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" formControlName="from" ngClass="field">
+    </ngx-timepicker-field>
+    <mat-error *ngIf="from.invalid">
+        {{ getErrorMessage(from) }}
+    </mat-error>
+
+    <ngx-timepicker-field [format]="24" formControlName="until" ngClass="field">
+    </ngx-timepicker-field>
+    <mat-error *ngIf="until.invalid">
+        {{ getErrorMessage(until) }}
+    </mat-error>
+</div>
