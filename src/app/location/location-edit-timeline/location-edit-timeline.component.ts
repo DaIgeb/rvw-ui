@@ -56,7 +56,7 @@ export class LocationEditTimelineComponent implements OnInit, ControlValueAccess
     this.businessHours.clear();
     const businessHourItems = obj.businessHours ? obj.businessHours.length : 0;
     while (businessHourItems > this.businessHours.length) {
-      this.addBusinessHour(0);
+      this.addBusinessHour();
     }
 
     this.formGroup.patchValue({
@@ -82,7 +82,7 @@ export class LocationEditTimelineComponent implements OnInit, ControlValueAccess
     };
   }
 
-  addBusinessHour(index: number) {
-    this.businessHours.insert(index, new FormControl(''));
+  addBusinessHour() {
+    this.businessHours.push(new FormControl(''));
   }
 }

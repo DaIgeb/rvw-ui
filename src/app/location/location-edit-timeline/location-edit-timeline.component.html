@@ -34,11 +34,9 @@
     <div formArrayName="businessHours"
         *ngFor="let businessHour of formGroup.controls['businessHours'].controls; let j = index">
         <rvw-location-edit-businesshour [formControlName]="j"></rvw-location-edit-businesshour>
-
     </div>
     <div>
-        <button mat-button type="button" aria-label="Example icon-button with a heart icon"
-            (click)="addBusinessHour(j)">
+        <button mat-button type="button" (click)="addBusinessHour()">
             <mat-icon>add</mat-icon>
             Add Business Hours
         </button>

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, ControlValueAccessor, Validator, NG_VALUE_ACCESSOR, NG_ASYNC_VALIDATORS, ValidationErrors, AbstractControl, FormControl, Validators, NG_VALIDATORS } from '@angular/forms';
 import { BusinessHour, Timeline } from '../location.model';
+import * as moment from 'moment';
 
 @Component({
   selector: 'rvw-location-edit-businesshour',
@@ -31,11 +32,22 @@ export class LocationEditBusinesshourComponent implements OnInit, ControlValueAc
     weekday: this.weekday
   });
 
+  weekdays = moment.weekdays();
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  getErrorMessage(formControl: FormControl) {
+    return formControl.hasError('required')
+      ? 'You must enter a value'
+      : formControl.hasError('email')
+        ? 'Not a valid email'
+        : formControl.hasError('minlength')
+          ? 'Requires at least ' + formControl.errors.minlength.requiredLength
+          : '';
+  }
 
   validate(control: AbstractControl): ValidationErrors {
     return this.formGroup.valid ? [] : this.formGroup.errors

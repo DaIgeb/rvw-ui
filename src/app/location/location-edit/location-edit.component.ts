@@ -47,8 +47,6 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
     timelines: this.timelines
   });
 
-  weekdays = moment.weekdays();
-
   currentLocation$: Observable<Location>;
   location: Location;
 
