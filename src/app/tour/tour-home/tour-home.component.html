@@ -1,33 +1,39 @@
-<mat-grid-list cols="2" rowHeight="100px">
-  <mat-grid-tile colspan="2">
-    <mat-card class="dashboard-card">
-      <mat-card-content>
-        <form [formGroup]="formGroup" (ngSubmit)="save()">
-          <mat-form-field>
-            <input matInput type="number" formControlName="year" />
-          </mat-form-field>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </mat-grid-tile>
-  <mat-grid-tile colspan="2" rowspan="5">
-    <mat-card class="dashboard-card">
-      <rvw-by-date></rvw-by-date>
-    </mat-card>
-  </mat-grid-tile>
-  <mat-grid-tile colspan="1" rowspan="5">
-  <mat-card class="dashboard-card">
-    <rvw-tour-top-tour></rvw-tour-top-tour>
-  </mat-card>
-  </mat-grid-tile>
-  <mat-grid-tile colspan="1" rowspan="5">
-    <mat-card class="dashboard-card">
-      <rvw-tour-top-member></rvw-tour-top-member>
-    </mat-card>
-  </mat-grid-tile>
-  <mat-grid-tile colspan="2" rowspan="5">
-    <mat-card class="dashboard-card">
-      <rvw-tour-list></rvw-tour-list>
-    </mat-card>
-  </mat-grid-tile>
-</mat-grid-list>
+<mat-card class="dashboard-card">
+  <mat-card-header>
+    <mat-card-title>
+      <form [formGroup]="formGroup" (ngSubmit)="save()">
+        <mat-form-field>
+          <input matInput type="number" formControlName="year" />
+        </mat-form-field>
+      </form>
+      <button mat-icon-button class="more-button" [matMenuTriggerFor]="chartMenu" aria-label="Toggle menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #chartMenu="matMenu" xPosition="before">
+        <button mat-menu-item (click)="setChart('date')">Top by Date</button>
+        <button mat-menu-item (click)="setChart('member')">Top by Member</button>
+        <button mat-menu-item (click)="setChart('tour')">Top by Tour</button>
+      </mat-menu>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <rvw-by-date *ngIf="chart === 'date'"></rvw-by-date>
+    <rvw-tour-top-tour *ngIf="chart === 'tour'"></rvw-tour-top-tour>
+    <rvw-tour-top-member *ngIf="chart === 'member'"></rvw-tour-top-member>
+  </mat-card-content>
+</mat-card>
+<mat-card class="dashboard-card">
+  <mat-card-title>
+    List
+    <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" xPosition="before">
+      <button mat-menu-item [routerLink]="['.', 'list']">Expand</button>
+      <button mat-menu-item>Remove</button>
+    </mat-menu>
+  </mat-card-title>
+  <mat-card-content>
+    <rvw-tour-list></rvw-tour-list>
+  </mat-card-content>
+</mat-card>

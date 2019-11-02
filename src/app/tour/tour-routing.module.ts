@@ -5,8 +5,8 @@ import { TourEditComponent } from './tour-edit/tour-edit.component';
 import { TourHomeComponent } from './tour-home/tour-home.component';
 
 const routes: Routes = [
-  { path: ':id', component: TourEditComponent },
   { path: 'list', component: TourListComponent },
+  { path: ':id', component: TourEditComponent },
   { path: '', component: TourHomeComponent }
 ];
 

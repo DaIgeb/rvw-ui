@@ -12,6 +12,7 @@ import { distinctUntilChanged, delay, first } from 'rxjs/operators';
   styleUrls: ['./tour-home.component.scss']
 })
 export class TourHomeComponent implements OnInit {
+  chart ='date';
   year = new FormControl(new Date().getFullYear(), { updateOn: 'blur' });
   formGroup = new FormGroup({
     year: this.year
@@ -30,6 +31,10 @@ export class TourHomeComponent implements OnInit {
       .subscribe(v => {
         return this.store.dispatch(new ActionTourSetYear(v));
       });
+  }
+
+  setChart(type: string) {
+    this.chart = type;
   }
 
   save() {

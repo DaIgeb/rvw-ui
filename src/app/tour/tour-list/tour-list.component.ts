@@ -61,11 +61,21 @@ export class TourListComponent implements OnInit, AfterViewInit {
   currentSort: Sort | undefined;
   currentPage: PageEvent;
 
+  baseTourUrl: string;
+
   constructor(
     private store: Store<AppState>,
     private logger: LoggerService,
-    private tableService: TableService
-  ) {}
+    private tableService: TableService,
+    private router: Router
+  ) {
+    if (this.router.url.endsWith("list")) {
+      this.baseTourUrl = '..';
+    }
+    else {
+      this.baseTourUrl = '.';
+    }
+  }
 
   ngOnInit() {
     this.store.dispatch(new ActionTourLoad());

@@ -1,7 +1,23 @@
 .dashboard-card {
+  margin: 15px;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-part {
+  display: flex;
+}
+
+.content {
+  flex: 1;
+  min-height: 450px;
+}
+
+.more-button {
   position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
+  top: 5px;
+  right: 10px;
 }
