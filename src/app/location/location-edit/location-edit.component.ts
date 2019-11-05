@@ -78,7 +78,6 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
     );
     this.currentLocation$.subscribe(r => {
       this.location = r;
-      // this.timelines = r && r.type === 'restaurant' ? r.timelines : [];
       this.reset();
     });
   }
@@ -121,7 +120,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
     });
     this.currentLocation$.pipe(startWith(this.location)).subscribe(r => {
       if (r) {
-        const position = new google.maps.LatLng(r.longitude, r.latitude);
+        const position = new google.maps.LatLng(r.latitude, r.longitude);
         marker.setPosition(position);
       }
     });

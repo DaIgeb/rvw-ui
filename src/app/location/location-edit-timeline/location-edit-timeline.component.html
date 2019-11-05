@@ -1,44 +1,46 @@
-<div [formGroup]="formGroup">
-    <div>
-        <mat-form-field>
-            <input matInput [matDatepicker]="fromPicker" placeholder="From" formControlName="from" required />
-            <mat-datepicker-toggle matSuffix [for]="fromPicker" tabindex=-1></mat-datepicker-toggle>
-            <mat-datepicker #fromPicker></mat-datepicker>
-            <mat-error *ngIf="from.invalid">{{ getErrorMessage(from) }}
-            </mat-error>
-        </mat-form-field>
+<mat-card>
+    <mat-card-content [formGroup]="formGroup">
+        <div>
+            <mat-form-field>
+                <input matInput [matDatepicker]="fromPicker" placeholder="From" formControlName="from" required />
+                <mat-datepicker-toggle matSuffix [for]="fromPicker" tabindex=-1></mat-datepicker-toggle>
+                <mat-datepicker #fromPicker></mat-datepicker>
+                <mat-error *ngIf="from.invalid">{{ getErrorMessage(from) }}
+                </mat-error>
+            </mat-form-field>
 
-        <mat-form-field>
-            <input matInput [matDatepicker]="untilPicker" placeholder="Until" formControlName="until" />
-            <mat-datepicker-toggle matSuffix [for]="untilPicker" tabindex=-1></mat-datepicker-toggle>
-            <mat-datepicker #untilPicker></mat-datepicker>
-            <mat-error *ngIf="until.invalid">{{ getErrorMessage(until) }}
-            </mat-error>
-        </mat-form-field>
-
-
-        <mat-form-field>
-            <input matInput placeholder="phone" formControlName="phone" />
-            <mat-error *ngIf="getErrorMessage(phone).invalid">
-                {{ getErrorMessage(getErrorMessage(phone)) }}</mat-error>
-        </mat-form-field>
+            <mat-form-field>
+                <input matInput [matDatepicker]="untilPicker" placeholder="Until" formControlName="until" />
+                <mat-datepicker-toggle matSuffix [for]="untilPicker" tabindex=-1></mat-datepicker-toggle>
+                <mat-datepicker #untilPicker></mat-datepicker>
+                <mat-error *ngIf="until.invalid">{{ getErrorMessage(until) }}
+                </mat-error>
+            </mat-form-field>
 
 
-        <mat-form-field>
-            <input matInput placeholder="notes" formControlName="notes" />
-            <mat-error *ngIf="getErrorMessage(notes).invalid">
-                {{ getErrorMessage(getErrorMessage(notes)) }}</mat-error>
-        </mat-form-field>
-    </div>
+            <mat-form-field>
+                <input matInput placeholder="phone" formControlName="phone" />
+                <mat-error *ngIf="getErrorMessage(phone).invalid">
+                    {{ getErrorMessage(getErrorMessage(phone)) }}</mat-error>
+            </mat-form-field>
 
-    <div formArrayName="businessHours"
-        *ngFor="let businessHour of formGroup.controls['businessHours'].controls; let j = index">
-        <rvw-location-edit-businesshour [formControlName]="j"></rvw-location-edit-businesshour>
-    </div>
-    <div>
-        <button mat-button type="button" (click)="addBusinessHour()">
-            <mat-icon>add</mat-icon>
-            Add Business Hours
-        </button>
-    </div>
-</div>
+
+            <mat-form-field>
+                <input matInput placeholder="notes" formControlName="notes" />
+                <mat-error *ngIf="getErrorMessage(notes).invalid">
+                    {{ getErrorMessage(getErrorMessage(notes)) }}</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div formArrayName="businessHours"
+            *ngFor="let businessHour of formGroup.controls['businessHours'].controls; let j = index">
+            <rvw-location-edit-businesshour [formControlName]="j"></rvw-location-edit-businesshour>
+        </div>
+        <div>
+            <button mat-button type="button" (click)="addBusinessHour()">
+                <mat-icon>add</mat-icon>
+                Add Business Hours
+            </button>
+        </div>
+    </mat-card-content>
+</mat-card>
