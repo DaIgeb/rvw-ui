@@ -101,13 +101,10 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
     marker.addListener('dragend', () => {
       const pos = marker.getPosition();
 
-      this.formGroup.patchValue(
-        {
-          longitude: pos.lng(),
-          latitude: pos.lat()
-        },
-        { emitEvent: true }
-      );
+      this.longitude.setValue(pos.lng());
+      this.latitude.setValue(pos.lat());
+      this.longitude.markAsDirty();
+      this.latitude.markAsDirty();
     });
 
     combineLatest([
