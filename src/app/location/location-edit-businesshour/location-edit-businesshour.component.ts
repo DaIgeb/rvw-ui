@@ -22,7 +22,7 @@ import * as moment from 'moment';
 })
 export class LocationEditBusinesshourComponent implements OnInit, ControlValueAccessor, Validator {
   onTouched: any;
-  from = new FormControl('', [Validators.required]);
+  from = new FormControl(undefined, [Validators.required]);
   until = new FormControl('', [Validators.required]);
   weekday = new FormControl('', [Validators.required]);
 
@@ -56,8 +56,8 @@ export class LocationEditBusinesshourComponent implements OnInit, ControlValueAc
   writeValue(obj: BusinessHour): void {
     this.formGroup.patchValue({
       ...obj,
-      from: moment(obj.from, 'HH:mm:ss').format('HH:mm'),
-      until: moment(obj.until, 'HH:mm:ss').format('HH:mm')
+      from: obj.from ? moment(obj.from, 'HH:mm:ss').format('HH:mm') : undefined,
+      until: obj.until ? moment(obj.until, 'HH:mm:ss').format('HH:mm') : undefined
     });
   }
 
