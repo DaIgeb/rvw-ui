@@ -13,6 +13,7 @@
 
     <mat-form-field ngClass="field">
         <input matInput [ngxTimepicker]="fromPicker" formControlName="from" [format]="24">
+        <ngx-material-timepicker-toggle [for]="fromPicker" matSuffix></ngx-material-timepicker-toggle>            
         <ngx-material-timepicker #fromPicker></ngx-material-timepicker>
         <mat-error *ngIf="from.invalid">
             {{ getErrorMessage(from) }}
@@ -21,7 +22,8 @@
 
     <mat-form-field ngClass="field">
         <input matInput [ngxTimepicker]="untilPicker" formControlName="until" [format]="24">
-        <ngx-material-timepicker #untilPicker></ngx-material-timepicker>
+        <ngx-material-timepicker-toggle [for]="untilPicker" matSuffix></ngx-material-timepicker-toggle>            
+        <ngx-material-timepicker #untilPicker ></ngx-material-timepicker>
         <mat-error *ngIf="until.invalid">
             {{ getErrorMessage(until) }}
         </mat-error>

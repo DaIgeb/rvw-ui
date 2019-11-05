@@ -59,7 +59,6 @@ export class LocationEditTimelineComponent implements OnInit, ControlValueAccess
       this.addBusinessHour();
     }
 
-    console.log(obj);
     this.formGroup.patchValue({
       ...obj,
       from: obj.from || this.formGroup.value.from || moment().format('YYYY-MM-DD')
