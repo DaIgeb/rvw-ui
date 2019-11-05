@@ -8,7 +8,7 @@ import {
   ElementRef,
   AfterViewInit
 } from '@angular/core';
-import { FormControl, Validators, FormArray, FormGroup, AbstractControl } from '@angular/forms';
+import { FormControl, Validators, FormArray, FormGroup, AbstractControl, Validator } from '@angular/forms';
 import { Observable, combineLatest } from 'rxjs';
 import { Location, Timeline } from '../location.model';
 import { Store, select } from '@ngrx/store';
@@ -18,7 +18,14 @@ import { ActionLocationSave, ActionLocationLoad } from '../location.actions';
 import { switchMap, startWith } from 'rxjs/operators';
 import { selectLocationById } from '../location.selectors';
 import * as moment from 'moment';
-import { MatTabChangeEvent } from '@angular/material/tabs';
+
+const requiredIfRestaurant = (c: AbstractControl) => {
+  if (!c.parent || c.parent.controls['type'].value !== 'restaurant') {
+    return null;
+  }
+
+  return (c as FormArray).controls.length > 0 && c.valid ? null: {'required': 'At least one element required'};
+}
 
 @Component({
   templateUrl: './location-edit.component.html',
@@ -33,7 +40,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
   country = new FormControl('', []);
   longitude = new FormControl('', []);
   latitude = new FormControl('', []);
-  timelines = new FormArray([], [Validators.required, Validators.minLength(1)]);
+  timelines = new FormArray([], [requiredIfRestaurant, Validators.minLength(1)]);
 
   formGroup = new FormGroup({
     name: this.name,

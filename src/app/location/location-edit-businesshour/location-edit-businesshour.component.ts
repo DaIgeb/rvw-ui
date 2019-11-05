@@ -54,7 +54,11 @@ export class LocationEditBusinesshourComponent implements OnInit, ControlValueAc
   }
 
   writeValue(obj: BusinessHour): void {
-    this.formGroup.patchValue(obj, { emitEvent: false });
+    this.formGroup.patchValue({
+      ...obj,
+      from: moment(obj.from, 'HH:mm:ss').format('HH:mm'),
+      until: moment(obj.until, 'HH:mm:ss').format('HH:mm')
+    });
   }
 
   registerOnChange(fn) {

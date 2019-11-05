@@ -50,7 +50,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
     private store: Store<AppState>,
     private logger: LoggerService,
     private tableService: TableService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.store.dispatch(new ActionLocationLoad());
@@ -115,20 +115,40 @@ export class LocationListComponent implements OnInit, AfterViewInit {
       .subscribe(data => (this.data = data));
   }
 
+  onFileSelected() {
+  }
+
   private parseFile(
     inputNode: HTMLInputElement,
-    handleContent: (csv: ParseResult) => void
+    includeId: boolean,
+    handleContent: (csv: Location[]) => void
   ) {
     if (typeof FileReader !== 'undefined') {
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
-        const csv = papa.parse(e.target.result, { header: true });
+        if (inputNode.files[0].type === 'application/json') { 
+          let data = JSON.parse(e.target.result) as Location[];
 
-        if (csv.errors && csv.errors.length > 0) {
-          this.logger.error(JSON.stringify(csv.errors, null, 2));
-        } else {
-          handleContent(csv);
+          if (!includeId) 
+          {
+            data = data.map(d => {
+              const {id, ...rest} = d;
+
+              return rest as Location;
+            });
+          }
+
+          handleContent(data);
+        }
+        else {
+          const csv = papa.parse(e.target.result, { header: true });
+
+          if (csv.errors && csv.errors.length > 0) {
+            this.logger.error(JSON.stringify(csv.errors, null, 2));
+          } else {
+            handleContent(this.map(csv, includeId));
+          }
         }
       };
 
@@ -139,16 +159,16 @@ export class LocationListComponent implements OnInit, AfterViewInit {
   onUpdateFileSelected() {
     const inputNode = document.querySelector<HTMLInputElement>('#updateFile');
 
-    this.parseFile(inputNode, csv =>
-      this.store.dispatch(new ActionLocationSave(this.map(csv, true)))
+    this.parseFile(inputNode, true, csv =>
+      this.store.dispatch(new ActionLocationSave(csv))
     );
   }
 
   onCreateFileSelected() {
     const inputNode = document.querySelector<HTMLInputElement>('#createFile');
 
-    this.parseFile(inputNode, csv =>
-      this.store.dispatch(new ActionLocationSave(this.map(csv, false)))
+    this.parseFile(inputNode, false, csv =>
+      this.store.dispatch(new ActionLocationSave(csv))
     );
   }
 
