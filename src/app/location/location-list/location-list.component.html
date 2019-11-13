@@ -4,9 +4,11 @@
       <mat-icon>add</mat-icon>Add new
     </a>
     <button type="button" mat-raised-button (click)="createFile.click()">
-      Batch Create Routes
+      Batch Create Locations
     </button>
     <input hidden (change)="onCreateFileSelected()" #createFile type="file" id="createFile" /> </mat-card-header>
+    
+    <rvw-export [items]="locations$ | async" fileName="location.json" type="application/json"></rvw-export>
   <mat-card-content>
     <div class="table-container">
       <mat-form-field [formGroup]="formGroup">

@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Location } from './location.model';
+import { Detail as Location } from 'rvw-model/lib/location';
 
 export enum LocationActionTypes {
   LOAD = '[Location] Load',

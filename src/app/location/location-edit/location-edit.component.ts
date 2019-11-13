@@ -8,9 +8,10 @@ import {
   ElementRef,
   AfterViewInit
 } from '@angular/core';
-import { FormControl, Validators, FormArray, FormGroup, AbstractControl, Validator } from '@angular/forms';
+import { FormControl, Validators, FormArray, FormGroup, AbstractControl } from '@angular/forms';
 import { Observable, combineLatest } from 'rxjs';
-import { Location, Timeline } from '../location.model';
+import { Detail as Location } from 'rvw-model/lib/location';
+
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { ActivatedRoute } from '@angular/router';
@@ -33,6 +34,7 @@ const requiredIfRestaurant = (c: AbstractControl) => {
 })
 export class LocationEditComponent implements OnInit, AfterViewInit {
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
+  identifier = new FormControl('', [Validators.required, Validators.minLength(3)]);
   type = new FormControl('', [Validators.required]);
   street = new FormControl('', []);
   zipCode = new FormControl('', []);
@@ -44,6 +46,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
 
   formGroup = new FormGroup({
     name: this.name,
+    identifier: this.identifier,
     type: this.type,
     street: this.street,
     zipCode: this.zipCode,
@@ -167,6 +170,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
     let location: Location = {
       id: this.location ? this.location.id : undefined,
       name: this.name.value,
+      identifier: this.identifier.value,
       type: 'position',
       street: this.street.value ? this.street.value : undefined,
       zipCode: this.zipCode.value ? this.zipCode.value : undefined,

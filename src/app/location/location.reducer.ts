@@ -2,7 +2,8 @@ import { LocationState } from './location.model';
 import { LocationActions, LocationActionTypes } from './location.actions';
 
 export const initialState: LocationState = {
-  locations: []
+  list: [],
+  details: {}
 };
 
 export function locationReducer(
@@ -13,26 +14,30 @@ export function locationReducer(
     case LocationActionTypes.LOAD: {
       return {
         ...state,
-        locations: []
+        list: []
       };
     }
     case LocationActionTypes.LOAD_SUCCESS: {
       return {
         ...state,
-        locations: action.payload
+        list: action.payload,
+        details: action.payload.reduce((prev, cur) => {
+          prev[cur.id] = cur;
+          return prev;
+        }, {})
       };
     }
     case LocationActionTypes.LOAD_FAILURE: {
       return {
         ...state,
-        locations: []
+        list: []
       };
     }
     case LocationActionTypes.SAVE_SUCCESS: {
       return {
         ...state,
-        locations: [
-          ...state.locations.filter(
+        list: [
+          ...state.list.filter(
             r => !action.payload.some(l => r.id === l.id)
           ),
           ...action.payload

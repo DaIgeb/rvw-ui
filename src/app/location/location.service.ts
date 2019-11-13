@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { switchMap, tap } from 'rxjs/operators';
 import { isArray } from 'util';
 import { Observable } from 'rxjs';
-import {Location} from './location.model';
+import { Detail as Location } from 'rvw-model/lib/location';
 
 @Injectable({
   providedIn: 'root'

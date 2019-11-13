@@ -7,6 +7,7 @@ import { RouteRoutingModule } from './route-routing.module';
 import { RouteListComponent } from './route-list/route-list.component';
 import { AppMaterialModule } from '@app/app-material/app-material.module';
 import { RouteEditComponent } from './route-edit/route-edit.component';
+import { SharedModule } from '@app/shared/shared.module';
 
 @NgModule({
   declarations: [RouteListComponent, RouteEditComponent],
@@ -15,6 +16,7 @@ import { RouteEditComponent } from './route-edit/route-edit.component';
     ReactiveFormsModule,
     RouteRoutingModule,
     CdkTableModule,
+    SharedModule,
     AppMaterialModule
   ]
 })

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, ControlValueAccessor, Validator, NG_VALUE_ACCESSOR, NG_ASYNC_VALIDATORS, ValidationErrors, AbstractControl, FormControl, Validators, NG_VALIDATORS } from '@angular/forms';
-import { BusinessHour, Timeline } from '../location.model';
+import { ITimeline as Timeline, IBusinessHour as BusinessHour } from 'rvw-model/lib/location';
+
 import * as moment from 'moment';
 
 @Component({

@@ -1,8 +1,8 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { FormGroup, FormControl, FormArray, ControlValueAccessor, NG_VALUE_ACCESSOR, NG_ASYNC_VALIDATORS, Validators, Validator, AbstractControl, ValidationErrors, NG_VALIDATORS } from '@angular/forms';
-import { tap } from 'rxjs/operators';
-import { Timeline } from '../location.model';
+import { FormGroup, FormControl, FormArray, ControlValueAccessor, NG_VALUE_ACCESSOR, Validators, Validator, AbstractControl, ValidationErrors, NG_VALIDATORS } from '@angular/forms';
+import { ITimeline as Timeline } from 'rvw-model/lib/location';
+
 
 @Component({
   selector: 'rvw-location-edit-timeline',

@@ -16,7 +16,7 @@ import { LoggerService } from '@app/core/logger.service';
 import { TableService } from '@app/shared/table.service';
 import { ActionLocationLoad, ActionLocationSave } from '../location.actions';
 import { selectLocationAll } from '../location.selectors';
-import { Location } from '../location.model';
+import { Detail, List as Location } from 'rvw-model/lib/location';
 import { ParseResult } from 'papaparse';
 import * as papa from 'papaparse';
 
@@ -28,7 +28,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['name', 'type', 'action'];
 
   data: Location[] = [];
-  data$: Observable<Location[]>;
+  locations$: Observable<Location[]>;
 
   private filter = new FormControl('');
   private filter$: Observable<string>;
@@ -67,7 +67,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
 
     const locations$ = this.store.select(selectLocationAll);
 
-    merge(this.sort.sortChange, this.paginator.page)
+    this.locations$ = merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
         delay(0),
@@ -89,53 +89,50 @@ export class LocationListComponent implements OnInit, AfterViewInit {
               )
             )
           );
-        }),
-        map(data => {
-          this.isLoadingResults = false;
-          this.isRateLimitReached = false;
-          this.resultsLength = data.length;
+        }));
+    this.locations$.pipe(
+      map(data => {
+        this.isLoadingResults = false;
+        this.isRateLimitReached = false;
+        this.resultsLength = data.length;
 
-          const sortedData = this.tableService.applySort(
-            data,
-            this.currentSort || {
-              active: 'firstName',
-              direction: 'asc'
-            }
-          );
+        const sortedData = this.tableService.applySort(
+          data,
+          this.currentSort || {
+            active: 'firstName',
+            direction: 'asc'
+          }
+        );
 
-          return this.tableService.applyPaging(sortedData, this.currentPage);
-        }),
-        catchError(err => {
-          this.logger.error(err);
-          this.isLoadingResults = false;
-          this.isRateLimitReached = true;
-          return of([]);
-        })
-      )
+        return this.tableService.applyPaging(sortedData, this.currentPage);
+      }),
+      catchError(err => {
+        this.logger.error(err);
+        this.isLoadingResults = false;
+        this.isRateLimitReached = true;
+        return of([]);
+      })
+    )
       .subscribe(data => (this.data = data));
-  }
-
-  onFileSelected() {
   }
 
   private parseFile(
     inputNode: HTMLInputElement,
     includeId: boolean,
-    handleContent: (csv: Location[]) => void
+    handleContent: (csv: Detail[]) => void
   ) {
     if (typeof FileReader !== 'undefined') {
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
-        if (inputNode.files[0].type === 'application/json') { 
-          let data = JSON.parse(e.target.result) as Location[];
+        if (inputNode.files[0].type === 'application/json') {
+          let data = JSON.parse(e.target.result) as Detail[];
 
-          if (!includeId) 
-          {
+          if (!includeId) {
             data = data.map(d => {
-              const {id, ...rest} = d;
+              const { id, ...rest } = d;
 
-              return rest as Location;
+              return rest as Detail;
             });
           }
 
@@ -172,7 +169,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private map(csv: ParseResult, includeId: boolean) {
+  private map(csv: ParseResult, includeId: boolean): Detail[] {
     const headers = this.parseHeader(csv);
 
     return csv.data.map(
@@ -180,6 +177,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
         ({
           id: includeId ? d[headers.idField] : undefined,
           name: d[headers.nameField],
+          identifier: d[headers.identifierField],
           type: d[headers.typeField],
           address: d[headers.addressField]
             ? d[headers.addressField]
@@ -190,7 +188,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
           city: d[headers.cityField] ? d[headers.cityField] : undefined,
           longitude: d[headers.longitudeField],
           latitude: d[headers.latitudeField]
-        } as Location)
+        } as Detail)
     );
   }
 
@@ -198,6 +196,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
     return {
       idField: csv.meta.fields.find(s => s.startsWith('id')),
       nameField: csv.meta.fields.find(s => s.startsWith('name')),
+      identifierField: csv.meta.fields.find(s => s.startsWith('identifier')),
       typeField: csv.meta.fields.find(s => s.startsWith('type')),
       addressField: csv.meta.fields.find(s => s.startsWith('address')),
       zipCodeField: csv.meta.fields.find(s => s.startsWith('zipCode')),

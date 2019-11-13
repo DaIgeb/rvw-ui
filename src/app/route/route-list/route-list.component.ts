@@ -48,7 +48,7 @@ export class RouteListComponent implements AfterViewInit, OnInit {
     private route: Router,
     private logger: LoggerService,
     private tableService: TableService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.store.dispatch(new ActionRouteLoad());
@@ -63,7 +63,7 @@ export class RouteListComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.sort.sortChange.subscribe(() => this.paginator.firstPage());
 
-    merge(this.sort.sortChange, this.paginator.page)
+    this.data$ = merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
         delay(0),
@@ -83,27 +83,28 @@ export class RouteListComponent implements AfterViewInit, OnInit {
           ]).pipe(
             map(data => data[0].filter(i => i.name.toLocaleLowerCase().indexOf(data[1]) !== -1))
           );
-        }),
-        map(data => {
-          // Flip flag to show that loading has finished.
-          this.isLoadingResults = false;
-          this.isRateLimitReached = false;
-          this.resultsLength = data.length;
+        }));
+    this.data$.pipe(
+      map(data => {
+        // Flip flag to show that loading has finished.
+        this.isLoadingResults = false;
+        this.isRateLimitReached = false;
+        this.resultsLength = data.length;
 
-          return this.tableService.applyPaging(
-            this.tableService.applySort(data, this.currentSort || {
-              active: 'firstName',
-              direction: 'asc'
-            }),
-            this.currentPage
-          );
-        }),
-        catchError(() => {
-          this.isLoadingResults = false;
-          this.isRateLimitReached = true;
-          return observableOf([]);
-        })
-      )
+        return this.tableService.applyPaging(
+          this.tableService.applySort(data, this.currentSort || {
+            active: 'firstName',
+            direction: 'asc'
+          }),
+          this.currentPage
+        );
+      }),
+      catchError(() => {
+        this.isLoadingResults = false;
+        this.isRateLimitReached = true;
+        return observableOf([]);
+      })
+    )
       .subscribe(data => (this.data = data));
   }
 

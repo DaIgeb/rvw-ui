@@ -8,21 +8,33 @@ import * as Papa from 'papaparse';
 })
 export class ExportComponent implements OnInit {
   @Input()
-  fileName? = 'data.csv';
+  fileName?= 'data.csv';
 
   @Input()
   items: any[];
 
-  constructor() {}
+  @Input()
+  type = 'text/csv';
 
-  ngOnInit() {}
+  constructor() { }
+
+  ngOnInit() { }
 
   exportAll() {
-    const content = Papa.unparse(this.items, {});
+    let content: string;
+
+    switch (this.type) {
+      case 'application/json':
+        content = JSON.stringify(this.items, null, 0);
+        break;
+      default:
+        content = Papa.unparse(this.items, {});
+        break;
+    }
 
     const dynamicDownload = document.createElement('a');
     const element = dynamicDownload;
-    const fileType = 'text/csv';
+    const fileType = this.type;
     element.setAttribute(
       'href',
       `data:${fileType};charset=utf-8,${encodeURIComponent(content)}`

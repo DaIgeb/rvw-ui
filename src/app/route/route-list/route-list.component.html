@@ -18,6 +18,9 @@
       type="file"
       id="file"
     />
+
+    <rvw-export [items]="data$ | async" fileName="route.json" type="application/json"></rvw-export>
+
   </mat-card-header>
   <mat-card-content>
     <div class="table-container">
