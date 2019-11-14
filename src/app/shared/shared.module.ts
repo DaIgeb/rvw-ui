@@ -6,15 +6,16 @@ import { AppMaterialModule } from '@app/app-material/app-material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { ExportComponent } from './export/export.component';
+import { ProgressIndicatorComponent } from './progress-indicator/progress-indicator.component';
 
 @NgModule({
-  declarations: [LogPipe, ChartComponent, ExportComponent],
+  declarations: [LogPipe, ChartComponent, ExportComponent, ProgressIndicatorComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     HighchartsChartModule,
     AppMaterialModule
   ],
-  exports: [LogPipe, ChartComponent, ExportComponent]
+  exports: [LogPipe, ChartComponent, ExportComponent, ProgressIndicatorComponent]
 })
 export class SharedModule {}

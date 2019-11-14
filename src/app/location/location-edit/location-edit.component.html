@@ -1,4 +1,5 @@
-<mat-card>
+<rvw-progress-indicator [style.display]="(currentLocationLoading$ |async) ? 'block':'none'"></rvw-progress-indicator>
+<mat-card [style.display]="(currentLocationLoading$ |async) ? 'none' : 'block'">
   <mat-card-content>
     <form [formGroup]="formGroup" (ngSubmit)="save()" class="form">
       <mat-form-field>

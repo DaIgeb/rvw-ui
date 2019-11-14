@@ -13,7 +13,7 @@ export class LocationEffects {
   constructor(
     private actions$: Actions,
     private service: LocationService,
-    private location: Location  ) {}
+    private location: Location) { }
 
   @Effect()
   load = this.actions$.pipe(
@@ -22,6 +22,17 @@ export class LocationEffects {
       this.service.load().pipe(
         map(r => new fromLocation.ActionLocationLoadSuccess(r)),
         catchError(error => of(new fromLocation.ActionLocationLoadFailure(error)))
+      )
+    )
+  );
+
+  @Effect()
+  loadDetail = this.actions$.pipe(
+    ofType<fromLocation.ActionLocationLoadDetail>(fromLocation.LocationActionTypes.LOAD_DETAIL),
+    switchMap(a =>
+      this.service.loadDetail(a.payload).pipe(
+        map(r => new fromLocation.ActionLocationLoadDetailSuccess(r)),
+        catchError(error => of(new fromLocation.ActionLocationLoadDetailFailure({ id: a.payload, err: error })))
       )
     )
   );

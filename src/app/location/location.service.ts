@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { switchMap, tap } from 'rxjs/operators';
 import { isArray } from 'util';
 import { Observable } from 'rxjs';
-import { Detail as Location } from 'rvw-model/lib/location';
+import { Detail, List } from 'rvw-model/lib/location';
 
 @Injectable({
   providedIn: 'root'
@@ -17,17 +17,17 @@ export class LocationService {
     private http: HttpClient
   ) { }
 
-  save(payload: Location | Location[]): Observable<Location | Location[]> {
+  save(payload: Detail | Detail[]): Observable<Detail | Detail[]> {
     return this.configService
       .getConfig()
       .pipe(
         switchMap(c => {
           if (isArray(payload)) {
-            return this.http.post<Location[]>(c.locationsUrl, payload);
+            return this.http.post<Detail[]>(c.locationsUrl, payload);
           } else if (payload.id) {
-            return this.http.put<Location>(`${c.locationsUrl}${payload.id}`, payload);
+            return this.http.put<Detail>(`${c.locationsUrl}${payload.id}`, payload);
           } else {
-            return this.http.post<Location>(c.locationsUrl, payload);
+            return this.http.post<Detail>(c.locationsUrl, payload);
           }
         })
       )
@@ -36,10 +36,18 @@ export class LocationService {
       );
   }
 
-  load = (): Observable<Location[]> => {
+  load = (): Observable<List[]> => {
     return this.configService
       .getConfig()
-      .pipe(switchMap(c => this.http.get<Location[]>(c.locationsUrl)))
+      .pipe(switchMap(c => this.http.get<List[]>(c.locationsUrl)))
+      .pipe(tap(i => this.logger.log('Locations: ' + JSON.stringify(i, null, 2))))
+      ;
+  }
+  
+  loadDetail = (id: string): Observable<Detail> => {
+    return this.configService
+      .getConfig()
+      .pipe(switchMap(c => this.http.get<Detail>(`${c.locationsUrl}/${id}`)))
       .pipe(tap(i => this.logger.log('Locations: ' + JSON.stringify(i, null, 2))))
       ;
   }

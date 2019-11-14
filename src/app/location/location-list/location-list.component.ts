@@ -6,7 +6,8 @@ import {
   startWith,
   delay,
   switchMap,
-  debounce
+  debounce,
+  tap
 } from 'rxjs/operators';
 import { MatPaginator, MatSort, Sort, PageEvent } from '@angular/material';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -15,7 +16,7 @@ import { AppState } from '@app/core';
 import { LoggerService } from '@app/core/logger.service';
 import { TableService } from '@app/shared/table.service';
 import { ActionLocationLoad, ActionLocationSave } from '../location.actions';
-import { selectLocationAll } from '../location.selectors';
+import { selectLocationAll, selectLocationIsLoaded } from '../location.selectors';
 import { Detail, List as Location } from 'rvw-model/lib/location';
 import { ParseResult } from 'papaparse';
 import * as papa from 'papaparse';
@@ -45,6 +46,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   currentSort: Sort | undefined;
   currentPage: PageEvent;
+  locationsLoaded$: Observable<boolean>;
 
   constructor(
     private store: Store<AppState>,
@@ -53,7 +55,13 @@ export class LocationListComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this.store.dispatch(new ActionLocationLoad());
+    this.locationsLoaded$ = this.store.select(selectLocationIsLoaded);
+    this.locationsLoaded$
+      .subscribe(loaded => {
+        if (!loaded) {
+          this.store.dispatch(new ActionLocationLoad())
+        }
+      });
 
     this.filter$ = this.filter.valueChanges.pipe(
       startWith(''),
@@ -66,7 +74,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
     this.sort.sortChange.subscribe(() => this.paginator.firstPage());
 
     const locations$ = this.store.select(selectLocationAll);
-
+    
     this.locations$ = merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),

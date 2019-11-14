@@ -1,4 +1,6 @@
-<mat-card>
+<rvw-progress-indicator [style.display]="(locationsLoaded$ |async) ? 'none':'block'"></rvw-progress-indicator>
+
+<mat-card [style.display]="(locationsLoaded$ |async) ? 'block' : 'none'">
   <mat-card-header>
     <a mat-raised-button aria-label="Add new" [routerLink]="['../location/', 0]" routerLinkActive="router-link-active">
       <mat-icon>add</mat-icon>Add new
@@ -7,8 +9,8 @@
       Batch Create Locations
     </button>
     <input hidden (change)="onCreateFileSelected()" #createFile type="file" id="createFile" /> </mat-card-header>
-    
-    <rvw-export [items]="locations$ | async" fileName="location.json" type="application/json"></rvw-export>
+
+  <rvw-export [items]="locations$ | async" fileName="location.json" type="application/json"></rvw-export>
   <mat-card-content>
     <div class="table-container">
       <mat-form-field [formGroup]="formGroup">

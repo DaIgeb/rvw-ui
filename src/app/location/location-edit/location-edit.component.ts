@@ -15,9 +15,9 @@ import { Detail as Location } from 'rvw-model/lib/location';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { ActivatedRoute } from '@angular/router';
-import { ActionLocationSave, ActionLocationLoad } from '../location.actions';
-import { switchMap, startWith } from 'rxjs/operators';
-import { selectLocationById } from '../location.selectors';
+import { ActionLocationSave, ActionLocationLoad, ActionLocationLoadDetail } from '../location.actions';
+import { switchMap, startWith, map, tap } from 'rxjs/operators';
+import { selectLocationById, selectLocationByIdState } from '../location.selectors';
 import * as moment from 'moment';
 
 const requiredIfRestaurant = (c: AbstractControl) => {
@@ -67,6 +67,7 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
 
   @ViewChild('gmap', { static: true }) mapElement: ElementRef;
   map: google.maps.Map;
+  currentLocationLoading$: Observable<boolean>;
 
   constructor(
     private store: Store<AppState>,
@@ -74,11 +75,18 @@ export class LocationEditComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this.store.dispatch(new ActionLocationLoad());
+    const id = this.snapshot.paramMap.pipe(map(p => p.get('id')));
+    const itemState = id.pipe(
+      switchMap(i => this.store.pipe(select(selectLocationByIdState(i))))
+    ).pipe(tap(state => {
+      if (!state.loaded && !state.loading) {
+        this.store.dispatch(new ActionLocationLoadDetail(state.id))
+      }
+    }));
 
-    this.currentLocation$ = this.snapshot.paramMap.pipe(
-      switchMap(p => this.store.pipe(select(selectLocationById(p.get('id')))))
-    );
+    this.currentLocationLoading$ = itemState.pipe(map(state => state.loading));
+    this.currentLocation$ = itemState.pipe(map(state => state.item));
+
     this.currentLocation$.subscribe(r => {
       this.location = r;
       this.reset();
