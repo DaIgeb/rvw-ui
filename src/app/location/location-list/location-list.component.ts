@@ -39,9 +39,7 @@ export class LocationListComponent implements OnInit, AfterViewInit {
   });
 
   resultsLength = 0;
-  isLoadingResults = true;
-  isRateLimitReached = false;
-
+  
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   currentSort: Sort | undefined;
@@ -86,8 +84,6 @@ export class LocationListComponent implements OnInit, AfterViewInit {
             this.currentPage = s;
           }
 
-          this.isLoadingResults = true;
-
           return combineLatest([locations$, this.filter$]).pipe(
             map(data =>
               data[0].filter(
@@ -100,8 +96,6 @@ export class LocationListComponent implements OnInit, AfterViewInit {
         }));
     this.locations$.pipe(
       map(data => {
-        this.isLoadingResults = false;
-        this.isRateLimitReached = false;
         this.resultsLength = data.length;
 
         const sortedData = this.tableService.applySort(
@@ -116,8 +110,6 @@ export class LocationListComponent implements OnInit, AfterViewInit {
       }),
       catchError(err => {
         this.logger.error(err);
-        this.isLoadingResults = false;
-        this.isRateLimitReached = true;
         return of([]);
       })
     )
