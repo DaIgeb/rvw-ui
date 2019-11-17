@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { of, Observable } from 'rxjs';
-import { Route } from './route.model';
+import { IDetail, IList } from 'rvw-model/lib/route';
 import { HttpClient } from '@angular/common/http';
 import { LoggerService } from '@app/core/logger.service';
 import { ConfigService } from '@app/core/config';
@@ -15,19 +15,19 @@ export class RouteService {
     private logger: LoggerService,
     private configService: ConfigService,
     private http: HttpClient
-  ) {}
+  ) { }
 
-  save(payload: Route | Route[]): Observable<Route | Route[]> {
+  save(payload: IDetail | IDetail[]): Observable<IDetail | IDetail[]> {
     return this.configService
       .getConfig()
       .pipe(
         switchMap(c => {
           if (isArray(payload)) {
-            return this.http.post<Route[]>(c.routesUrl, payload);
+            return this.http.post<IDetail[]>(c.routesUrl, payload);
           } else if (payload.id) {
-            return this.http.put<Route>(`${c.routesUrl}${payload.id}`, payload);
+            return this.http.put<IDetail>(`${c.routesUrl}${payload.id}`, payload);
           } else {
-            return this.http.post<Route>(c.routesUrl, payload);
+            return this.http.post<IDetail>(c.routesUrl, payload);
           }
         })
       )
@@ -36,10 +36,17 @@ export class RouteService {
       );
   }
 
-  load = (): Observable<Route[]> => {
+  load = (): Observable<IList[]> => {
     return this.configService
       .getConfig()
-      .pipe(switchMap(c => this.http.get<Route[]>(c.routesUrl)))
+      .pipe(switchMap(c => this.http.get<IDetail[]>(c.routesUrl)))
+      .pipe(tap(i => this.logger.log('Routes: ' + JSON.stringify(i, null, 2))));
+  }
+
+  loadDetail = (id: string): Observable<IDetail> => {
+    return this.configService
+      .getConfig()
+      .pipe(switchMap(c => this.http.get<IDetail>(`${c.routesUrl}/${id}`)))
       .pipe(tap(i => this.logger.log('Routes: ' + JSON.stringify(i, null, 2))));
   }
 }

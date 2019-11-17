@@ -46,7 +46,8 @@ export function locationReducer(
         ...state,
         details: {
           ...state.details,
-          [action.payload]: {
+          [action.payload]: {            
+            id: action.payload,
             loaded: false,
             loading: true,
             item: undefined
@@ -60,7 +61,8 @@ export function locationReducer(
         ...state,
         details: {
           ...state.details,
-          [action.payload.id]: {
+          [action.payload.id]: {            
+            id: action.payload.id,
             loaded: true,
             loading: false,
             item: action.payload
@@ -75,6 +77,7 @@ export function locationReducer(
         details: {
           ...state.details,
           [action.payload.id]: {
+            id: action.payload.id,
             loaded: false,
             loading: false,
             item: undefined

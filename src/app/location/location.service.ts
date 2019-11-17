@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { switchMap, tap } from 'rxjs/operators';
 import { isArray } from 'util';
 import { Observable } from 'rxjs';
-import { Detail, List } from 'rvw-model/lib/location';
+import { Detail, IList } from 'rvw-model/lib/location';
 
 @Injectable({
   providedIn: 'root'
@@ -36,10 +36,10 @@ export class LocationService {
       );
   }
 
-  load = (): Observable<List[]> => {
+  load = (): Observable<IList[]> => {
     return this.configService
       .getConfig()
-      .pipe(switchMap(c => this.http.get<List[]>(c.locationsUrl)))
+      .pipe(switchMap(c => this.http.get<IList[]>(c.locationsUrl)))
       .pipe(tap(i => this.logger.log('Locations: ' + JSON.stringify(i, null, 2))))
       ;
   }

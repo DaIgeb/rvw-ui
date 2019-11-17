@@ -6,7 +6,7 @@ import { startWith, switchMap, map, catchError, delay, debounce } from 'rxjs/ope
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { selectRouteRoutes } from '../../core/route/route.selectors';
-import { Route } from '@app/core/route/route.model';
+import { IList } from 'rvw-model/lib/route';
 import {
   ActionRouteLoad,
   ActionRouteSave
@@ -16,6 +16,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import * as papa from 'papaparse';
 import { LoggerService } from '@app/core/logger.service';
 import { TableService } from '@app/shared/table.service';
+import { FileService } from '@app/core/file.service';
 
 @Component({
   templateUrl: './route-list.component.html',
@@ -24,8 +25,8 @@ import { TableService } from '@app/shared/table.service';
 export class RouteListComponent implements AfterViewInit, OnInit {
   displayedColumns: string[] = ['name', 'elevation', 'distance', 'action'];
 
-  data: Route[] = [];
-  data$: Observable<Route[]>;
+  data: IList[] = [];
+  data$: Observable<IList[]>;
 
   private filter = new FormControl('');
   private filter$: Observable<string>;
@@ -47,7 +48,8 @@ export class RouteListComponent implements AfterViewInit, OnInit {
     private store: Store<AppState>,
     private route: Router,
     private logger: LoggerService,
-    private tableService: TableService
+    private tableService: TableService,
+    private fileService: FileService
   ) { }
 
   ngOnInit() {
@@ -135,9 +137,17 @@ export class RouteListComponent implements AfterViewInit, OnInit {
           this.store.dispatch(
             new ActionRouteSave(
               csv.data.map(d => ({
+                id: undefined,
                 name: d[nameField],
-                distance: parseInt(d[distanceField], 10),
-                elevation: parseInt(d[elevationField], 10)
+                type: 'route',
+                timelines: [
+                  {
+                    from: '1900-01-01',
+                    locations: [],
+                    distance: parseInt(d[distanceField], 10),
+                    elevation: parseInt(d[elevationField], 10)
+                  }
+                ]
               }))
             )
           );
@@ -146,5 +156,11 @@ export class RouteListComponent implements AfterViewInit, OnInit {
 
       reader.readAsText(inputNode.files[0]);
     }
+  }
+
+  onRouteFileSelected(id: string) {
+    const inputNode: HTMLInputElement = document.querySelector('#routeFile');
+    const file = inputNode.files[0];
+    this.fileService.uploadFile(file.name, file.type, file).subscribe(r => this.logger.log('File' + r, 'error'));
   }
 }

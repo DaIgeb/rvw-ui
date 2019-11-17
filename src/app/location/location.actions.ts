@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Detail, List } from 'rvw-model/lib/location';
+import { Detail, IList } from 'rvw-model/lib/location';
 
 export enum LocationActionTypes {
   LOAD = '[Location] Load',
@@ -20,7 +20,7 @@ export class ActionLocationLoad implements Action {
 export class ActionLocationLoadSuccess implements Action {
   readonly type = LocationActionTypes.LOAD_SUCCESS;
 
-  constructor(public payload: List[]) { }
+  constructor(public payload: IList[]) { }
 }
 
 export class ActionLocationLoadFailure implements Action {

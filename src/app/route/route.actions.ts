@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
-import { Route } from '@app/core/route/route.model';
+
+import { IDetail, IList } from 'rvw-model/lib/route';
 
 export enum RouteActionTypes {
   LOAD = '[Route] Load',
@@ -20,50 +21,50 @@ export class ActionRouteLoad implements Action {
 export class ActionRouteLoadSuccess implements Action {
   readonly type = RouteActionTypes.LOAD_SUCCESS;
 
-  constructor(public payload: Route[]) {}
+  constructor(public payload: IDetail[]) { }
 }
 
 export class ActionRouteLoadFailure implements Action {
   readonly type = RouteActionTypes.LOAD_FAILURE;
 
-  constructor(public payload: any) {}
+  constructor(public payload: any) { }
 }
 
 export class ActionRouteSave implements Action {
   readonly type = RouteActionTypes.SAVE;
 
-  constructor(public payload: Route) {}
+  constructor(public payload: IDetail) { }
 }
 
 export class ActionRouteSaveSuccess implements Action {
   readonly type = RouteActionTypes.SAVE_SUCCESS;
 
-  constructor(public payload: Route) {}
+  constructor(public payload: IDetail) { }
 }
 
 export class ActionRouteSaveFailure implements Action {
   readonly type = RouteActionTypes.SAVE_FAILURE;
 
-  constructor(public payload: any) {}
+  constructor(public payload: any) { }
 }
 
 
 export class ActionRouteBatchSave implements Action {
   readonly type = RouteActionTypes.BATCH_SAVE;
 
-  constructor(public payload: Route[]) {}
+  constructor(public payload: IDetail[]) { }
 }
 
 export class ActionRouteBatchSaveSuccess implements Action {
   readonly type = RouteActionTypes.BATCH_SAVE_SUCCESS;
 
-  constructor(public payload: Route[]) {}
+  constructor(public payload: IDetail[]) { }
 }
 
 export class ActionRouteBatchSaveFailure implements Action {
   readonly type = RouteActionTypes.BATCH_SAVE_FAILURE;
 
-  constructor(public payload: any) {}
+  constructor(public payload: any) { }
 }
 
 export type RouteActions =
@@ -73,4 +74,4 @@ export type RouteActions =
   | ActionRouteSave
   | ActionRouteSaveSuccess
   | ActionRouteSaveFailure
- ;
+  ;

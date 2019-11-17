@@ -27,6 +27,7 @@ export class ConfigService {
       routesUrl: `${environment.api.url}/${config.routesUrl}`,
       toursUrl: `${environment.api.url}/${config.toursUrl}`,
       locationsUrl: `${environment.api.url}/${config.locationsUrl}`,
+      fileUrl: `${environment.api.url}/${config.fileUrl}`,
       logLevel: config.logLevel || environment.log.level
     })));
 

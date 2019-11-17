@@ -3,16 +3,16 @@ import { ActionTourLoad } from '../tour.actions';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
 import { ActionMemberLoad } from '@app/core/member/member.actions';
-import { ActionRouteLoad } from '@app/core/route/route.actions';
+import { ActionRouteLoad, ActionRouteLoadDetail } from '@app/core/route/route.actions';
 import { selectTourTours, selectTourYear } from '../tour.selectors';
+import { map, tap, switchMap } from 'rxjs/operators';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
-import { map } from 'rxjs/operators';
-import { Member } from '@app/core/member/member.model';
-import { selectRouteRoutes } from '@app/core/route/route.selectors';
+import { selectRouteRoutes, selectRoute, selectCurrentRouteDetailState } from '@app/core/route/route.selectors';
 import { combineLatest, Observable } from 'rxjs';
-import { Route } from '@app/core/route/route.model';
+import { IDetail as IRouteDetail } from 'rvw-model/lib/route';
 import { Tour } from '../tour.model';
 import * as moment from 'moment';
+import { prepareEventListenerParameters } from '@angular/compiler/src/render3/view/template';
 
 interface Data {
   display: string;
@@ -49,7 +49,7 @@ export class TourTopMemberComponent implements OnInit {
   aggregatedData: Data[];
 
   constructor(
-    private store: Store<AppState>  ) { }
+    private store: Store<AppState>) { }
 
   ngOnInit() {
     this.store.dispatch(new ActionTourLoad());
@@ -78,15 +78,33 @@ export class TourTopMemberComponent implements OnInit {
         };
       })
     );
+    
+    const routes$ = tours$.pipe(
+      map(tours => tours.tours.reduce((prev, cur) => ([
+        ...prev,
+        cur.route
+      ]), [] as string[])),
+      switchMap(routes => combineLatest(routes.map(r => this.store.select(selectCurrentRouteDetailState(r))))),
+      tap(routes => console.log(routes)),
+      tap(routes => routes.filter(r => !r.loaded && !r.loading).forEach(t => this.store.dispatch(new ActionRouteLoadDetail(t.id)))),
+      map(routes => routes
+        .filter(r => r.item)
+        .reduce((prev, cur) => {
+          prev[cur.id] = cur.item;
+          return prev;
+        })),
+      tap(routes => console.log(routes))
+    );
+
     const members$ = this.store.select(selectMemberMembers);
-    const routes$ = this.store.select(selectRouteRoutes).pipe(map(r => r.reduce(
+    /*const routes$ = this.store.select(selectRouteRoutes).pipe(map(r => r.reduce(
       (arr, item) => {
         arr[item.id] = item;
         return arr;
       },
-      {} as { [index: string]: Route }
+      {} as { [index: string]: IRouteDetail }
     )));
-
+*/
     this.aggregatedData$ = combineLatest([
       tours$,
       members$,
@@ -98,16 +116,22 @@ export class TourTopMemberComponent implements OnInit {
             cur.participants.forEach(
               p => (prev[p] = [...(prev[p] || []), {
                 ...cur, r2: data[2][cur.route] || {
-                  distance: 0,
-                  elevation: 0,
-                  name: ''
+                  id: cur.route,
+                  type: 'route',
+                  name: '',
+                  timelines: [{
+                    from: '1900-01-01',
+                    distance: 0,
+                    elevation: 0,
+                    locations: []
+                  }]
                 }
               }])
             );
 
             return prev;
           },
-          {} as { [index: string]: (Tour & { r2: Route })[] }
+          {} as { [index: string]: (Tour & { r2: IRouteDetail })[] }
         );
 
         return data[1].map(m => {
@@ -124,8 +148,8 @@ export class TourTopMemberComponent implements OnInit {
             isActive: m.membership.some(ms => moment(ms.from).isBefore(moment()) && (!ms.to || moment(ms.to).isAfter(moment()))),
             tourCount: (tours).length,
             points: (tours).reduce((prev, cur) => prev + cur.points, 0),
-            distance: tours.reduce((prev, cur) => prev + cur.r2.distance, 0),
-            elevation: tours.reduce((prev, cur) => prev + cur.r2.elevation, 0)
+            distance: tours.reduce((prev, cur) => prev + cur.r2.timelines[0].distance, 0),
+            elevation: tours.reduce((prev, cur) => prev + cur.r2.timelines[0].elevation, 0)
           });
         });
       })

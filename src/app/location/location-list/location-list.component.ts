@@ -17,7 +17,7 @@ import { LoggerService } from '@app/core/logger.service';
 import { TableService } from '@app/shared/table.service';
 import { ActionLocationLoad, ActionLocationSave } from '../location.actions';
 import { selectLocationAll, selectLocationIsLoaded } from '../location.selectors';
-import { Detail, List as Location } from 'rvw-model/lib/location';
+import { Detail, IList as Location } from 'rvw-model/lib/location';
 import { ParseResult } from 'papaparse';
 import * as papa from 'papaparse';
 

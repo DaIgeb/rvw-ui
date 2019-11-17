@@ -1,17 +1,14 @@
+import { Detail, IList } from 'rvw-model/lib/location'
+
 import { AppState } from '@app/core';
+import { ILoadingState, ILoadingDetailState } from '@app/core/core.model';
 
-import { Detail, List } from 'rvw-model/lib/location'
-
-export interface ILoadingState {
-  loaded: boolean;
-  loading: boolean;
-}
 
 export interface LocationState extends ILoadingState {
-  list: List[];
-  details: { [id: string]: ILoadingState & {
-    item: Detail | undefined
-  }; }
+  list: IList[];
+  details: {
+    [id: string]: ILoadingDetailState<Detail, string>;
+  }
 }
 
 export interface State extends AppState {

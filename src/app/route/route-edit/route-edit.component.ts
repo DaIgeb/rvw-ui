@@ -10,12 +10,10 @@ import { Store, select } from '@ngrx/store';
 import { selectCurrentRouteRoutes } from '../../core/route/route.selectors';
 import { AppState } from '@app/core';
 import {
-  ActivatedRouteSnapshot,
-  ParamMap,
   ActivatedRoute
 } from '@angular/router';
-import { switchMap, map } from 'rxjs/operators';
-import { Route } from '@app/core/route/route.model';
+import { switchMap } from 'rxjs/operators';
+import { IDetail as Route } from 'rvw-model/lib/route';
 import { ActionRouteSave } from '@app/core/route/route.actions';
 
 @Component({
@@ -28,6 +26,7 @@ export class RouteEditComponent implements OnInit, OnDestroy {
   private route: Route;
 
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
+  type = new FormControl('', [Validators.required]);
   distance = new FormControl('', [Validators.required]);
   elevation = new FormControl('', [Validators.required]);
 
@@ -39,9 +38,8 @@ export class RouteEditComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<AppState>,
-    private fb: FormBuilder,
     private routeSnapshot: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.currentRouteSubscription = this.routeSnapshot.paramMap
@@ -64,10 +62,10 @@ export class RouteEditComponent implements OnInit, OnDestroy {
     return formControl.hasError('required')
       ? 'You must enter a value'
       : formControl.hasError('email')
-      ? 'Not a valid email'
-      : formControl.hasError('minlength')
-      ? 'Requires at least ' + formControl.errors.minlength.requiredLength
-      : '';
+        ? 'Not a valid email'
+        : formControl.hasError('minlength')
+          ? 'Requires at least ' + formControl.errors.minlength.requiredLength
+          : '';
   }
 
   reset() {
@@ -80,8 +78,8 @@ export class RouteEditComponent implements OnInit, OnDestroy {
     } else {
       this.currentRouteFormGroup.patchValue({
         name: this.route.name,
-        distance: this.route.distance,
-        elevation: this.route.elevation
+        distance: this.route.timelines[0].distance,
+        elevation: this.route.timelines[0].elevation
       });
       this.name.patchValue(this.route.name);
     }
@@ -92,8 +90,15 @@ export class RouteEditComponent implements OnInit, OnDestroy {
       new ActionRouteSave({
         id: this.route ? this.route.id : undefined,
         name: this.name.value,
-        elevation: this.elevation.value,
-        distance: this.distance.value
+        type: this.type.value,
+        timelines: [
+          {
+            from: '1900-01-01',
+            elevation: this.elevation.value,
+            distance: this.distance.value,
+            locations: []
+          }
+        ]
       })
     );
   }

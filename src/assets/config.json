@@ -3,5 +3,6 @@
   "routesUrl": "rvw-route/",
   "membersUrl": "rvw-member/",
   "toursUrl": "rvw-tour/",
-  "locationsUrl": "rvw-location/"
+  "locationsUrl": "rvw-location/",
+  "fileUrl": "rvw-file/"
 }

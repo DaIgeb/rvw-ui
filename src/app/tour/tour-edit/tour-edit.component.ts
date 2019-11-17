@@ -13,7 +13,7 @@ import { switchMap, startWith, map, tap } from 'rxjs/operators';
 import { Tour } from '../tour.model';
 import { ActivatedRoute } from '@angular/router';
 import { ActionTourSave, ActionTourLoad } from '../tour.actions';
-import { Route } from '@app/core/route/route.model';
+import { IDetail as Route, IList as IRouteList } from 'rvw-model/lib/route';
 import { Member } from '@app/core/member/member.model';
 import { selectRouteRoutes } from '@app/core/route/route.selectors';
 import { selectMemberMembers } from '@app/core/member/member.selectors';
@@ -44,10 +44,10 @@ import * as moment from 'moment';
 export class TourEditComponent implements OnInit, OnDestroy {
   private currentTourSubscription: Subscription;
   private tour: Tour;
-  private routes: Route[];
+  private routes: IRouteList[];
   private members: Member[];
 
-  filteredRoutes: Observable<Route[]>;
+  filteredRoutes: Observable<IRouteList[]>;
   filteredMembers: Observable<Member[]>[] = [];
   pointsOptions = [15, 20, 40, 80, 150];
 
@@ -212,7 +212,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
     );
   }
 
-  private filterRoutes(value: string): Route[] {
+  private filterRoutes(value: string): IRouteList[] {
     if (value.toLocaleLowerCase) {
       const filterValue = value.toLowerCase();
 
@@ -227,7 +227,7 @@ export class TourEditComponent implements OnInit, OnDestroy {
     return this.routes;
   }
 
-  displayRoute(args: Route) {
+  displayRoute(args: IRouteList) {
     return args.name;
   }
 

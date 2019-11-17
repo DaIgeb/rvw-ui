@@ -1,7 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { Detail, List } from 'rvw-model/lib/location'
+import { Detail } from 'rvw-model/lib/location'
 
-import { LocationState, State, ILoadingState } from './location.model';
+import { LocationState, State } from './location.model';
+import { ILoadingDetailState } from '@app/core/core.model';
 
 export const selectLocationState = createFeatureSelector<State, LocationState>('location');
 
@@ -36,7 +37,7 @@ export const selectLocationByIdState = (id: string) => {
 export const selectLocationById = (id: string) => {
   return createSelector(
     selectLocationByIdState(id),
-    (state: ILoadingState & { item: Detail }) => state ? state.item : undefined
+    (state: ILoadingDetailState<Detail, string>) => state ? state.item : undefined
   );
 };
 

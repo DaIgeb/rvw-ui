@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { tap, exhaustMap, map, catchError, switchMap } from 'rxjs/operators';
+import { tap, exhaustMap, map, catchError, switchMap, mergeMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 import * as fromRoute from './route.actions';
@@ -14,7 +14,7 @@ export class RouteEffects {
     private actions$: Actions,
     private routeService: RouteService,
     private router: Router
-  ) {}
+  ) { }
 
   @Effect()
   load = this.actions$.pipe(
@@ -23,6 +23,17 @@ export class RouteEffects {
       this.routeService.load().pipe(
         map(r => new fromRoute.ActionRouteLoadSuccess(r)),
         catchError(error => of(new fromRoute.ActionRouteLoadFailure(error)))
+      )
+    )
+  );
+
+  @Effect()
+  loadDetail = this.actions$.pipe(
+    ofType<fromRoute.ActionRouteLoadDetail>(fromRoute.RouteActionTypes.LOAD_DETAIL),
+    mergeMap(a =>
+      this.routeService.loadDetail(a.payload).pipe(
+        map(r => new fromRoute.ActionRouteLoadDetailSuccess(r)),
+        catchError(error => of(new fromRoute.ActionRouteLoadDetailFailure(error)))
       )
     )
   );

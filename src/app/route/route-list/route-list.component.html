@@ -69,6 +69,17 @@
             >
               <mat-icon>edit</mat-icon>
             </a>
+            <button type="button" mat-icon-button (click)="uploadFile.click()">
+                <mat-icon>cloud_upload</mat-icon>                
+              </button>
+              <input
+                hidden
+                (change)="onRouteFileSelected(row.id)"
+                #uploadFile
+                type="file"
+                id="routeFile"
+              />
+          
           </td>
         </ng-container>
 

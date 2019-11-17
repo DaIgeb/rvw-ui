@@ -23,7 +23,7 @@ import { selectMemberMembers } from '@app/core/member/member.selectors';
 import { Member } from '@app/core/member/member.model';
 import { selectRouteRoutes } from '@app/core/route/route.selectors';
 import { ActionMemberLoad } from '@app/core/member/member.actions';
-import { Route } from '@app/core/route/route.model';
+import { IList as Route } from 'rvw-model/lib/route';
 import { ActionRouteLoad } from '@app/core/route/route.actions';
 import { TableService } from '@app/shared/table.service';
 
