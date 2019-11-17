@@ -97,14 +97,6 @@ export class TourTopMemberComponent implements OnInit {
     );
 
     const members$ = this.store.select(selectMemberMembers);
-    /*const routes$ = this.store.select(selectRouteRoutes).pipe(map(r => r.reduce(
-      (arr, item) => {
-        arr[item.id] = item;
-        return arr;
-      },
-      {} as { [index: string]: IRouteDetail }
-    )));
-*/
     this.aggregatedData$ = combineLatest([
       tours$,
       members$,

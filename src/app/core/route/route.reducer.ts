@@ -21,7 +21,7 @@ export function routeReducer(
           [action.payload]: {
             id: action.payload,
             loaded: false,
-            loading: false,
+            loading: true,
             item: undefined
           }
         }

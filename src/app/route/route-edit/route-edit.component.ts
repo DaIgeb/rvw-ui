@@ -3,18 +3,20 @@ import {
   FormControl,
   Validators,
   FormBuilder,
-  FormGroup
+  FormGroup,
+  FormArray,
+  AbstractControl
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
-import { selectCurrentRouteRoutes } from '../../core/route/route.selectors';
+import { selectCurrentRouteRoutes, selectCurrentRouteDetailState } from '../../core/route/route.selectors';
 import { AppState } from '@app/core';
 import {
   ActivatedRoute
 } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap, map } from 'rxjs/operators';
 import { IDetail as Route } from 'rvw-model/lib/route';
-import { ActionRouteSave } from '@app/core/route/route.actions';
+import { ActionRouteSave, ActionRouteLoadDetail } from '@app/core/route/route.actions';
 
 @Component({
   selector: 'rvw-route-edit',
@@ -27,14 +29,18 @@ export class RouteEditComponent implements OnInit, OnDestroy {
 
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
   type = new FormControl('', [Validators.required]);
-  distance = new FormControl('', [Validators.required]);
-  elevation = new FormControl('', [Validators.required]);
+  timelines = new FormArray([], [Validators.required, Validators.minLength(1)]);
 
   currentRouteFormGroup = new FormGroup({
     name: this.name,
-    elevation: this.elevation,
-    distance: this.distance
+    type: this.type,
+    timelines: this.timelines
   });
+
+  typeOptions = [
+    { value: 'startRoute', label: 'Start-Route' },
+    { value: 'route', label: 'Route' }
+  ];
 
   constructor(
     private store: Store<AppState>,
@@ -45,8 +51,14 @@ export class RouteEditComponent implements OnInit, OnDestroy {
     this.currentRouteSubscription = this.routeSnapshot.paramMap
       .pipe(
         switchMap(p =>
-          this.store.pipe(select(selectCurrentRouteRoutes(p.get('id'))))
-        )
+          this.store.pipe(select(selectCurrentRouteDetailState(p.get('id'))))
+        ),
+        tap(s => {
+          if (!s.loading && !s.loaded) {
+            this.store.dispatch(new ActionRouteLoadDetail(s.id))
+          }
+        }),
+        map(s => s.item)
       )
       .subscribe(r => {
         this.route = r;
@@ -69,17 +81,23 @@ export class RouteEditComponent implements OnInit, OnDestroy {
   }
 
   reset() {
+    this.timelines.clear();
+
     if (!this.route) {
       this.currentRouteFormGroup.patchValue({
         name: '',
-        distance: '',
-        elevation: ''
+        type: '',
+        timelines: []
       });
     } else {
+      this.route.timelines.forEach(timeline => {
+        this.timelines.push(new FormControl(timeline));
+      });
+
       this.currentRouteFormGroup.patchValue({
         name: this.route.name,
-        distance: this.route.timelines[0].distance,
-        elevation: this.route.timelines[0].elevation
+        type: this.route.type,
+        timelines: this.route.timelines
       });
       this.name.patchValue(this.route.name);
     }
@@ -91,15 +109,27 @@ export class RouteEditComponent implements OnInit, OnDestroy {
         id: this.route ? this.route.id : undefined,
         name: this.name.value,
         type: this.type.value,
-        timelines: [
-          {
-            from: '1900-01-01',
-            elevation: this.elevation.value,
-            distance: this.distance.value,
-            locations: []
-          }
-        ]
+        timelines: this.timelines.value
       })
     );
+  }
+
+  addTimeline() {
+    this.timelines.push(new FormControl());
+  }
+
+  getTimelineTitel(item: AbstractControl) {
+    const from = item.value.from;
+    const until = item.value.until || '-';
+
+    if (from) {
+      if (until) {
+        return `${from} / ${until}`
+      }
+
+      return `${from} / -`;
+    }
+
+    return '';
   }
 }

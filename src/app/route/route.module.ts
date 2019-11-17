@@ -8,9 +8,10 @@ import { RouteListComponent } from './route-list/route-list.component';
 import { AppMaterialModule } from '@app/app-material/app-material.module';
 import { RouteEditComponent } from './route-edit/route-edit.component';
 import { SharedModule } from '@app/shared/shared.module';
+import { RouteEditTimelineComponent } from './route-edit-timeline/route-edit-timeline.component';
 
 @NgModule({
-  declarations: [RouteListComponent, RouteEditComponent],
+  declarations: [RouteListComponent, RouteEditComponent, RouteEditTimelineComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,

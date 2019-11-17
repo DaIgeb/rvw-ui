@@ -1,60 +1,42 @@
 <div class="container">
-    <form [formGroup]="currentRouteFormGroup" (ngSubmit)="save()" class="form">
-      <mat-form-field>
-        <input
-          matInput
-          placeholder="Name"
-          formControlName="name"
-          required
-        />
-        <mat-error *ngIf="name.invalid">{{
+  <form [formGroup]="currentRouteFormGroup" (ngSubmit)="save()" class="form">
+    <mat-form-field>
+      <input matInput placeholder="Name" formControlName="name" required />
+      <mat-error *ngIf="name.invalid">{{
           getErrorMessage(name)
         }}</mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <input
-          matInput
-          type="number"
-          placeholder="Elevation"
-          formControlName="elevation"
-          required
-        />
-        <mat-error *ngIf="elevation.invalid">{{
-          getErrorMessage(elevation)
-        }}</mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <input
-          matInput
-          type="number"
-          placeholder="Distance"
-          formControlName="distance"
-          required
-        />
-        <mat-error *ngIf="distance.invalid">{{
-          getErrorMessage(distance)
-        }}</mat-error>
-      </mat-form-field>
+    </mat-form-field>
 
-      <div class="button">
-        <div class="spacer"></div>
-        <button
-          mat-button
-          type="submit"
-          [disabled]="currentRouteFormGroup.invalid || currentRouteFormGroup.pristine"
-          color="primary"
-        >
-          Submit
-        </button>
+    <label id="type-radio-label">Type</label>
+    <mat-radio-group aria-labelledby="type-radio-label" formControlName="type">
+      <mat-radio-button class="example-radio-button" *ngFor="let option of typeOptions" [value]="option.value">
+        {{ option.label }}
+      </mat-radio-button>
+    </mat-radio-group>
+    <mat-error *ngIf="type.invalid">{{ getErrorMessage(type) }}</mat-error>
 
-        <button
-          mat-button
-          type="button"
-          [disabled]="currentRouteFormGroup.pristine"
-          (click)="reset()"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
-  </div>
+    <h2>
+      Timelines <button mat-flat-button type="button" (click)="addTimeline()">Add</button>
+    </h2>
+    <mat-tab-group formArrayName="timelines">
+      <ng-template ngFor let-item [ngForOf]="timelines.controls" ; let-i="index">
+        <mat-tab [label]="getTimelineTitel(item)">
+          <rvw-route-edit-timeline [formControlName]="i"></rvw-route-edit-timeline>
+        </mat-tab>
+      </ng-template>
+
+    </mat-tab-group>
+
+    <div class="button">
+      <div class="spacer"></div>
+      <button mat-button type="submit" [disabled]="currentRouteFormGroup.invalid || currentRouteFormGroup.pristine"
+        color="primary">
+        Submit
+      </button>
+
+      <button mat-button type="button" [disabled]="currentRouteFormGroup.pristine" (click)="reset()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

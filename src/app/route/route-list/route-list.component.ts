@@ -5,8 +5,8 @@ import { merge, of as observableOf, Observable, timer, combineLatest } from 'rxj
 import { startWith, switchMap, map, catchError, delay, debounce } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/core';
-import { selectRouteRoutes } from '../../core/route/route.selectors';
-import { IList } from 'rvw-model/lib/route';
+import { selectRouteRoutes, selectRouteState } from '../../core/route/route.selectors';
+import { IList, IDetail } from 'rvw-model/lib/route';
 import {
   ActionRouteLoad,
   ActionRouteSave
@@ -53,7 +53,11 @@ export class RouteListComponent implements AfterViewInit, OnInit {
   ) { }
 
   ngOnInit() {
-    this.store.dispatch(new ActionRouteLoad());
+    this.store.select(selectRouteState).subscribe(s => {
+      if (!s.loaded && !s.loading) {
+        this.store.dispatch(new ActionRouteLoad());
+      }
+    });
 
     this.filter$ = this.filter.valueChanges.pipe(
       startWith(''),
@@ -121,36 +125,43 @@ export class RouteListComponent implements AfterViewInit, OnInit {
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
-        const csv = papa.parse(e.target.result, { header: true });
+        if (inputNode.files[0].type === 'application/json') {
+          let data = JSON.parse(e.target.result) as IDetail[];
 
-        if (csv.errors && csv.errors.length > 0) {
-          this.logger.error(JSON.stringify(csv.errors, null, 2));
-        } else {
-          const nameField = csv.meta.fields.find(s => s.startsWith('name'));
-          const distanceField = csv.meta.fields.find(s =>
-            s.startsWith('distance')
-          );
-          const elevationField = csv.meta.fields.find(s =>
-            s.startsWith('elevation')
-          );
+          this.store.dispatch(new ActionRouteSave(data));
+        }
+        else {
+          const csv = papa.parse(e.target.result, { header: true });
 
-          this.store.dispatch(
-            new ActionRouteSave(
-              csv.data.map(d => ({
-                id: undefined,
-                name: d[nameField],
-                type: 'route',
-                timelines: [
-                  {
-                    from: '1900-01-01',
-                    locations: [],
-                    distance: parseInt(d[distanceField], 10),
-                    elevation: parseInt(d[elevationField], 10)
-                  }
-                ]
-              }))
-            )
-          );
+          if (csv.errors && csv.errors.length > 0) {
+            this.logger.error(JSON.stringify(csv.errors, null, 2));
+          } else {
+            const nameField = csv.meta.fields.find(s => s.startsWith('name'));
+            const distanceField = csv.meta.fields.find(s =>
+              s.startsWith('distance')
+            );
+            const elevationField = csv.meta.fields.find(s =>
+              s.startsWith('elevation')
+            );
+
+            this.store.dispatch(
+              new ActionRouteSave(
+                csv.data.map(d => ({
+                  id: undefined,
+                  name: d[nameField],
+                  type: 'route',
+                  timelines: [
+                    {
+                      from: '1900-01-01',
+                      locations: [],
+                      distance: parseInt(d[distanceField], 10),
+                      elevation: parseInt(d[elevationField], 10)
+                    }
+                  ]
+                }))
+              )
+            );
+          }
         }
       };
 
