@@ -21,7 +21,7 @@ export class HttpAuthInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     // how to update the request Parameters
-    if (request.url.startsWith('https://') && this.auth.authenticated) {
+    if (!request.url.startsWith('https://rvw-files-v1.s3') && request.url.startsWith('https://') && this.auth.authenticated) {
       return this.auth.getToken().pipe(
         switchMap(t => {
           const updatedRequest = request.clone({

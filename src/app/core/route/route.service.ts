@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { of, Observable } from 'rxjs';
-import { IDetail, IList } from 'rvw-model/lib/route';
+import { IDetail, IList, IAttachFileBody } from 'rvw-model/lib/route';
 import { HttpClient } from '@angular/common/http';
 import { LoggerService } from '@app/core/logger.service';
 import { ConfigService } from '@app/core/config';
@@ -48,5 +48,11 @@ export class RouteService {
       .getConfig()
       .pipe(switchMap(c => this.http.get<IDetail>(`${c.routesUrl}/${id}`)))
       .pipe(tap(i => this.logger.log('Routes: ' + JSON.stringify(i, null, 2))));
+  }
+
+  attachFile = (id: string, params: IAttachFileBody): Observable<IDetail> => {
+    return this.configService
+      .getConfig()
+      .pipe(switchMap(c => this.http.post<IDetail>(`${c.routesUrl}/${id}/attachFile`, params)));
   }
 }

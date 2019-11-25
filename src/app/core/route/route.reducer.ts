@@ -27,6 +27,7 @@ export function routeReducer(
         }
       };
     }
+    case RouteActionTypes.SAVE_FILE_SUCCESS:
     case RouteActionTypes.LOAD_DETAIL_SUCCESS: {
       return {
         ...state,
@@ -85,7 +86,14 @@ export function routeReducer(
         list: [
           ...state.list.filter(r => !action.payload.some(l => r.id === l.id)),
           ...action.payload
-        ]
+        ],
+        details: {
+          ...state.details,
+          ...action.payload.reduce((prev, cur) => {
+            prev[cur.id] = cur;
+            return prev;
+          }, {})
+        }
       };
     }
     default:

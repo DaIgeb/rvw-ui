@@ -17,6 +17,7 @@
         </mat-error>
       </mat-form-field>
 
+      <div *ngIf="type === 'route'">
       <label id="type-radio-label">Difficulty</label>
       <mat-radio-group aria-labelledby="type-radio-label" formControlName="difficulty">
         <mat-radio-button class="example-radio-button" *ngFor="let option of difficultyOptions" [value]="option.value">
@@ -24,19 +25,20 @@
         </mat-radio-button>
       </mat-radio-group>
       <mat-error *ngIf="difficulty.invalid">{{ getErrorMessage(difficulty) }}</mat-error>
+</div>
 
-      <mat-form-field>
+      <mat-form-field *ngIf="type === 'route'">
         <input matInput type="number" placeholder="Elevation" formControlName="elevation" required />
         <mat-error *ngIf="elevation.invalid">{{      getErrorMessage(elevation)    }}</mat-error>
       </mat-form-field>
-      <mat-form-field>
+      <mat-form-field *ngIf="type === 'route'">
         <input matInput type="number" placeholder="Distance" formControlName="distance" required />
         <mat-error *ngIf="distance.invalid">{{
       getErrorMessage(distance)
     }}</mat-error>
       </mat-form-field>
 
-      <mat-form-field>
+      <mat-form-field *ngIf="type === 'route'">
         <input matInput placeholder="Start-Route" formControlName="startRoute" [matAutocomplete]="startRouteAuto"
           required />
         <mat-error *ngIf="startRoute.invalid">{{ getErrorMessage(startRoute) }}</mat-error>
@@ -48,5 +50,70 @@
             }}</mat-option>
       </mat-autocomplete>
     </div>
+
+    <mat-tab-group>
+      <mat-tab label="Files" *ngIf="type ==='route'">
+        <rvw-route-detail-files [files]="files" (onFileUpload)="onUploadFile($event)" [locations]="[]" [restaurants]="[]"></rvw-route-detail-files>
+      </mat-tab>
+      <mat-tab label="Locations">
+        <div formArrayName="locations">
+          <div *ngFor="let location of locations.controls; let i = index" formGroupName="{{ i }}">
+            <div>
+              <mat-form-field>
+                <input matInput type="input" placeholder="Location {{i + 1}}" formControlName="location"
+                  [matAutocomplete]="auto" />
+              </mat-form-field>
+
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayLocation" autoActiveFirstOption>
+                <mat-option *ngFor="let option of filteredLocations[i] | async" [value]="option">
+                  {{ displayLocation(option) }}
+                </mat-option>
+              </mat-autocomplete>
+              <button mat-icon-button type="button" (click)="removeLocation(i)" tabindex=-1>
+                <mat-icon>delete</mat-icon>
+              </button>
+              <mat-error *ngIf="location.invalid">{{ getErrorMessage(location) }}</mat-error>
+              <mat-error *ngIf="locations.controls[i].invalid">{{ getErrorMessage(locations.controls[i]) }}
+              </mat-error>
+            </div>
+          </div>
+
+          <button mat-icon-button type="button" (click)="addLocation(i)">
+            <mat-icon>add</mat-icon>
+          </button>
+          <mat-error *ngIf="locations.invalid">{{ getErrorMessage(locations) }}</mat-error>
+        </div>
+      </mat-tab>
+      <mat-tab label="Restaurants" *ngIf="type === 'route'">
+        <div formArrayName="restaurants">
+          <div *ngFor="let restaurant of restaurants.controls; let i = index" formGroupName="{{ i }}">
+            <div>
+              <mat-form-field>
+                <input matInput type="input" placeholder="Restaurant {{i + 1}}" formControlName="restaurant"
+                  [matAutocomplete]="auto" />
+              </mat-form-field>
+
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayLocation" autoActiveFirstOption>
+                <mat-option *ngFor="let option of filteredRestaurants[i] | async" [value]="option">
+                  {{ displayLocation(option) }}
+                </mat-option>
+              </mat-autocomplete>
+              <button mat-icon-button type="button" (click)="removeRestaurant(i)" tabindex=-1>
+                <mat-icon>delete</mat-icon>
+              </button>
+              <mat-error *ngIf="restaurant.invalid">{{ getErrorMessage(location) }}</mat-error>
+              <mat-error *ngIf="restaurants.controls[i].invalid">{{ getErrorMessage(restaurants.controls[i]) }}
+              </mat-error>
+            </div>
+          </div>
+
+          <button mat-icon-button type="button" (click)="addRestaurant()">
+            <mat-icon>add</mat-icon>
+          </button>
+          <mat-error *ngIf="restaurants.invalid">{{ getErrorMessage(locations) }}</mat-error>
+
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </mat-card-content>
 </mat-card>

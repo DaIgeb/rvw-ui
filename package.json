@@ -41,9 +41,10 @@
     "ngx-material-timepicker": "^5.2.1",
     "papaparse": "^5.1.0",
     "redux-beacon": "^2.1.0",
-    "rvw-model": "^1.0.4",
+    "rvw-model": "^1.0.6",
     "rxjs": "~6.5.3",
     "tslib": "^1.10.0",
+    "url-parse": "^1.4.7",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {

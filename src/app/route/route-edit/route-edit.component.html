@@ -21,7 +21,7 @@
     <mat-tab-group formArrayName="timelines">
       <ng-template ngFor let-item [ngForOf]="timelines.controls" ; let-i="index">
         <mat-tab [label]="getTimelineTitel(item)">
-          <rvw-route-edit-timeline [formControlName]="i"></rvw-route-edit-timeline>
+          <rvw-route-edit-timeline [id]="id$ |async" [type]="type.value" [formControlName]="i"></rvw-route-edit-timeline>
         </mat-tab>
       </ng-template>
 

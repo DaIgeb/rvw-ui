@@ -1,0 +1,15 @@
+<button type="button" mat-icon-button (click)="uploadFile.click()">
+  <mat-icon>cloud_upload</mat-icon>
+</button>
+<input hidden (change)="onUploadFile()" #uploadFile type="file" id="routeFile" />
+<div>
+  <label id="file-radio-button">Files</label>
+  <mat-radio-group aria-labelledby="file-radio-button" class="files-radio-group">
+    <mat-radio-button class="files-radio-button" *ngFor="let file of files" [value]="file.type"
+      (change)="selectFile(file.path)">
+      {{ file.type }}: {{file.path}}
+    </mat-radio-button>
+  </mat-radio-group>
+</div>
+
+<div #gmap style="width:100%;height:400px"></div>

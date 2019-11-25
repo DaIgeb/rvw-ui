@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { IDetail, IList } from 'rvw-model/lib/route';
+import { IDetail, IList, ITimeline } from 'rvw-model/lib/route';
 
 export enum RouteActionTypes {
   LOAD = '[Route] Load',
@@ -11,6 +11,9 @@ export enum RouteActionTypes {
   SAVE = '[Route] Save',
   SAVE_SUCCESS = '[Route] Save Success',
   SAVE_FAILURE = '[Route] Save Failure',
+  SAVE_FILE = '[Route] Save File',
+  SAVE_FILE_SUCCESS = '[Route] Save File Success',
+  SAVE_FILE_FAILURE = '[Route] Save File Failure',
 }
 
 export class ActionRouteLoad implements Action {
@@ -65,6 +68,24 @@ export class ActionRouteSaveFailure implements Action {
   constructor(public payload: any) { }
 }
 
+export class ActionRouteSaveFile implements Action {
+  readonly type = RouteActionTypes.SAVE_FILE;
+
+  constructor(public payload: { file: File, id: string, timeline: ITimeline }) { }
+}
+
+export class ActionRouteSaveFileSuccess implements Action {
+  readonly type = RouteActionTypes.SAVE_FILE_SUCCESS;
+
+  constructor(public payload: IDetail) { }
+}
+
+export class ActionRouteSaveFileFailure implements Action {
+  readonly type = RouteActionTypes.SAVE_FILE_FAILURE;
+
+  constructor(public payload: any) { }
+}
+
 export type RouteActions =
   | ActionRouteLoad
   | ActionRouteLoadSuccess
@@ -75,4 +96,8 @@ export type RouteActions =
   | ActionRouteSave
   | ActionRouteSaveSuccess
   | ActionRouteSaveFailure
+  | ActionRouteSaveFile
+  | ActionRouteSaveFileSuccess
+  | ActionRouteSaveFileFailure
+
   ;

@@ -170,8 +170,17 @@ export class RouteListComponent implements AfterViewInit, OnInit {
   }
 
   onRouteFileSelected(id: string) {
+    const route = this.data.find(r => r.id === id);
     const inputNode: HTMLInputElement = document.querySelector('#routeFile');
     const file = inputNode.files[0];
-    this.fileService.uploadFile(file.name, file.type, file).subscribe(r => this.logger.log('File' + r, 'error'));
+    this.fileService.uploadFile(`${route.name}/${file.name}`, file.type, file).subscribe(r => 
+      {
+        if (r) {
+          console.log('Success')
+        } else {
+          console.error('Failure')
+        }
+      }
+      );
   }
 }

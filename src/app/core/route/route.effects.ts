@@ -5,14 +5,17 @@ import { Router } from '@angular/router';
 
 import * as fromRoute from './route.actions';
 import { RouteService } from './route.service';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { isArray } from 'util';
+import { FileService } from '../file.service';
+import { TFileTypes } from 'rvw-model/lib/route';
 
 @Injectable()
 export class RouteEffects {
   constructor(
     private actions$: Actions,
     private routeService: RouteService,
+    private fileService: FileService,
     private router: Router
   ) { }
 
@@ -56,4 +59,32 @@ export class RouteEffects {
     ),
     tap(a => this.router.navigate(['./route']))
   );
+
+  @Effect()
+  uploadFile = this.actions$.pipe(
+    ofType<fromRoute.ActionRouteSaveFile>(fromRoute.RouteActionTypes.SAVE_FILE),
+    switchMap(a => {
+      const result: Observable<fromRoute.RouteActions> = this.fileService.uploadFile(`${a.payload.id}/${a.payload.file.name}`, a.payload.file.type, a.payload.file)
+        .pipe(switchMap(r => {
+          if (r) {
+            return this.routeService
+              .attachFile(a.payload.id, {
+                from: a.payload.timeline.from,
+                until: a.payload.timeline.until,
+                path: r,
+                type: a.payload.file.type as TFileTypes || 'kmz'
+              })
+              .pipe(
+                map(r => new fromRoute.ActionRouteSaveFileSuccess(r)),
+                catchError(err => of(new fromRoute.ActionRouteSaveFileFailure(err)))
+              );
+          }
+          return of(new fromRoute.ActionRouteSaveFileFailure('Failed to upload file'));
+        }));
+
+      return result;
+    }
+    )
+  );
+
 }
