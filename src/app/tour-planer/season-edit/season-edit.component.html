@@ -1,0 +1,61 @@
+<div class="container">
+  <form [formGroup]="formGroup" (ngSubmit)="save()" class="form">
+    <div>
+      <mat-form-field>
+        <input matInput type="number" placeholder="Year" formControlName="year" required />
+        <mat-error *ngIf="year.invalid">{{
+              getErrorMessage(year)
+            }}</mat-error>
+      </mat-form-field>
+      <button mat-button type="button" (click)="calculateDates(year.value, true)">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <input matInput [matDatepicker]="seasonStartPicker" placeholder="Choose a season start date"
+          formControlName="seasonStart" required />
+        <mat-datepicker-toggle matSuffix [for]="seasonStartPicker" tabindex=-1></mat-datepicker-toggle>
+        <mat-datepicker #seasonStartPicker></mat-datepicker>
+        <mat-error *ngIf="seasonStart.invalid">{{ getErrorMessage(seasonStart) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput [matDatepicker]="seasonEndPicker" placeholder="Choose a season end date"
+          formControlName="seasonEnd" required />
+        <mat-datepicker-toggle matSuffix [for]="seasonEndPicker" tabindex=-1></mat-datepicker-toggle>
+        <mat-datepicker #seasonEndPicker></mat-datepicker>
+        <mat-error *ngIf="seasonEnd.invalid">{{ getErrorMessage(seasonEnd) }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <input matInput [matDatepicker]="eveningStartPicker" placeholder="Choose an evening start date"
+          formControlName="eveningStart" required />
+        <mat-datepicker-toggle matSuffix [for]="eveningStartPicker" tabindex=-1></mat-datepicker-toggle>
+        <mat-datepicker #eveningStartPicker></mat-datepicker>
+        <mat-error *ngIf="eveningStart.invalid">{{ getErrorMessage(eveningStart) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput [matDatepicker]="eveningEndPicker" placeholder="Choose an evening end date"
+          formControlName="eveningEnd" required />
+        <mat-datepicker-toggle matSuffix [for]="eveningEndPicker" tabindex=-1></mat-datepicker-toggle>
+        <mat-datepicker #eveningEndPicker></mat-datepicker>
+        <mat-error *ngIf="eveningEnd.invalid">{{ getErrorMessage(eveningEnd) }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-tab-group>
+      <mat-tab label="Events">
+        <rvw-season-events-edit formControlName="events"> </rvw-season-events-edit>
+      </mat-tab>
+
+    </mat-tab-group>
+
+
+  </form>
+
+</div>

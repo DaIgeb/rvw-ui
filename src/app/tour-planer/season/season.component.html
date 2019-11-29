@@ -1,0 +1,54 @@
+<mat-card>
+  <mat-card-header>
+    <a mat-raised-button aria-label="Add new" [routerLink]="['./', 0]" routerLinkActive="router-link-active">
+      <mat-icon>add</mat-icon>Add new
+    </a>
+    <rvw-export [items]="data$ | async" fileName="route.json" type="application/json"></rvw-export>
+
+  </mat-card-header>
+  <mat-card-content>
+    <div class="table-container">
+      <mat-form-field [formGroup]="formGroup">
+        <input matInput formControlName="filter" placeholder="Filter" />
+      </mat-form-field>
+      <table mat-table [dataSource]="data" class="table" matSort matSortActive="name" matSortDisableClear>
+        <!-- Number Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="year">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>year</th>
+          <td mat-cell *matCellDef="let row">{{ row.year }}</td>
+        </ng-container>
+
+        <!-- State Column -->
+        <ng-container matColumnDef="seasonStart">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>seasonStart</th>
+          <td mat-cell *matCellDef="let row">{{ row.seasonStart }}</td>
+        </ng-container>
+
+        <!-- Created Column -->
+        <ng-container matColumnDef="seasonEnd">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>seasonEnd</th>
+          <td mat-cell *matCellDef="let row">{{ row.seasonEnd }}</td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let row">
+            <a mat-icon-button aria-label="Edit" [routerLink]="['.', row.id]" routerLinkActive="router-link-active">
+              <mat-icon>edit</mat-icon>
+            </a>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <mat-paginator [length]="resultsLength" [pageSize]="5" [pageSizeOptions]="[5, 10, 25, 50]"></mat-paginator>
+  </mat-card-content>
+</mat-card>

@@ -1,6 +1,7 @@
 {
   "usersUrl": "rvw-user/",
   "routesUrl": "rvw-route/",
+  "seasonsUrl": "rvw-season/",
   "membersUrl": "rvw-member/",
   "toursUrl": "rvw-tour/",
   "locationsUrl": "rvw-location/",

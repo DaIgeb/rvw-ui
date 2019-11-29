@@ -1,0 +1,38 @@
+<div [formGroup]="formGroup">
+  <mat-form-field>
+    <input matInput placeholder="name" formControlName="name" required />
+    <mat-error *ngIf="name.invalid">{{
+            getErrorMessage(name)
+          }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput [matDatepicker]="fromPicker" placeholder="Choose an evening start date"
+      formControlName="from" required />
+    <mat-datepicker-toggle matSuffix [for]="fromPicker" tabindex=-1></mat-datepicker-toggle>
+    <mat-datepicker #fromPicker></mat-datepicker>
+    <mat-error *ngIf="from.invalid">{{ getErrorMessage(from) }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput [matDatepicker]="untilPicker" placeholder="Choose an evening end date"
+      formControlName="until" required />
+    <mat-datepicker-toggle matSuffix [for]="untilPicker" tabindex=-1></mat-datepicker-toggle>
+    <mat-datepicker #untilPicker></mat-datepicker>
+    <mat-error *ngIf="until.invalid">{{ getErrorMessage(until) }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="location" formControlName="location" required />
+    <mat-error *ngIf="location.invalid">{{
+              getErrorMessage(location)
+            }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="organizer" formControlName="organizer" required />
+    <mat-error *ngIf="organizer.invalid">{{
+              getErrorMessage(organizer)
+            }}</mat-error>
+  </mat-form-field>
+</div>

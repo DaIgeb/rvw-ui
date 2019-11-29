@@ -1,0 +1,10 @@
+<mat-card>
+  <mat-card-content [formGroup]="formGroup">
+    <div formArrayName="events">
+      <div *ngFor="let item of events.controls;let i=index">
+        <rvw-season-event-edit [formControlName]="i"></rvw-season-event-edit>
+      </div>
+    </div>
+    <button mat-flat-button type="button" (click)="addEvent()">Add</button>
+  </mat-card-content>
+</mat-card>

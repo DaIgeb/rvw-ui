@@ -62,14 +62,12 @@
           Timelines <button mat-flat-button type="button" (click)="addTimeline()">Add</button>
         </h2>
         <mat-tab-group formArrayName="timelines">
-          <ng-template ngFor let-item [ngForOf]="timelines.controls" ; let-i="index">
+          <ng-template ngFor let-item [ngForOf]="timelines.controls" let-i="index">
             <mat-tab [label]="getTimelineTitel(item)">
               <rvw-location-edit-timeline [formControlName]="i"></rvw-location-edit-timeline>
             </mat-tab>
           </ng-template>
-
         </mat-tab-group>
-
       </div>
 
       <div class="button">

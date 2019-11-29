@@ -25,6 +25,7 @@ export class ConfigService {
       membersUrl: `${environment.api.url}/${config.membersUrl}`,
       usersUrl: `${environment.api.url}/${config.usersUrl}`,
       routesUrl: `${environment.api.url}/${config.routesUrl}`,
+      seasonsUrl: `${environment.api.url}/${config.seasonsUrl}`,
       toursUrl: `${environment.api.url}/${config.toursUrl}`,
       locationsUrl: `${environment.api.url}/${config.locationsUrl}`,
       fileUrl: `${environment.api.url}/${config.fileUrl}`,
