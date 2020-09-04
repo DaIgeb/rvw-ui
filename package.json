@@ -39,7 +39,7 @@
     "highcharts-angular": "^2.4.0",
     "moment": "^2.24.0",
     "ngx-material-timepicker": "^5.2.1",
-    "papaparse": "^5.1.0",
+    "papaparse": "^5.2.0",
     "redux-beacon": "^2.1.0",
     "rvw-model": "^1.0.9",
     "rxjs": "~6.5.3",
