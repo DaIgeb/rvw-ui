@@ -37,7 +37,7 @@
     "hammerjs": "^2.0.8",
     "highcharts": "^7.2.0",
     "highcharts-angular": "^2.4.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "ngx-material-timepicker": "^5.2.1",
     "papaparse": "^5.1.0",
     "redux-beacon": "^2.1.0",
